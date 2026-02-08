@@ -6,19 +6,14 @@ import {Spin} from "antd";
 
 interface ProtectedRouteProps {
     page: ReactNode;
-    requiredPermission?: string[];
 }
 
-const ProtectedRoute = observer(({ page, requiredPermission }: ProtectedRouteProps) => {
-    const { isAuth, inited, allPermissions$ } = UserStore;
+const ProtectedRoute = observer(({ page }: ProtectedRouteProps) => {
+    const { isAuth, inited } = UserStore;
 
     if (!inited) return <Spin />;
 
     if (!isAuth) {
-        return <Navigate to="/login" replace />;
-    }
-
-    if (requiredPermission && !requiredPermission.some(p => allPermissions$.includes(p))) {
         return <Navigate to="/login" replace />;
     }
 

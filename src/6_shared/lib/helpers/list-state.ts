@@ -1,16 +1,9 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type {PaginatedResponse, MonitoringPaginatedResponse, PaginationParams} from "@/6_shared";
+import type {PaginatedResponse, PaginationParams} from "@/6_shared";
 
-/** Унифицированный тип для результатов пагинации */
-type AnyPaginatedResponse<T> = PaginatedResponse<T> | MonitoringPaginatedResponse<T>;
 
 /** Извлекает items и total из любого формата пагинации */
-function extractPaginationData<T>(response: AnyPaginatedResponse<T>): { items: T[]; total: number } {
-    if ('results' in response) {
-        return { items: response.results, total: response.count };
-    }
-
-    // для мониторинг api
+function extractPaginationData<T>(response: PaginatedResponse<T>): { items: T[]; total: number } {
     return { items: response.items, total: response.total };
 }
 
@@ -29,7 +22,7 @@ class ListState<T, F extends object = object> {
     }
 
     /** Обычная пагинация - заменяет items */
-    run = async (fn: (params: PaginationParams & F) => Promise<AnyPaginatedResponse<T>>) => {
+    run = async (fn: (params: PaginationParams & F) => Promise<PaginatedResponse<T>>) => {
         runInAction(() => {
             this.loading = true;
             this.error = null;
@@ -74,7 +67,7 @@ class ListState<T, F extends object = object> {
     };
 
     /** Infinite scroll - добавляет к items */
-    append = async (fn: (params: PaginationParams & F) => Promise<AnyPaginatedResponse<T>>) => {
+    append = async (fn: (params: PaginationParams & F) => Promise<PaginatedResponse<T>>) => {
         if (this.loading || !this.hasMore) return;
 
         runInAction(() => {
