@@ -1,0 +1,25 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.error {
+    color: #ff4d4f;
+    font-size: 14px;
+    text-align: center;
+}
+
+.link {
+    text-align: center;
+    font-size: 14px;
+    color: var(--gray-secondary-text);
+
+    a {
+        color: var(--violet-light);
+
+        &:hover {
+            color: var(--violet-light-active);
+        }
+    }
+}
