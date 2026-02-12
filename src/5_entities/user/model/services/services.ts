@@ -1,5 +1,6 @@
 import {api} from "@/6_shared";
-import type {IUser, LoginRequest, RegisterStudentRequest, VerifyOtpRequest} from "@/5_entities/user";
+import type {PaginatedResponse} from "@/6_shared";
+import type {IUser, LoginRequest, RegisterStudentRequest, VerifyOtpRequest, CreateUserRequest} from "@/5_entities/user";
 
 export const userService = {
     /*** Авторизация ***/
@@ -19,5 +20,38 @@ export const userService = {
 
     getCurrent(): Promise<IUser> {
         return api.get<IUser>("/auth/me/");
+    },
+
+    logout(): Promise<void> {
+        return api.post<void>("/auth/jwt/logout/");
+    },
+
+    updateUser(id: number, data: { full_name?: string; email?: string; phone?: string }): Promise<{ message: string }> {
+        return api.patch(`/users/${id}/`, data);
+    },
+
+    /*** Админ: управление пользователями ***/
+    getUsers(params: Record<string, unknown>): Promise<PaginatedResponse<IUser>> {
+        return api.getPaginated<IUser>("/users/", params);
+    },
+
+    getUser(id: number): Promise<IUser> {
+        return api.get<IUser>(`/users/${id}/`);
+    },
+
+    activateUser(id: number): Promise<{ message: string }> {
+        return api.patch(`/users/${id}/`, { is_active: true });
+    },
+
+    blockUser(id: number): Promise<{ message: string }> {
+        return api.patch(`/users/${id}/`, { blocked_at: new Date().toISOString() });
+    },
+
+    unblockUser(id: number): Promise<{ message: string }> {
+        return api.patch(`/users/${id}/`, { blocked_at: null });
+    },
+
+    createUser(data: CreateUserRequest): Promise<{ message: string }> {
+        return api.post("/users/", data);
     },
 }

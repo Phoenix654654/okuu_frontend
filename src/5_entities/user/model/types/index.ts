@@ -20,6 +20,15 @@ export interface VerifyOtpRequest {
     purpose: OtpPurpose;
 }
 
+export interface CreateUserRequest {
+    email: string;
+    full_name: string;
+    phone: string;
+    role: "Admin" | "Teacher";
+    password: string;
+    password_confirm: string;
+}
+
 export interface IUser {
     id: number;
     email: string;

@@ -38,12 +38,50 @@ $api.interceptors.request.use((config) => {
     return config;
 });
 
+let isRefreshing = false;
+let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = [];
+
+const processQueue = (error: unknown) => {
+    failedQueue.forEach(({ resolve, reject }) => {
+        if (error) reject(error);
+        else resolve();
+    });
+    failedQueue = [];
+};
+
 $api.interceptors.response.use(
     (response) => response,
-    (error) => {
-        if (error.response?.status === 401 && !error.config?.url?.includes("/auth/me")) {
-            window.location.href = "/login";
+    async (error) => {
+        const originalRequest = error.config;
+
+        if (
+            error.response?.status === 401
+            && !originalRequest._retry
+            && !originalRequest.url?.includes("/auth/jwt/refresh/")
+            && !originalRequest.url?.includes("/auth/me")
+        ) {
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                }).then(() => $api(originalRequest));
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            try {
+                await $api.post("/auth/jwt/refresh/");
+                processQueue(null);
+                return $api(originalRequest);
+            } catch (refreshError) {
+                processQueue(refreshError);
+                window.location.href = "/login";
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
+            }
         }
+
         const message = errorHandler(error);
         return Promise.reject({ ...error, message });
     },

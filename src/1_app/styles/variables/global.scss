@@ -11,14 +11,30 @@
   --desciption-primary-text: #596780;
   --violet-light: #4379FF;
   --violet-light-active: #1d43a3;
-  --bg-color: #F3F3F3;
-
+  --bg-color: #eaeaea;
 
   --third-btn-bg: #DBDEEB;
   --third-btn-bg-active: #b7b8bd;
 
+  --disabled-bg: #e0e0e0;
+  --disabled-color: #9e9e9e;
+  --disabled-border: #d0d0d0;
 
-  --disabled-bg: #e0e0e0;     
-  --disabled-color: #9e9e9e; 
-  --disabled-border: #d0d0d0; 
+  // Sidebar
+  --sidebar-bg-start: #0e1e73;
+  --sidebar-bg-end: #2a5fad;
+  --sidebar-text: #ffffff;
+  --sidebar-text-muted: rgba(255, 255, 255, 0.7);
+  --sidebar-item-hover: rgba(255, 255, 255, 0.1);
+  --sidebar-item-active: rgba(255, 255, 255, 0.2);
+  --sidebar-width: 300px;
+
+  // Content
+  --content-bg: #fff;
+  --header-bg: #ffffff;
+  --header-border: #ffffff;
+
+  // Accent
+  --accent-yellow: #e8b730;
+  --accent-yellow-hover: #d4a420;
 }

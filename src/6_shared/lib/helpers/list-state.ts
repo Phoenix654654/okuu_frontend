@@ -2,11 +2,6 @@ import { makeAutoObservable, runInAction } from "mobx";
 import type {PaginatedResponse, PaginationParams} from "@/6_shared";
 
 
-/** Извлекает items и total из любого формата пагинации */
-function extractPaginationData<T>(response: PaginatedResponse<T>): { items: T[]; total: number } {
-    return { items: response.items, total: response.total };
-}
-
 class ListState<T, F extends object = object> {
     items: T[] = [];
     total = 0;
@@ -21,6 +16,13 @@ class ListState<T, F extends object = object> {
         makeAutoObservable(this);
     }
 
+    private get paginationParams(): PaginationParams {
+        return {
+            limit: this.pageSize,
+            offset: (this.page - 1) * this.pageSize,
+        };
+    }
+
     /** Обычная пагинация - заменяет items */
     run = async (fn: (params: PaginationParams & F) => Promise<PaginatedResponse<T>>) => {
         runInAction(() => {
@@ -30,15 +32,13 @@ class ListState<T, F extends object = object> {
 
         try {
             const params = {
-                page: this.page,
-                per_page: this.pageSize,
+                ...this.paginationParams,
                 ...this.filters,
             } as PaginationParams & F;
             const response = await fn(params);
-            const { items, total } = extractPaginationData(response);
             runInAction(() => {
-                this.items = items;
-                this.total = total;
+                this.items = response.results;
+                this.total = response.count;
             });
         } catch (e) {
             runInAction(() => {
@@ -78,15 +78,13 @@ class ListState<T, F extends object = object> {
 
         try {
             const params = {
-                page: this.page,
-                per_page: this.pageSize,
+                ...this.paginationParams,
                 ...this.filters,
             } as PaginationParams & F;
             const response = await fn(params);
-            const { items, total } = extractPaginationData(response);
             runInAction(() => {
-                this.items.push(...items);
-                this.total = total;
+                this.items.push(...response.results);
+                this.total = response.count;
             });
         } catch (e) {
             runInAction(() => {

@@ -60,6 +60,17 @@ class UserStore {
         }
     };
 
+    logout = async () => {
+        try {
+            await userService.logout();
+        } finally {
+            runInAction(() => {
+                this.isAuth = false;
+                this.currentUser$.clear();
+            });
+        }
+    };
+
     fetchCurrentUser = async () => {
         const user = await this.currentUser$.run(() => userService.getCurrent());
 
@@ -70,4 +81,4 @@ class UserStore {
 
 }
 
-export default new UserStore
+export default new UserStore()

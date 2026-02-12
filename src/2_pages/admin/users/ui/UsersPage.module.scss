@@ -1,0 +1,28 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .filters {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .formWrapper {
+        max-width: 500px;
+    }
+
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 16px;
+    }
+}

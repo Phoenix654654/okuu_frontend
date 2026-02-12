@@ -23,7 +23,6 @@ export const errorHandler = (error: AxiosError<any | unknown>): string => {
         [403, message || DEFAULT_ERRORS.PERMISSION_DENIED],
         [404, message || DEFAULT_ERRORS.NOT_FOUND],
         [406, message || DEFAULT_ERRORS.NOT_ACCEPTABLE],
-        [406, message || DEFAULT_ERRORS.CONFLICT],
         [409, message || DEFAULT_ERRORS.CONFLICT],
         [500, message || DEFAULT_ERRORS.SERVER_ERROR],
     ]);

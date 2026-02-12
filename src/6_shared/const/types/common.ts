@@ -6,11 +6,13 @@ export enum ThemeToast {
 }
 
 export interface PaginationParams {
-    page: number;
-    per_page: number;
+    limit: number;
+    offset: number;
 }
 
 export interface PaginatedResponse<T> {
-    items: T[];
-    total: number;
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: T[];
 }

@@ -1,0 +1,45 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--header-border);
+    min-height: 90px;
+    border-radius: 10px;
+
+    .info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .pageTitle {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--dark-light);
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .userName {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-third-text);
+            margin-right: 8px;
+        }
+
+        :global {
+            .ant-btn {
+                color: var(--gray-secondary-text);
+
+                &:hover {
+                    color: var(--dark-light) !important;
+                }
+            }
+        }
+    }
+}
