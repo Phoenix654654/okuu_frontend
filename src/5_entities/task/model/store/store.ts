@@ -19,6 +19,7 @@ class TaskStore {
     list$ = createListState<ITask, { group_id?: number }>();
     current$ = createAsyncState<ITask>();
     submissions$ = createListState<ISubmission, { task_id?: number }>();
+    currentSubmission$ = createAsyncState<ISubmission>();
 
     // Student — описания
     descriptions$ = createListState<ITaskDescription>();
@@ -116,6 +117,10 @@ class TaskStore {
 
     fetchSubmissions = async () => {
         await this.submissions$.run((params) => taskService.getSubmissions(params));
+    };
+
+    fetchSubmission = async (id: number) => {
+        await this.currentSubmission$.run(() => taskService.getSubmission(id));
     };
 
     gradeSubmission = async (id: number, data: GradeSubmissionRequest): Promise<boolean> => {

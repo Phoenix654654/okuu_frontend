@@ -1,5 +1,5 @@
 import {routes} from "@/6_shared";
-import {BookOutlined, EditOutlined, FileTextOutlined, HomeOutlined, TeamOutlined, UserOutlined, UsergroupAddOutlined} from "@ant-design/icons";
+import {BookOutlined, CheckSquareOutlined, EditOutlined, FileTextOutlined, HomeOutlined, TeamOutlined, UserOutlined, UsergroupAddOutlined} from "@ant-design/icons";
 import {createElement} from "react";
 
 export const teacherItems = [
@@ -12,6 +12,11 @@ export const teacherItems = [
         key: routes.tasks,
         icon: createElement(FileTextOutlined),
         label: "Задания",
+    },
+    {
+        key: routes.submissions,
+        icon: createElement(CheckSquareOutlined),
+        label: "Решения",
     },
 ];
 

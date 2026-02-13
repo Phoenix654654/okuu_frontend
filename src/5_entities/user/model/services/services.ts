@@ -1,5 +1,6 @@
 import {api} from "@/6_shared";
 import type {PaginatedResponse} from "@/6_shared";
+import type {PaginatedResponse, PaginationParams} from "@/6_shared";
 import type {IUser, LoginRequest, RegisterStudentRequest, VerifyOtpRequest, CreateUserRequest} from "@/5_entities/user";
 
 export const userService = {
@@ -53,5 +54,9 @@ export const userService = {
 
     createUser(data: CreateUserRequest): Promise<{ message: string }> {
         return api.post("/users/", data);
+    },
+
+    getStudents(params: PaginationParams & { search?: string }): Promise<PaginatedResponse<IUser>> {
+        return api.getPaginated<IUser>("/users/", { ...params, role: "Student" });
     },
 }

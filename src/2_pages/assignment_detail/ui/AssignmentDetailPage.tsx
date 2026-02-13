@@ -58,9 +58,12 @@ const AssignmentDetailPage = observer(() => {
         return <Spin size="large" style={{display: "block", margin: "40px auto"}} />;
     }
 
+    const task = assignment.task;
+    const submission = assignment.submission;
+
     return (
         <div className={cls.page}>
-            <h1>Задание #{assignment.task}</h1>
+            <h1>{task?.title || `Задание #${assignment.id}`}</h1>
 
             <Descriptions bordered size="small" column={2}>
                 <Descriptions.Item label="Статус">
@@ -69,7 +72,23 @@ const AssignmentDetailPage = observer(() => {
                 <Descriptions.Item label="Дата назначения">
                     {new Date(assignment.created_at).toLocaleString("ru-RU")}
                 </Descriptions.Item>
+                {task?.deadline && (
+                    <Descriptions.Item label="Дедлайн">
+                        {new Date(task.deadline).toLocaleString("ru-RU")}
+                    </Descriptions.Item>
+                )}
+                {task?.group && (
+                    <Descriptions.Item label="Группа">
+                        {task.group.name}
+                    </Descriptions.Item>
+                )}
             </Descriptions>
+
+            {task?.approved_description && (
+                <Card title="Описание задания" size="small">
+                    <p style={{whiteSpace: "pre-wrap"}}>{task.approved_description}</p>
+                </Card>
+            )}
 
             {canSubmit ? (
                 <Card title="Отправить решение" size="small">
@@ -92,6 +111,32 @@ const AssignmentDetailPage = observer(() => {
                             </AppButton>
                         </div>
                     </div>
+                </Card>
+            ) : submission ? (
+                <Card title="Ваше решение" size="small">
+                    <p style={{whiteSpace: "pre-wrap"}}>{submission.content}</p>
+                    {submission.files && submission.files.length > 0 && (
+                        <div style={{marginTop: 8}}>
+                            <strong>Файлы:</strong>
+                            {submission.files.map(f => (
+                                <div key={f.id}>
+                                    <a href={f.file} target="_blank" rel="noopener noreferrer">{f.original_name}</a>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {submission.score !== null && (
+                        <Descriptions bordered size="small" column={1} style={{marginTop: 16}}>
+                            <Descriptions.Item label="Оценка">
+                                <Tag color="green">{submission.score}/5</Tag>
+                            </Descriptions.Item>
+                            {submission.teacher_comment && (
+                                <Descriptions.Item label="Комментарий преподавателя">
+                                    {submission.teacher_comment}
+                                </Descriptions.Item>
+                            )}
+                        </Descriptions>
+                    )}
                 </Card>
             ) : (
                 <Card title="Решение отправлено" size="small">

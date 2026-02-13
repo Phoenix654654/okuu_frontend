@@ -15,6 +15,9 @@ export const routes = {
     descriptions: "/my-descriptions",
     descriptionDetail: "/my-descriptions/:id",
 
+    submissions: "/submissions",
+    submissionDetail: "/submissions/:id",
+
     profile: "/profile",
 
     adminUsers: "/admin/users",

@@ -68,7 +68,7 @@ const DescriptionDetailPage = observer(() => {
 
     return (
         <div className={cls.page}>
-            <h1>Описание задания #{desc.task}</h1>
+            <h1>{desc.task?.title || `Описание задания #${desc.id}`}</h1>
 
             <Descriptions bordered size="small" column={2}>
                 <Descriptions.Item label="Статус">
@@ -79,11 +79,11 @@ const DescriptionDetailPage = observer(() => {
                 </Descriptions.Item>
             </Descriptions>
 
-            {desc.comment && desc.status === "REVISION" && (
+            {desc.revision_comment && desc.status === "REVISION" && (
                 <Alert
                     type="warning"
                     message="Комментарий преподавателя"
-                    description={desc.comment}
+                    description={desc.revision_comment}
                     showIcon
                 />
             )}
@@ -119,7 +119,7 @@ const DescriptionDetailPage = observer(() => {
                                 <strong>Файлы:</strong>
                                 {desc.files.map(f => (
                                     <div key={f.id}>
-                                        <a href={f.url} target="_blank" rel="noopener noreferrer">{f.url}</a>
+                                        <a href={f.file} target="_blank" rel="noopener noreferrer">{f.original_name}</a>
                                     </div>
                                 ))}
                             </div>

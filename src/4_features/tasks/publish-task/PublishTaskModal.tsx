@@ -1,7 +1,10 @@
-import {useState} from "react";
-import {Modal, InputNumber, message, Tag, Space, Button} from "antd";
+import {useCallback, useEffect, useState} from "react";
+import {Modal, Select, message, Spin} from "antd";
 import {observer} from "mobx-react-lite";
 import {TaskStore} from "@/5_entities/task";
+import {userService} from "@/5_entities/user";
+import type {IUser} from "@/5_entities/user";
+import {useDebounce} from "@/6_shared/lib/hooks/useDebounce/useDebounce";
 
 interface PublishTaskModalProps {
     open: boolean;
@@ -12,19 +15,33 @@ interface PublishTaskModalProps {
 
 export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess}: PublishTaskModalProps) => {
     const [studentIds, setStudentIds] = useState<number[]>([]);
-    const [currentId, setCurrentId] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const addStudent = () => {
-        if (currentId && !studentIds.includes(currentId)) {
-            setStudentIds([...studentIds, currentId]);
-            setCurrentId(null);
-        }
-    };
+    const [students, setStudents] = useState<IUser[]>([]);
+    const [studentsLoading, setStudentsLoading] = useState(false);
 
-    const removeStudent = (id: number) => {
-        setStudentIds(studentIds.filter(sid => sid !== id));
-    };
+    const loadStudents = useCallback(async (search?: string) => {
+        setStudentsLoading(true);
+        try {
+            const res = await userService.getStudents({limit: 50, offset: 0, search});
+            setStudents(res.results);
+        } catch {
+            // ignore
+        } finally {
+            setStudentsLoading(false);
+        }
+    }, []);
+
+    const debouncedSearch = useDebounce((value: string) => {
+        loadStudents(value || undefined);
+    }, 300);
+
+    useEffect(() => {
+        if (open) {
+            loadStudents();
+            setStudentIds([]);
+        }
+    }, [open, loadStudents]);
 
     const handlePublish = async () => {
         if (studentIds.length === 0) {
@@ -55,35 +72,23 @@ export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess}: Pu
             okText="Опубликовать"
             cancelText="Отмена"
             confirmLoading={loading}
+            okButtonProps={{disabled: studentIds.length === 0}}
         >
-            <div style={{marginBottom: 12}}>
-                <Space>
-                    <InputNumber
-                        value={currentId}
-                        onChange={setCurrentId}
-                        placeholder="ID студента"
-                        min={1}
-                    />
-                    <Button onClick={addStudent} disabled={!currentId}>
-                        Добавить
-                    </Button>
-                </Space>
-            </div>
-            <div>
-                {studentIds.map(id => (
-                    <Tag
-                        key={id}
-                        closable
-                        onClose={() => removeStudent(id)}
-                        style={{marginBottom: 4}}
-                    >
-                        Студент #{id}
-                    </Tag>
-                ))}
-                {studentIds.length === 0 && (
-                    <span style={{color: "#9e9e9e"}}>Добавьте студентов для назначения</span>
-                )}
-            </div>
+            <Select
+                mode="multiple"
+                showSearch
+                value={studentIds}
+                onChange={setStudentIds}
+                onSearch={debouncedSearch}
+                filterOption={false}
+                placeholder="Поиск и выбор студентов..."
+                notFoundContent={studentsLoading ? <Spin size="small" /> : "Не найдено"}
+                options={students.map(s => ({
+                    value: s.id,
+                    label: `${s.full_name}${s.student_code ? ` (${s.student_code})` : ""}`,
+                }))}
+                style={{width: "100%"}}
+            />
         </Modal>
     );
 });

@@ -26,9 +26,8 @@ const AssignmentsPage = observer(() => {
     const columns = [
         {
             title: "Задание",
-            dataIndex: "task",
             key: "task",
-            render: (taskId: number) => `Задание #${taskId}`,
+            render: (_: unknown, record: ITaskAssignment) => record.task?.title || `#${record.id}`,
         },
         {
             title: "Статус",

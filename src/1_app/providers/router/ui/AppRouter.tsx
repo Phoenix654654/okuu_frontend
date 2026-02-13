@@ -13,6 +13,8 @@ import { AssignmentsPage } from "@/2_pages/assignments";
 import { AssignmentDetailPage } from "@/2_pages/assignment_detail";
 import { DescriptionsPage } from "@/2_pages/descriptions";
 import { DescriptionDetailPage } from "@/2_pages/description_detail";
+import { SubmissionsPage } from "@/2_pages/submissions";
+import { SubmissionDetailPage } from "@/2_pages/submission_detail";
 import { ProfilePage } from "@/2_pages/profile";
 import { UsersPage } from "@/2_pages/admin/users";
 import { UserDetailPage as AdminUserDetailPage } from "@/2_pages/admin/user_detail";
@@ -39,6 +41,14 @@ const router = createBrowserRouter(
                 {
                     path: routes.taskDetail,
                     element: <TaskDetailPage />,
+                },
+                {
+                    path: routes.submissions,
+                    element: <SubmissionsPage />,
+                },
+                {
+                    path: routes.submissionDetail,
+                    element: <SubmissionDetailPage />,
                 },
                 // Student
                 {

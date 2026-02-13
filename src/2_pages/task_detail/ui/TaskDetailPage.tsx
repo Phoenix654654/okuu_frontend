@@ -3,7 +3,7 @@ import {Card, Tag, Table, Button, Space, Spin, Descriptions, message, Popconfirm
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
-import type {DescriptionStatus, AssignmentStatus, ITaskDescription, ITaskAssignment, ISubmission} from "@/5_entities/task";
+import type {DescriptionStatus, AssignmentStatus, ITaskDescriptionInline, ITaskAssignmentInline, ISubmission} from "@/5_entities/task";
 import {AssignDescriberModal, ReviewDescriptionModal, PublishTaskModal, GradeSubmissionModal} from "@/4_features/tasks";
 import {routes, taskStatusLabels, taskStatusColors, descriptionStatusLabels, assignmentStatusLabels} from "@/6_shared";
 import cls from "./TaskDetailPage.module.scss";
@@ -65,7 +65,7 @@ const TaskDetailPage = observer(() => {
         {
             title: "Описатель",
             key: "describer",
-            render: (_: unknown, r: ITaskDescription) => r.describer?.full_name || "—",
+            render: (_: unknown, r: ITaskDescriptionInline) => r.describer?.full_name || "—",
         },
         {
             title: "Статус",
@@ -82,7 +82,7 @@ const TaskDetailPage = observer(() => {
         {
             title: "Действия",
             key: "actions",
-            render: (_: unknown, r: ITaskDescription) =>
+            render: (_: unknown, r: ITaskDescriptionInline) =>
                 r.status === "SUBMITTED" ? (
                     <Button
                         size="small"
@@ -101,7 +101,7 @@ const TaskDetailPage = observer(() => {
         {
             title: "Студент",
             key: "student",
-            render: (_: unknown, r: ITaskAssignment) => r.student?.full_name || "—",
+            render: (_: unknown, r: ITaskAssignmentInline) => r.student?.full_name || "—",
         },
         {
             title: "Статус",
@@ -109,13 +109,19 @@ const TaskDetailPage = observer(() => {
             key: "status",
             render: (s: AssignmentStatus) => <Tag>{assignmentStatusLabels[s]}</Tag>,
         },
+        {
+            title: "Оценка",
+            dataIndex: "score",
+            key: "score",
+            render: (score: number | null) => score !== null ? <Tag color="green">{score}/5</Tag> : "—",
+        },
     ];
 
     const submissionColumns = [
         {
             title: "Студент",
             key: "student",
-            render: (_: unknown, r: ISubmission) => r.student?.full_name || `#${r.assignment}`,
+            render: (_: unknown, r: ISubmission) => r.student || `#${r.id}`,
         },
         {
             title: "Содержание",
@@ -187,6 +193,12 @@ const TaskDetailPage = observer(() => {
                     {new Date(task.created_at).toLocaleDateString("ru-RU")}
                 </Descriptions.Item>
             </Descriptions>
+
+            {task.approved_description && (
+                <Card title="Одобренное описание" size="small">
+                    <p style={{whiteSpace: "pre-wrap"}}>{task.approved_description}</p>
+                </Card>
+            )}
 
             {task.descriptions && task.descriptions.length > 0 && (
                 <Card title="Описания" size="small">

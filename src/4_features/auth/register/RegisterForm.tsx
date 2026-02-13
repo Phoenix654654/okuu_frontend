@@ -2,8 +2,11 @@ import {AppInput} from "@/6_shared/ui/input/AppInput.tsx";
 import {AppButton} from "@/6_shared/ui/button/AppButton.tsx";
 import {Link, useNavigate} from "react-router-dom";
 import {routes} from "@/6_shared";
-import {type FormEvent, useState} from "react";
+import {type FormEvent, useEffect, useState} from "react";
 import {UserStore} from "@/5_entities/user";
+import {groupService} from "@/5_entities/group";
+import type {IGroup} from "@/5_entities/group";
+import {Select} from "antd";
 import cls from "./RegisterForm.module.scss";
 import {observer} from "mobx-react-lite";
 
@@ -14,10 +17,18 @@ export const RegisterForm = observer(() => {
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
+    const [groupId, setGroupId] = useState<number | null>(null);
+    const [groups, setGroups] = useState<IGroup[]>([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const isDisabled = !email || !fullName || !phone || !password || !passwordConfirm || loading;
+    useEffect(() => {
+        groupService.getList({limit: 100, offset: 0}).then((res) => {
+            setGroups(res.results);
+        });
+    }, []);
+
+    const isDisabled = !email || !fullName || !phone || !password || !passwordConfirm || !groupId || loading;
 
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -25,6 +36,11 @@ export const RegisterForm = observer(() => {
 
         if (password !== passwordConfirm) {
             setError("Пароли не совпадают");
+            return;
+        }
+
+        if (!groupId) {
+            setError("Выберите группу");
             return;
         }
 
@@ -37,6 +53,7 @@ export const RegisterForm = observer(() => {
             role: "Student",
             password,
             password_confirm: passwordConfirm,
+            group: groupId,
         });
 
         setLoading(false);
@@ -65,6 +82,14 @@ export const RegisterForm = observer(() => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
             />
+            <Select
+                placeholder="Выберите группу"
+                value={groupId}
+                onChange={setGroupId}
+                options={groups.map((g) => ({value: g.id, label: g.name}))}
+                style={{width: "100%"}}
+                size="large"
+            />
             <AppInput
                 type="password"
                 placeholder="Пароль"
@@ -92,4 +117,3 @@ export const RegisterForm = observer(() => {
         </form>
     );
 });
-

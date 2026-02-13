@@ -10,6 +10,7 @@ export interface RegisterStudentRequest {
     role: "Student";
     password: string;
     password_confirm: string;
+    group: number;
 }
 
 export type OtpPurpose = "Account_verify" | "Reset_password" | "Change_email";

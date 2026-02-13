@@ -26,9 +26,8 @@ const DescriptionsPage = observer(() => {
     const columns = [
         {
             title: "Задание",
-            dataIndex: "task",
             key: "task",
-            render: (taskId: number) => `Задание #${taskId}`,
+            render: (_: unknown, record: ITaskDescription) => record.task?.title || `#${record.id}`,
         },
         {
             title: "Статус",
@@ -47,8 +46,8 @@ const DescriptionsPage = observer(() => {
         },
         {
             title: "Комментарий",
-            dataIndex: "comment",
-            key: "comment",
+            dataIndex: "revision_comment",
+            key: "revision_comment",
             ellipsis: true,
             render: (comment: string | null) => comment || "—",
         },
