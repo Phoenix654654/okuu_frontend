@@ -1,41 +1,39 @@
 import {useState} from "react";
-import {Modal, Form, DatePicker, Select, message} from "antd";
-import type {Dayjs} from "dayjs";
+import {Modal, Form, Switch, Input, message} from "antd";
 import {observer} from "mobx-react-lite";
 import {TaskStore} from "@/5_entities/task";
-import {GroupStore} from "@/5_entities/group";
 import {AppInput} from "@/6_shared/ui/input/AppInput";
 
 interface CreateTaskModalProps {
     open: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    defaultGroupId?: number;
 }
 
 export const CreateTaskModal = observer(({open, onClose, onSuccess}: CreateTaskModalProps) => {
     const [title, setTitle] = useState("");
-    const [groupId, setGroupId] = useState<number | undefined>();
-    const [deadline, setDeadline] = useState<Dayjs | null>(null);
+    const [description, setDescription] = useState("");
+    const [isShared, setIsShared] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const groups = GroupStore.list$.items;
-
     const handleOk = async () => {
-        if (!title.trim() || !groupId || !deadline) return;
+        if (!title.trim()) return;
 
         setLoading(true);
         const success = await TaskStore.createTask({
-            group: groupId,
             title: title.trim(),
-            deadline: deadline.format("YYYY-MM-DDTHH:mm:ssZ"),
+            description,
+            is_shared: isShared,
+            file_ids: [],
         });
         setLoading(false);
 
         if (success) {
             message.success("Задание создано");
             setTitle("");
-            setGroupId(undefined);
-            setDeadline(null);
+            setDescription("");
+            setIsShared(false);
             onSuccess();
             onClose();
         } else {
@@ -52,17 +50,9 @@ export const CreateTaskModal = observer(({open, onClose, onSuccess}: CreateTaskM
             okText="Создать"
             cancelText="Отмена"
             confirmLoading={loading}
-            okButtonProps={{disabled: !title.trim() || !groupId || !deadline}}
+            okButtonProps={{disabled: !title.trim()}}
         >
             <Form layout="vertical">
-                <Form.Item label="Группа">
-                    <Select
-                        value={groupId}
-                        onChange={setGroupId}
-                        placeholder="Выберите группу"
-                        options={groups.map(g => ({value: g.id, label: g.name}))}
-                    />
-                </Form.Item>
                 <Form.Item label="Заголовок">
                     <AppInput
                         value={title}
@@ -70,12 +60,18 @@ export const CreateTaskModal = observer(({open, onClose, onSuccess}: CreateTaskM
                         placeholder="Название задания"
                     />
                 </Form.Item>
-                <Form.Item label="Дедлайн">
-                    <DatePicker
-                        showTime
-                        value={deadline}
-                        onChange={setDeadline}
-                        style={{width: "100%"}}
+                <Form.Item label="Описание">
+                    <Input.TextArea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Описание задания"
+                        rows={3}
+                    />
+                </Form.Item>
+                <Form.Item label="Общая задача">
+                    <Switch
+                        checked={isShared}
+                        onChange={setIsShared}
                     />
                 </Form.Item>
             </Form>

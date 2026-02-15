@@ -12,10 +12,17 @@ interface AssignDescriberModalProps {
     taskId: number;
     onClose: () => void;
     onSuccess: () => void;
+    defaultDescriberId?: number;
 }
 
-export const AssignDescriberModal = observer(({open, taskId, onClose, onSuccess}: AssignDescriberModalProps) => {
-    const [describerId, setDescriberId] = useState<number | null>(null);
+export const AssignDescriberModal = observer(({open, taskId, onClose, onSuccess, defaultDescriberId}: AssignDescriberModalProps) => {
+    const [describerId, setDescriberId] = useState<number | null>(defaultDescriberId ?? null);
+
+    useEffect(() => {
+        if (open && defaultDescriberId) {
+            setDescriberId(defaultDescriberId);
+        }
+    }, [open, defaultDescriberId]);
     const [deadline, setDeadline] = useState<Dayjs | null>(null);
     const [loading, setLoading] = useState(false);
 

@@ -60,6 +60,8 @@ export interface UserList {
    * @format date-time
    */
   blocked_at?: string | null;
+  /** Group */
+  group?: string;
 }
 
 export interface FileList {
@@ -185,6 +187,36 @@ export interface GroupCreate {
   year: number;
 }
 
+export interface GroupStudent {
+  /** ID */
+  id?: number;
+  /**
+   * Email адрес
+   * @format email
+   * @minLength 1
+   * @maxLength 50
+   */
+  email: string;
+  /**
+   * ФИО
+   * @minLength 1
+   * @maxLength 80
+   */
+  full_name: string;
+  /**
+   * Код студента
+   * @maxLength 8
+   */
+  student_code?: string | null;
+  /**
+   * Номер телефона
+   * @minLength 1
+   * @maxLength 13
+   * @pattern ^\+996\d{9}$
+   */
+  phone: string;
+}
+
 export interface GroupDetail {
   /** ID */
   id?: number;
@@ -201,6 +233,7 @@ export interface GroupDetail {
    * @max 10
    */
   year: number;
+  students?: GroupStudent[];
   /**
    * Created at
    * @format date-time
@@ -234,7 +267,6 @@ export interface TaskList {
   /** ID */
   id?: number;
   teacher?: UserList;
-  group?: GroupList;
   /**
    * Title
    * Оригинальная задача от учителя
@@ -245,11 +277,10 @@ export interface TaskList {
   /** Status */
   status?: "draft" | "describing" | "review" | "published" | "closed";
   /**
-   * Deadline
-   * Дедлайн для решения
-   * @format date-time
+   * Is shared
+   * Видна всем учителям
    */
-  deadline?: string | null;
+  is_shared?: boolean;
   /**
    * Created at
    * @format date-time
@@ -258,21 +289,17 @@ export interface TaskList {
 }
 
 export interface TaskCreate {
-  /** Group */
-  group: number;
   /**
    * Title
-   * Оригинальная задача от учителя
    * @minLength 1
    * @maxLength 255
    */
   title: string;
   /**
-   * Deadline
-   * Дедлайн для решения
-   * @format date-time
+   * Is shared
+   * @default false
    */
-  deadline?: string | null;
+  is_shared?: boolean;
 }
 
 export interface TaskAssignmentList {
@@ -282,6 +309,12 @@ export interface TaskAssignmentList {
   student?: UserList;
   /** Status */
   status?: "pending" | "submitted" | "graded";
+  /**
+   * Deadline
+   * Дедлайн для решения
+   * @format date-time
+   */
+  deadline?: string | null;
   /**
    * Created at
    * @format date-time
@@ -342,6 +375,12 @@ export interface TaskAssignmentInline {
   student?: UserList;
   /** Status */
   status?: "pending" | "submitted" | "graded";
+  /**
+   * Deadline
+   * Дедлайн для решения
+   * @format date-time
+   */
+  deadline?: string | null;
   /** Has submission */
   has_submission?: string;
   /** Score */
@@ -352,7 +391,6 @@ export interface TaskDetail {
   /** ID */
   id?: number;
   teacher?: UserList;
-  group?: GroupList;
   /**
    * Title
    * Оригинальная задача от учителя
@@ -363,11 +401,10 @@ export interface TaskDetail {
   /** Status */
   status?: "draft" | "describing" | "review" | "published" | "closed";
   /**
-   * Deadline
-   * Дедлайн для решения
-   * @format date-time
+   * Is shared
+   * Видна всем учителям
    */
-  deadline?: string | null;
+  is_shared?: boolean;
   descriptions?: TaskDescriptionInline[];
   assignments?: TaskAssignmentInline[];
   /** Approved description */
@@ -420,6 +457,12 @@ export interface TaskAssignmentDetail {
   student?: UserList;
   /** Status */
   status?: "pending" | "submitted" | "graded";
+  /**
+   * Deadline
+   * Дедлайн для решения
+   * @format date-time
+   */
+  deadline?: string | null;
   submission?: SubmissionInline;
   /**
    * Created at
@@ -579,17 +622,12 @@ export interface GradeSubmission {
 export interface TaskUpdate {
   /**
    * Title
-   * Оригинальная задача от учителя
    * @minLength 1
    * @maxLength 255
    */
-  title: string;
-  /**
-   * Deadline
-   * Дедлайн для решения
-   * @format date-time
-   */
-  deadline?: string | null;
+  title?: string;
+  /** Is shared */
+  is_shared?: boolean;
 }
 
 export interface AssignDescriber {
@@ -611,8 +649,15 @@ export interface Revision {
 }
 
 export interface PublishTask {
-  /** @minItems 1 */
-  student_ids: number[];
+  /**
+   * Deadline
+   * @format date-time
+   */
+  deadline: string;
+  /** @default [] */
+  group_ids?: number[];
+  /** @default [] */
+  student_ids?: number[];
 }
 
 export interface UserCreate {
@@ -648,6 +693,8 @@ export interface UserCreate {
    * @minLength 1
    */
   password_confirm: string;
+  /** Группа */
+  group?: number | null;
 }
 
 export interface UserDetail {
@@ -687,6 +734,8 @@ export interface UserDetail {
    * @format date-time
    */
   blocked_at?: string | null;
+  /** Group */
+  group?: string;
   /**
    * Created at
    * @format date-time
@@ -720,6 +769,21 @@ export interface UserUpdate {
    * @pattern ^\+996\d{9}$
    */
   phone: string;
+  /** Группа */
+  group?: number | null;
+}
+
+export interface ChangePassword {
+  /**
+   * Password
+   * @minLength 1
+   */
+  password: string;
+  /**
+   * Password confirm
+   * @minLength 1
+   */
+  password_confirm: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -1835,6 +1899,11 @@ export class Api<
      */
     usersList: (
       query?: {
+        full_name__icontains?: string;
+        student_code__icontains?: string;
+        is_active?: string;
+        group?: string;
+        role?: string;
         /** Number of results to return per page. */
         limit?: number;
         /** The initial index from which to return the results. */
@@ -1932,6 +2001,90 @@ export class Api<
       this.request<UserUpdate, any>({
         path: `/users/${id}/`,
         method: "PATCH",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name UsersActivate
+     * @request POST:/users/{id}/activate/
+     * @secure
+     */
+    usersActivate: (id: string, data: UserList, params: RequestParams = {}) =>
+      this.request<UserList, any>({
+        path: `/users/${id}/activate/`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name UsersChangePassword
+     * @request POST:/users/{id}/change_password/
+     * @secure
+     */
+    usersChangePassword: (
+      id: string,
+      data: ChangePassword,
+      params: RequestParams = {},
+    ) =>
+      this.request<ChangePassword, any>({
+        path: `/users/${id}/change_password/`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name UsersChangeStudentCode
+     * @request POST:/users/{id}/change_student_code/
+     * @secure
+     */
+    usersChangeStudentCode: (
+      id: string,
+      data: UserDetail,
+      params: RequestParams = {},
+    ) =>
+      this.request<UserDetail, any>({
+        path: `/users/${id}/change_student_code/`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name UsersDeactivate
+     * @request POST:/users/{id}/deactivate/
+     * @secure
+     */
+    usersDeactivate: (id: string, data: UserList, params: RequestParams = {}) =>
+      this.request<UserList, any>({
+        path: `/users/${id}/deactivate/`,
+        method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,

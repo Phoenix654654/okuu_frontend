@@ -5,6 +5,7 @@ export const routes = {
     verifyOtp: "/verify-otp",
 
     groups: "/groups",
+    groupDetail: "/groups/:id",
 
     tasks: "/tasks",
     taskDetail: "/tasks/:id",

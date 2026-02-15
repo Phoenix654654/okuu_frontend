@@ -7,6 +7,7 @@ import ProtectedRoute from "@/1_app/providers/router/router_provider/ProtectedRo
 import {routes} from "@/6_shared";
 import { HomePage } from "@/2_pages/home";
 import { GroupsPage } from "@/2_pages/groups";
+import { GroupDetailPage } from "@/2_pages/group_detail";
 import { TasksPage } from "@/2_pages/tasks";
 import { TaskDetailPage } from "@/2_pages/task_detail";
 import { AssignmentsPage } from "@/2_pages/assignments";
@@ -33,6 +34,10 @@ const router = createBrowserRouter(
                 {
                     path: routes.groups,
                     element: <GroupsPage />,
+                },
+                {
+                    path: routes.groupDetail,
+                    element: <GroupDetailPage />,
                 },
                 {
                     path: routes.tasks,

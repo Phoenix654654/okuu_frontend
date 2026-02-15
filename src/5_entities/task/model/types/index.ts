@@ -118,9 +118,10 @@ export interface ITask {
 }
 
 export interface CreateTaskRequest {
-    group: number;
     title: string;
-    deadline: string;
+    description?: string;
+    is_shared?: boolean;
+    file_ids?: number[];
 }
 
 export interface UpdateTaskRequest {

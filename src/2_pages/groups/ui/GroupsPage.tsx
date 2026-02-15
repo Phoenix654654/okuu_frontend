@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {Table, Button, Popconfirm, Space, Tag, Tabs, Form, InputNumber, Spin, message} from "antd";
 import {EditOutlined, DeleteOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
+import {useNavigate} from "react-router-dom";
 import {GroupStore} from "@/5_entities/group";
 import {UserStore} from "@/5_entities/user";
 import type {IGroup} from "@/5_entities/group";
@@ -11,6 +12,7 @@ import {AppButton} from "@/6_shared/ui/button/AppButton";
 import cls from "./GroupsPage.module.scss";
 
 const GroupList = observer(() => {
+    const navigate = useNavigate();
     const {items, total, loading, page, pageSize} = GroupStore.list$;
 
     useEffect(() => {
@@ -40,6 +42,9 @@ const GroupList = observer(() => {
             title: "Название",
             dataIndex: "name",
             key: "name",
+            render: (name: string, record: IGroup) => (
+                <a onClick={() => navigate(`/groups/${record.id}`)}>{name}</a>
+            ),
         },
         {
             title: "Курс",

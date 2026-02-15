@@ -45,26 +45,6 @@ const TasksPage = observer(() => {
             key: "title",
         },
         {
-            title: "Группа",
-            key: "group",
-            render: (_: unknown, record: ITask) => record.group?.name || "—",
-        },
-        {
-            title: "Статус",
-            dataIndex: "status",
-            key: "status",
-            render: (status: TaskStatus) => (
-                <Tag color={taskStatusColors[status]}>{taskStatusLabels[status]}</Tag>
-            ),
-        },
-        {
-            title: "Дедлайн",
-            dataIndex: "deadline",
-            key: "deadline",
-            render: (deadline: string) =>
-                deadline ? new Date(deadline).toLocaleDateString("ru-RU") : "—",
-        },
-        {
             title: "Действия",
             key: "actions",
             width: 80,
