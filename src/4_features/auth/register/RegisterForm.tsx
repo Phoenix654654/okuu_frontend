@@ -87,8 +87,6 @@ export const RegisterForm = observer(() => {
                 value={groupId}
                 onChange={setGroupId}
                 options={groups.map((g) => ({value: g.id, label: g.name}))}
-                style={{width: "100%"}}
-                size="large"
             />
             <AppInput
                 type="password"

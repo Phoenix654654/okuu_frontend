@@ -1,10 +1,12 @@
 import {useEffect, useCallback, useState} from "react";
 import {Table, Tag, Space, Button, Select, Popconfirm, message, Tabs, Form} from "antd";
-import {EyeOutlined, CheckOutlined, LockOutlined, UnlockOutlined} from "@ant-design/icons";
+import {EyeOutlined, CheckOutlined, LockOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
 import {UserAdminStore} from "@/5_entities/user";
 import type {IUser, CreateUserRequest} from "@/5_entities/user";
+import {groupService} from "@/5_entities/group";
+import type {IGroup} from "@/5_entities/group";
 import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
 import {AppInput} from "@/6_shared/ui/input/AppInput";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
@@ -15,22 +17,24 @@ import cls from "./UsersPage.module.scss";
 const UserList = observer(() => {
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize, filters} = UserAdminStore.list$;
+    const [groups, setGroups] = useState<IGroup[]>([]);
 
     useEffect(() => {
         UserAdminStore.fetchUsers();
+        groupService.getList({limit: 200, offset: 0}).then((res) => setGroups(res.results)).catch(() => {});
     }, []);
 
     const debouncedFetch = useDebounce(() => {
         UserAdminStore.fetchUsers();
     }, 500);
 
-    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        UserAdminStore.list$.setFilter("search", e.target.value || undefined);
+    const handleTextFilter = useCallback((key: "full_name__icontains" | "student_code__icontains") => (e: React.ChangeEvent<HTMLInputElement>) => {
+        UserAdminStore.list$.setFilter(key, e.target.value || undefined);
         debouncedFetch();
     }, [debouncedFetch]);
 
-    const handleRoleChange = (value: string | undefined) => {
-        UserAdminStore.list$.setFilter("role", value);
+    const handleSelectFilter = (key: "role" | "is_active" | "group") => (value: unknown) => {
+        UserAdminStore.list$.setFilter(key, value ?? undefined);
         UserAdminStore.fetchUsers();
     };
 
@@ -45,14 +49,9 @@ const UserList = observer(() => {
         if (success) message.success("Пользователь активирован");
     };
 
-    const handleBlock = async (id: number) => {
-        const success = await UserAdminStore.blockUser(id);
-        if (success) message.success("Пользователь заблокирован");
-    };
-
-    const handleUnblock = async (id: number) => {
-        const success = await UserAdminStore.unblockUser(id);
-        if (success) message.success("Пользователь разблокирован");
+    const handleDeactivate = async (id: number) => {
+        const success = await UserAdminStore.deactivateUser(id);
+        if (success) message.success("Пользователь деактивирован");
     };
 
     const columns = [
@@ -67,6 +66,12 @@ const UserList = observer(() => {
             key: "email",
         },
         {
+            title: "Код студента",
+            dataIndex: "student_code",
+            key: "student_code",
+            render: (code: string) => code || "—",
+        },
+        {
             title: "Роль",
             dataIndex: "role",
             key: "role",
@@ -77,17 +82,11 @@ const UserList = observer(() => {
         {
             title: "Статус",
             key: "status",
-            render: (_: unknown, record: IUser) => {
-                if (record.blocked_at) return <Tag color="red">Заблокирован</Tag>;
-                if (!record.is_active) return <Tag color="orange">Неактивен</Tag>;
-                return <Tag color="green">Активен</Tag>;
-            },
-        },
-        {
-            title: "Дата регистрации",
-            dataIndex: "created_at",
-            key: "created_at",
-            render: (date: string) => new Date(date).toLocaleDateString("ru-RU"),
+            render: (_: unknown, record: IUser) => (
+                record.is_active
+                    ? <Tag color="green">Активен</Tag>
+                    : <Tag color="red">Неактивен</Tag>
+            ),
         },
         {
             title: "Действия",
@@ -100,33 +99,26 @@ const UserList = observer(() => {
                         icon={<EyeOutlined />}
                         onClick={() => navigate(`/admin/users/${record.id}`)}
                     />
-                    {!record.is_active && (
+                    {record.is_active ? (
                         <Popconfirm
-                            title="Активировать пользователя?"
-                            onConfirm={() => handleActivate(record.id)}
-                            okText="Да"
-                            cancelText="Нет"
+                            title="Деактивировать пользователя?"
+                            description="Пользователь не сможет войти в систему."
+                            onConfirm={() => handleDeactivate(record.id)}
+                            okText="Деактивировать"
+                            cancelText="Отмена"
+                            okButtonProps={{danger: true}}
                         >
-                            <Button type="text" icon={<CheckOutlined />} style={{color: "green"}} />
-                        </Popconfirm>
-                    )}
-                    {record.blocked_at ? (
-                        <Popconfirm
-                            title="Разблокировать пользователя?"
-                            onConfirm={() => handleUnblock(record.id)}
-                            okText="Да"
-                            cancelText="Нет"
-                        >
-                            <Button type="text" icon={<UnlockOutlined />} style={{color: "green"}} />
+                            <Button type="text" danger icon={<LockOutlined />} />
                         </Popconfirm>
                     ) : (
                         <Popconfirm
-                            title="Заблокировать пользователя?"
-                            onConfirm={() => handleBlock(record.id)}
-                            okText="Да"
-                            cancelText="Нет"
+                            title="Активировать пользователя?"
+                            description="Пользователь сможет войти в систему."
+                            onConfirm={() => handleActivate(record.id)}
+                            okText="Активировать"
+                            cancelText="Отмена"
                         >
-                            <Button type="text" danger icon={<LockOutlined />} />
+                            <Button type="text" icon={<CheckOutlined />} style={{color: "green"}} />
                         </Popconfirm>
                     )}
                 </Space>
@@ -138,18 +130,46 @@ const UserList = observer(() => {
         <>
             <div className={cls.filters}>
                 <AppInput
-                    placeholder="Поиск по имени..."
-                    value={filters.search || ""}
-                    onChange={handleSearchChange}
-                    style={{width: 300}}
+                    placeholder="ФИО"
+                    value={filters.full_name__icontains || ""}
+                    onChange={handleTextFilter("full_name__icontains")}
+                    style={{width: 220}}
                     allowClear
+                />
+                <AppInput
+                    placeholder="Код студента"
+                    value={filters.student_code__icontains || ""}
+                    onChange={handleTextFilter("student_code__icontains")}
+                    style={{width: 180}}
+                    allowClear
+                />
+                <Select
+                    placeholder="Статус"
+                    value={filters.is_active}
+                    onChange={handleSelectFilter("is_active")}
+                    allowClear
+                    style={{width: 160}}
+                    options={[
+                        {value: "true", label: "Активен"},
+                        {value: "false", label: "Неактивен"},
+                    ]}
+                />
+                <Select
+                    placeholder="Группа"
+                    value={filters.group}
+                    onChange={handleSelectFilter("group")}
+                    allowClear
+                    showSearch
+                    optionFilterProp="label"
+                    style={{width: 200}}
+                    options={groups.map((g) => ({value: g.id, label: g.name}))}
                 />
                 <Select
                     placeholder="Роль"
                     value={filters.role}
-                    onChange={handleRoleChange}
+                    onChange={handleSelectFilter("role")}
                     allowClear
-                    style={{width: 200}}
+                    style={{width: 180}}
                     options={[
                         {value: "Student", label: "Студент"},
                         {value: "Teacher", label: "Преподаватель"},

@@ -27,7 +27,7 @@ export const userService = {
         return api.post<void>("/auth/jwt/logout/");
     },
 
-    updateUser(id: number, data: { full_name?: string; email?: string; phone?: string }): Promise<{ message: string }> {
+    updateUser(id: number, data: { full_name?: string; email?: string; phone?: string; group?: number | null }): Promise<{ message: string }> {
         return api.patch(`/users/${id}/`, data);
     },
 
@@ -41,15 +41,11 @@ export const userService = {
     },
 
     activateUser(id: number): Promise<{ message: string }> {
-        return api.patch(`/users/${id}/`, { is_active: true });
+        return api.post(`/users/${id}/activate/`);
     },
 
     blockUser(id: number): Promise<{ message: string }> {
-        return api.patch(`/users/${id}/`, { blocked_at: new Date().toISOString() });
-    },
-
-    unblockUser(id: number): Promise<{ message: string }> {
-        return api.patch(`/users/${id}/`, { blocked_at: null });
+        return api.post(`/users/${id}/deactivate/`);
     },
 
     createUser(data: CreateUserRequest): Promise<{ message: string }> {
@@ -58,5 +54,13 @@ export const userService = {
 
     getStudents(params: PaginationParams & { search?: string }): Promise<PaginatedResponse<IUser>> {
         return api.getPaginated<IUser>("/users/", { ...params, role: "Student" });
+    },
+
+    changeStudentCode(id: number): Promise<{ message: string }> {
+        return api.post(`/users/${id}/change_student_code/`);
+    },
+
+    changePassword(id: number, data: { password: string; password_confirm: string }): Promise<{ message: string }> {
+        return api.post(`/users/${id}/change_password/`, data);
     },
 }

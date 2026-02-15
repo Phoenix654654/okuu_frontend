@@ -37,6 +37,7 @@ export interface IUser {
     role: "Admin" | "Teacher" | "Student";
     student_code: string;
     phone: string;
+    group: { id: number; name: string } | null;
     is_active: boolean;
     blocked_at: Date | null;
     created_at: Date;

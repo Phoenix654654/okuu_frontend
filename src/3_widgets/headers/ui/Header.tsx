@@ -21,6 +21,9 @@ export const Header = observer(() => {
                 {user && (
                     <span className={cls.pageTitle}>{roleLabels[user.role] || user.role}: {user.full_name}</span>
                 )}
+                {user && user.student_code && (
+                    <span className={cls.studentCode}>Код: {user.student_code}</span>
+                )}
             </div>
             <div className={cls.actions}>
                 <Button type="text" icon={<BellOutlined />} size={'large'}/>
