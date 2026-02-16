@@ -17,6 +17,7 @@ export type {
     ITaskDescription,
     ITaskAssignment,
     ISubmission,
+    ISubmissionDetail,
     CreateTaskRequest,
     UpdateTaskRequest,
     AssignDescriberRequest,

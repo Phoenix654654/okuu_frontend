@@ -296,10 +296,18 @@ export interface TaskCreate {
    */
   title: string;
   /**
+   * Description
+   * @minLength 1
+   * @default ""
+   */
+  description?: string;
+  /**
    * Is shared
    * @default false
    */
   is_shared?: boolean;
+  /** @default [] */
+  file_ids?: number[];
 }
 
 export interface TaskAssignmentList {
@@ -320,6 +328,23 @@ export interface TaskAssignmentList {
    * @format date-time
    */
   created_at?: string;
+}
+
+export interface TaskFileOutput {
+  /** Id */
+  id: number;
+  /**
+   * Original name
+   * @minLength 1
+   */
+  original_name: string;
+  /**
+   * File
+   * @format uri
+   */
+  file?: string;
+  /** Size */
+  size: number;
 }
 
 export interface FileOutput {
@@ -398,6 +423,11 @@ export interface TaskDetail {
    * @maxLength 255
    */
   title: string;
+  /**
+   * Description
+   * Описание задачи от учителя
+   */
+  description?: string;
   /** Status */
   status?: "draft" | "describing" | "review" | "published" | "closed";
   /**
@@ -405,6 +435,7 @@ export interface TaskDetail {
    * Видна всем учителям
    */
   is_shared?: boolean;
+  files?: TaskFileOutput[];
   descriptions?: TaskDescriptionInline[];
   assignments?: TaskAssignmentInline[];
   /** Approved description */
@@ -626,8 +657,14 @@ export interface TaskUpdate {
    * @maxLength 255
    */
   title?: string;
+  /**
+   * Description
+   * @minLength 1
+   */
+  description?: string;
   /** Is shared */
   is_shared?: boolean;
+  file_ids?: number[];
 }
 
 export interface AssignDescriber {

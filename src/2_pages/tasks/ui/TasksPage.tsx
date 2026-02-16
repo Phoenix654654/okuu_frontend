@@ -40,9 +40,23 @@ const TasksPage = observer(() => {
 
     const columns = [
         {
-            title: "Заголовок",
+            title: "Название",
             dataIndex: "title",
             key: "title",
+        },
+        {
+            title: "Статус",
+            dataIndex: "status",
+            key: "status",
+            render: (status: TaskStatus) => (
+                <Tag color={taskStatusColors[status]}>{taskStatusLabels[status]}</Tag>
+            ),
+        },
+        {
+            title: "Создано",
+            dataIndex: "created_at",
+            key: "created_at",
+            render: (date: string) => new Date(date).toLocaleDateString("ru-RU"),
         },
         {
             title: "Действия",

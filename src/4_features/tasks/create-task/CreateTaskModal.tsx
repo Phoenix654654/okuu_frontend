@@ -2,6 +2,7 @@ import {useState} from "react";
 import {Modal, Form, Switch, Input, message} from "antd";
 import {observer} from "mobx-react-lite";
 import {TaskStore} from "@/5_entities/task";
+import {FileUpload} from "@/4_features/file-upload/FileUpload";
 import {AppInput} from "@/6_shared/ui/input/AppInput";
 
 interface CreateTaskModalProps {
@@ -15,6 +16,7 @@ export const CreateTaskModal = observer(({open, onClose, onSuccess}: CreateTaskM
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [isShared, setIsShared] = useState(false);
+    const [fileIds, setFileIds] = useState<number[]>([]);
     const [loading, setLoading] = useState(false);
 
     const handleOk = async () => {
@@ -25,7 +27,7 @@ export const CreateTaskModal = observer(({open, onClose, onSuccess}: CreateTaskM
             title: title.trim(),
             description,
             is_shared: isShared,
-            file_ids: [],
+            file_ids: fileIds,
         });
         setLoading(false);
 
@@ -34,6 +36,7 @@ export const CreateTaskModal = observer(({open, onClose, onSuccess}: CreateTaskM
             setTitle("");
             setDescription("");
             setIsShared(false);
+            setFileIds([]);
             onSuccess();
             onClose();
         } else {
@@ -67,6 +70,9 @@ export const CreateTaskModal = observer(({open, onClose, onSuccess}: CreateTaskM
                         placeholder="Описание задания"
                         rows={3}
                     />
+                </Form.Item>
+                <Form.Item label="Файлы">
+                    <FileUpload fileIds={fileIds} onChange={setFileIds} disabled={loading} />
                 </Form.Item>
                 <Form.Item label="Общая задача">
                     <Switch

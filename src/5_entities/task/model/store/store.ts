@@ -7,6 +7,7 @@ import type {
     CreateTaskRequest,
     GradeSubmissionRequest,
     ISubmission,
+    ISubmissionDetail,
     ITask,
     ITaskAssignment,
     ITaskDescription,
@@ -19,7 +20,7 @@ class TaskStore {
     list$ = createListState<ITask, { group_id?: number }>();
     current$ = createAsyncState<ITask>();
     submissions$ = createListState<ISubmission, { task_id?: number }>();
-    currentSubmission$ = createAsyncState<ISubmission>();
+    currentSubmission$ = createAsyncState<ISubmissionDetail>();
 
     // Student — описания
     descriptions$ = createListState<ITaskDescription>();

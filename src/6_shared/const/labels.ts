@@ -13,45 +13,45 @@ export const roleColors: Record<string, string> = {
 };
 
 export const taskStatusLabels: Record<TaskStatus, string> = {
-    DRAFT: "Черновик",
-    DESCRIBING: "На описании",
-    REVIEW: "На проверке",
-    PUBLISHED: "Опубликовано",
-    CLOSED: "Закрыто",
+    draft: "Черновик",
+    describing: "На описании",
+    review: "На проверке",
+    published: "Опубликовано",
+    closed: "Закрыто",
 };
 
 export const taskStatusColors: Record<TaskStatus, string> = {
-    DRAFT: "default",
-    DESCRIBING: "processing",
-    REVIEW: "warning",
-    PUBLISHED: "success",
-    CLOSED: "error",
+    draft: "default",
+    describing: "processing",
+    review: "warning",
+    published: "success",
+    closed: "error",
 };
 
 export const descriptionStatusLabels: Record<DescriptionStatus, string> = {
-    PENDING: "Ожидает",
-    SUBMITTED: "Отправлено",
-    REVISION: "На доработке",
-    APPROVED: "Одобрено",
-    REJECTED: "Отклонено",
+    pending: "Ожидает",
+    submitted: "Отправлено",
+    revision: "На доработке",
+    approved: "Одобрено",
+    rejected: "Отклонено",
 };
 
 export const descriptionStatusColors: Record<DescriptionStatus, string> = {
-    PENDING: "default",
-    SUBMITTED: "processing",
-    REVISION: "warning",
-    APPROVED: "success",
-    REJECTED: "error",
+    pending: "default",
+    submitted: "processing",
+    revision: "warning",
+    approved: "success",
+    rejected: "error",
 };
 
 export const assignmentStatusLabels: Record<AssignmentStatus, string> = {
-    PENDING: "Ожидает решения",
-    SUBMITTED: "Отправлено",
-    GRADED: "Оценено",
+    pending: "Ожидает решения",
+    submitted: "Отправлено",
+    graded: "Оценено",
 };
 
 export const assignmentStatusColors: Record<AssignmentStatus, string> = {
-    PENDING: "default",
-    SUBMITTED: "processing",
-    GRADED: "success",
+    pending: "default",
+    submitted: "processing",
+    graded: "success",
 };

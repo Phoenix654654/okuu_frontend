@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
-import {Modal, Select, message, Spin} from "antd";
+import {Modal, Select, Form, DatePicker, message, Spin} from "antd";
+import type {Dayjs} from "dayjs";
 import {observer} from "mobx-react-lite";
 import {TaskStore} from "@/5_entities/task";
 import {userService} from "@/5_entities/user";
@@ -11,10 +12,12 @@ interface PublishTaskModalProps {
     taskId: number;
     onClose: () => void;
     onSuccess: () => void;
+    defaultStudentIds?: number[];
 }
 
-export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess}: PublishTaskModalProps) => {
+export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess, defaultStudentIds}: PublishTaskModalProps) => {
     const [studentIds, setStudentIds] = useState<number[]>([]);
+    const [deadline, setDeadline] = useState<Dayjs | null>(null);
     const [loading, setLoading] = useState(false);
 
     const [students, setStudents] = useState<IUser[]>([]);
@@ -39,23 +42,32 @@ export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess}: Pu
     useEffect(() => {
         if (open) {
             loadStudents();
-            setStudentIds([]);
+            setStudentIds(defaultStudentIds ?? []);
+            setDeadline(null);
         }
-    }, [open, loadStudents]);
+    }, [open, loadStudents, defaultStudentIds]);
 
     const handlePublish = async () => {
         if (studentIds.length === 0) {
             message.warning("Добавьте хотя бы одного студента");
             return;
         }
+        if (!deadline) {
+            message.warning("Укажите дедлайн");
+            return;
+        }
 
         setLoading(true);
-        const success = await TaskStore.publishTask(taskId, {student_ids: studentIds});
+        const success = await TaskStore.publishTask(taskId, {
+            deadline: deadline.format("YYYY-MM-DDTHH:mm:ssZ"),
+            student_ids: studentIds,
+        });
         setLoading(false);
 
         if (success) {
             message.success("Задание опубликовано");
             setStudentIds([]);
+            setDeadline(null);
             onSuccess();
             onClose();
         } else {
@@ -72,23 +84,35 @@ export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess}: Pu
             okText="Опубликовать"
             cancelText="Отмена"
             confirmLoading={loading}
-            okButtonProps={{disabled: studentIds.length === 0}}
+            okButtonProps={{disabled: studentIds.length === 0 || !deadline}}
         >
-            <Select
-                mode="multiple"
-                showSearch
-                value={studentIds}
-                onChange={setStudentIds}
-                onSearch={debouncedSearch}
-                filterOption={false}
-                placeholder="Поиск и выбор студентов..."
-                notFoundContent={studentsLoading ? <Spin size="small" /> : "Не найдено"}
-                options={students.map(s => ({
-                    value: s.id,
-                    label: `${s.full_name}${s.student_code ? ` (${s.student_code})` : ""}`,
-                }))}
-                style={{width: "100%"}}
-            />
+            <Form layout="vertical">
+                <Form.Item label="Студенты">
+                    <Select
+                        mode="multiple"
+                        showSearch
+                        value={studentIds}
+                        onChange={setStudentIds}
+                        onSearch={debouncedSearch}
+                        filterOption={false}
+                        placeholder="Поиск и выбор студентов..."
+                        notFoundContent={studentsLoading ? <Spin size="small" /> : "Не найдено"}
+                        options={students.map(s => ({
+                            value: s.id,
+                            label: `${s.full_name}${s.student_code ? ` (${s.student_code})` : ""}`,
+                        }))}
+                        style={{width: "100%"}}
+                    />
+                </Form.Item>
+                <Form.Item label="Дедлайн">
+                    <DatePicker
+                        showTime
+                        value={deadline}
+                        onChange={setDeadline}
+                        style={{width: "100%"}}
+                    />
+                </Form.Item>
+            </Form>
         </Modal>
     );
 });

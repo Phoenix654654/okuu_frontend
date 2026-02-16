@@ -33,8 +33,8 @@ const DescriptionsPage = observer(() => {
             title: "Статус",
             dataIndex: "status",
             key: "status",
-            render: (status: DescriptionStatus) => (
-                <Tag color={descriptionStatusColors[status]}>{descriptionStatusLabels[status]}</Tag>
+            render: (s: DescriptionStatus) => (
+                <Tag color={descriptionStatusColors[s]}>{descriptionStatusLabels[s]}</Tag>
             ),
         },
         {
@@ -45,11 +45,11 @@ const DescriptionsPage = observer(() => {
                 deadline ? new Date(deadline).toLocaleDateString("ru-RU") : "—",
         },
         {
-            title: "Комментарий",
-            dataIndex: "revision_comment",
-            key: "revision_comment",
-            ellipsis: true,
-            render: (comment: string | null) => comment || "—",
+            title: "Создано",
+            dataIndex: "created_at",
+            key: "created_at",
+            render: (date: string) =>
+                date ? new Date(date).toLocaleDateString("ru-RU") : "—",
         },
         {
             title: "",

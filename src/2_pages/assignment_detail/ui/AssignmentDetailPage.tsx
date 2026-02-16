@@ -10,9 +10,9 @@ import {routes} from "@/6_shared";
 import cls from "./AssignmentDetailPage.module.scss";
 
 const statusLabels: Record<AssignmentStatus, string> = {
-    PENDING: "Ожидает решения",
-    SUBMITTED: "Отправлено",
-    GRADED: "Оценено",
+    pending: "Ожидает решения",
+    submitted: "Отправлено",
+    graded: "Оценено",
 };
 
 const AssignmentDetailPage = observer(() => {
@@ -25,7 +25,7 @@ const AssignmentDetailPage = observer(() => {
     const [fileIds, setFileIds] = useState<number[]>([]);
     const [submitting, setSubmitting] = useState(false);
 
-    const canSubmit = assignment?.status === "PENDING";
+    const canSubmit = assignment?.status === "pending";
 
     useEffect(() => {
         if (id) {
@@ -72,21 +72,20 @@ const AssignmentDetailPage = observer(() => {
                 <Descriptions.Item label="Дата назначения">
                     {new Date(assignment.created_at).toLocaleString("ru-RU")}
                 </Descriptions.Item>
-                {task?.deadline && (
+                {assignment.deadline && (
                     <Descriptions.Item label="Дедлайн">
-                        {new Date(task.deadline).toLocaleString("ru-RU")}
-                    </Descriptions.Item>
-                )}
-                {task?.group && (
-                    <Descriptions.Item label="Группа">
-                        {task.group.name}
+                        {new Date(assignment.deadline).toLocaleString("ru-RU")}
                     </Descriptions.Item>
                 )}
             </Descriptions>
 
             {task?.approved_description && (
                 <Card title="Описание задания" size="small">
-                    <p style={{whiteSpace: "pre-wrap"}}>{task.approved_description}</p>
+                    <p style={{whiteSpace: "pre-wrap"}}>
+                        {typeof task.approved_description === "string"
+                            ? task.approved_description
+                            : (task.approved_description as any).description || "—"}
+                    </p>
                 </Card>
             )}
 

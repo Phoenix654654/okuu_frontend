@@ -3,19 +3,10 @@ import {Card, Tag, Spin, Input, Descriptions, Alert, message} from "antd";
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
-import type {DescriptionStatus} from "@/5_entities/task";
 import {FileUpload} from "@/4_features/file-upload/FileUpload";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
-import {routes} from "@/6_shared";
+import {routes, descriptionStatusLabels, descriptionStatusColors} from "@/6_shared";
 import cls from "./DescriptionDetailPage.module.scss";
-
-const statusLabels: Record<DescriptionStatus, string> = {
-    PENDING: "Ожидает",
-    SUBMITTED: "Отправлено",
-    REVISION: "На доработке",
-    APPROVED: "Одобрено",
-    REJECTED: "Отклонено",
-};
 
 const DescriptionDetailPage = observer(() => {
     const {id} = useParams<{id: string}>();
@@ -27,7 +18,7 @@ const DescriptionDetailPage = observer(() => {
     const [fileIds, setFileIds] = useState<number[]>([]);
     const [submitting, setSubmitting] = useState(false);
 
-    const canSubmit = desc?.status === "PENDING" || desc?.status === "REVISION";
+    const canSubmit = desc?.status === "pending" || desc?.status === "revision";
 
     useEffect(() => {
         if (id) {
@@ -72,14 +63,16 @@ const DescriptionDetailPage = observer(() => {
 
             <Descriptions bordered size="small" column={2}>
                 <Descriptions.Item label="Статус">
-                    <Tag>{statusLabels[desc.status]}</Tag>
+                    <Tag color={descriptionStatusColors[desc.status]}>
+                        {descriptionStatusLabels[desc.status]}
+                    </Tag>
                 </Descriptions.Item>
                 <Descriptions.Item label="Дедлайн">
                     {desc.deadline ? new Date(desc.deadline).toLocaleString("ru-RU") : "—"}
                 </Descriptions.Item>
             </Descriptions>
 
-            {desc.revision_comment && desc.status === "REVISION" && (
+            {desc.revision_comment && desc.status === "revision" && (
                 <Alert
                     type="warning"
                     message="Комментарий преподавателя"

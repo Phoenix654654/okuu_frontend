@@ -3,7 +3,7 @@ import {Card, Tag, Table, Button, Space, Spin, Descriptions, message, Popconfirm
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
-import type {DescriptionStatus, AssignmentStatus, ITaskDescriptionInline, ITaskAssignmentInline, ISubmission} from "@/5_entities/task";
+import type {DescriptionStatus, AssignmentStatus, ITaskDescriptionInline, ITaskAssignmentInline, ISubmission, IFile} from "@/5_entities/task";
 import {AssignDescriberModal, ReviewDescriptionModal, PublishTaskModal, GradeSubmissionModal} from "@/4_features/tasks";
 import {routes, taskStatusLabels, taskStatusColors, descriptionStatusLabels, assignmentStatusLabels} from "@/6_shared";
 import cls from "./TaskDetailPage.module.scss";
@@ -63,27 +63,30 @@ const TaskDetailPage = observer(() => {
 
     const descriptionColumns = [
         {
-            title: "Описатель",
-            key: "describer",
-            render: (_: unknown, r: ITaskDescriptionInline) => r.describer?.full_name || "—",
-        },
-        {
-            title: "Статус",
-            dataIndex: "status",
-            key: "status",
-            render: (s: DescriptionStatus) => <Tag>{descriptionStatusLabels[s]}</Tag>,
-        },
-        {
             title: "Описание",
             dataIndex: "description",
             key: "description",
             ellipsis: true,
         },
         {
+            title: "Файлы",
+            key: "files",
+            render: (_: unknown, r: ITaskDescriptionInline) =>
+                r.files && r.files.length > 0 ? (
+                    <Space direction="vertical" size={2}>
+                        {r.files.map((f: IFile) => (
+                            <a key={f.id} href={f.file} target="_blank" rel="noopener noreferrer">
+                                {f.original_name}
+                            </a>
+                        ))}
+                    </Space>
+                ) : "—",
+        },
+        {
             title: "Действия",
             key: "actions",
             render: (_: unknown, r: ITaskDescriptionInline) =>
-                r.status === "SUBMITTED" ? (
+                r.status === "submitted" ? (
                     <Button
                         size="small"
                         onClick={() => {
@@ -110,6 +113,12 @@ const TaskDetailPage = observer(() => {
             render: (s: AssignmentStatus) => <Tag>{assignmentStatusLabels[s]}</Tag>,
         },
         {
+            title: "Решение",
+            dataIndex: "has_submission",
+            key: "has_submission",
+            render: (has: boolean) => has ? <Tag color="green">Есть</Tag> : <Tag>Нет</Tag>,
+        },
+        {
             title: "Оценка",
             dataIndex: "score",
             key: "score",
@@ -124,10 +133,16 @@ const TaskDetailPage = observer(() => {
             render: (_: unknown, r: ISubmission) => r.student || `#${r.id}`,
         },
         {
-            title: "Содержание",
-            dataIndex: "content",
-            key: "content",
+            title: "Задание",
+            dataIndex: "task_title",
+            key: "task_title",
             ellipsis: true,
+        },
+        {
+            title: "Отправлено",
+            dataIndex: "submitted_at",
+            key: "submitted_at",
+            render: (date: string) => date ? new Date(date).toLocaleString("ru-RU") : "—",
         },
         {
             title: "Оценка",
@@ -158,22 +173,22 @@ const TaskDetailPage = observer(() => {
             <div className={cls.header}>
                 <h1>{task.title}</h1>
                 <Space>
-                    {task.status === "DRAFT" && (
+                    {task.status === "draft" && (
                         <Button type="primary" onClick={() => setAssignDescriberOpen(true)}>
                             Назначить описателя
                         </Button>
                     )}
-                    {task.status === "REVIEW" && (
+                    {task.status === "review" && (
                         <Button type="primary" onClick={() => setPublishOpen(true)}>
                             Опубликовать
                         </Button>
                     )}
-                    {task.status === "PUBLISHED" && (
+                    {task.status === "published" && (
                         <Popconfirm title="Закрыть задание?" onConfirm={handleClose} okText="Да" cancelText="Нет">
                             <Button>Закрыть задание</Button>
                         </Popconfirm>
                     )}
-                    {task.status === "DRAFT" && (
+                    {task.status === "draft" && (
                         <Popconfirm title="Удалить задание?" onConfirm={handleDelete} okText="Да" cancelText="Нет">
                             <Button danger>Удалить</Button>
                         </Popconfirm>
@@ -182,21 +197,43 @@ const TaskDetailPage = observer(() => {
             </div>
 
             <Descriptions bordered size="small" column={2}>
-                <Descriptions.Item label="Группа">{task.group?.name || "—"}</Descriptions.Item>
+                <Descriptions.Item label="Преподаватель">{task.teacher?.full_name || "—"}</Descriptions.Item>
                 <Descriptions.Item label="Статус">
                     <Tag color={taskStatusColors[task.status]}>{taskStatusLabels[task.status]}</Tag>
-                </Descriptions.Item>
-                <Descriptions.Item label="Дедлайн">
-                    {task.deadline ? new Date(task.deadline).toLocaleString("ru-RU") : "—"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Создано">
                     {new Date(task.created_at).toLocaleDateString("ru-RU")}
                 </Descriptions.Item>
+                <Descriptions.Item label="Обновлено">
+                    {new Date(task.updated_at).toLocaleDateString("ru-RU")}
+                </Descriptions.Item>
             </Descriptions>
+
+            {task.description && (
+                <Card title="Описание задания" size="small">
+                    <p style={{whiteSpace: "pre-wrap"}}>{task.description}</p>
+                </Card>
+            )}
+
+            {task.files && task.files.length > 0 && (
+                <Card title="Файлы задания" size="small">
+                    <Space direction="vertical" size={4}>
+                        {task.files.map((f: IFile) => (
+                            <a key={f.id} href={f.file} target="_blank" rel="noopener noreferrer">
+                                {f.original_name}
+                            </a>
+                        ))}
+                    </Space>
+                </Card>
+            )}
 
             {task.approved_description && (
                 <Card title="Одобренное описание" size="small">
-                    <p style={{whiteSpace: "pre-wrap"}}>{task.approved_description}</p>
+                    <p style={{whiteSpace: "pre-wrap"}}>
+                        {typeof task.approved_description === "string"
+                            ? task.approved_description
+                            : (task.approved_description as any).description || "—"}
+                    </p>
                 </Card>
             )}
 

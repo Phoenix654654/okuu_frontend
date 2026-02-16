@@ -52,10 +52,14 @@ const SubmissionDetailPage = observer(() => {
 
     return (
         <div className={cls.page}>
-            <h1>{submission.task_title}</h1>
+            <h1>{typeof submission.task === "object" ? (submission.task as any)?.title : submission.task || "Решение"}</h1>
 
             <Descriptions bordered size="small" column={2}>
-                <Descriptions.Item label="Студент">{submission.student || "—"}</Descriptions.Item>
+                <Descriptions.Item label="Студент">
+                    {typeof submission.student === "object"
+                        ? (submission.student as any)?.full_name || "—"
+                        : submission.student || "—"}
+                </Descriptions.Item>
                 <Descriptions.Item label="Дата отправки">
                     {submission.submitted_at ? new Date(submission.submitted_at).toLocaleString("ru-RU") : "—"}
                 </Descriptions.Item>

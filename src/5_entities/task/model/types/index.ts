@@ -1,9 +1,8 @@
 import type {IUser} from "@/5_entities/user";
-import type {IGroup} from "@/5_entities/group";
 
-export type TaskStatus = "DRAFT" | "DESCRIBING" | "REVIEW" | "PUBLISHED" | "CLOSED";
-export type DescriptionStatus = "PENDING" | "SUBMITTED" | "REVISION" | "APPROVED" | "REJECTED";
-export type AssignmentStatus = "PENDING" | "SUBMITTED" | "GRADED";
+export type TaskStatus = "draft" | "describing" | "review" | "published" | "closed";
+export type DescriptionStatus = "pending" | "submitted" | "revision" | "approved" | "rejected";
+export type AssignmentStatus = "pending" | "submitted" | "graded";
 
 export interface IFile {
     id: number;
@@ -15,23 +14,11 @@ export interface IFile {
 /** Краткая информация о задаче (возвращается в списках описаний/назначений) */
 export interface ITaskListItem {
     id: number;
-    title: string;
-    status: TaskStatus;
-    deadline: string | null;
-    created_at: string;
-}
-
-/** Информация о задаче внутри назначения студента (включает approved_description) */
-export interface ITaskForAssignment {
-    id: number;
     teacher: IUser;
-    group: IGroup;
     title: string;
     status: TaskStatus;
-    deadline: string | null;
-    approved_description: string | null;
+    is_shared: boolean;
     created_at: string;
-    updated_at: string;
 }
 
 /** Inline-описание внутри TaskDetail (для учителя) */
@@ -51,8 +38,9 @@ export interface ITaskAssignmentInline {
     id: number;
     student: IUser;
     status: AssignmentStatus;
-    has_submission: boolean;
-    score: number | null;
+    deadline: string | null;
+    has_submission: string;
+    score: string;
 }
 
 /** Inline-решение внутри TaskAssignmentDetail (для студента) */
@@ -85,37 +73,50 @@ export interface ITaskAssignment {
     task: ITaskForAssignment;
     student: IUser;
     status: AssignmentStatus;
+    deadline: string | null;
     submission: ISubmissionInline | null;
     created_at: string;
-    updated_at: string;
 }
 
-/** Решение студента (для учителя — оценивание) */
+/** Решение студента — список (для учителя) */
 export interface ISubmission {
     id: number;
     student: string;
     task_title: string;
+    submitted_at: string;
+    score: number | null;
+}
+
+/** Решение студента — детали (для учителя — оценивание) */
+export interface ISubmissionDetail {
+    id: number;
+    student: string | IUser;
+    task: string | ITaskListItem;
     content: string;
     submitted_at: string;
-    files: IFile[];
     score: number | null;
     teacher_comment: string | null;
+    files: IFile[];
 }
 
 /** Полная детализация задания (для учителя) */
 export interface ITask {
     id: number;
     teacher: IUser;
-    group: IGroup;
     title: string;
+    description?: string;
     status: TaskStatus;
-    deadline: string | null;
+    is_shared?: boolean;
+    files?: IFile[];
     descriptions: ITaskDescriptionInline[];
     assignments: ITaskAssignmentInline[];
-    approved_description: string | null;
+    approved_description: string | ITaskDescriptionInline | null;
     created_at: string;
     updated_at: string;
 }
+
+/** Информация о задаче внутри назначения студента (task inside TaskAssignmentDetail) */
+export interface ITaskForAssignment extends ITask {}
 
 export interface CreateTaskRequest {
     title: string;
@@ -140,7 +141,9 @@ export interface SubmitDescriptionRequest {
 }
 
 export interface PublishTaskRequest {
-    student_ids: number[];
+    deadline: string;
+    group_ids?: number[];
+    student_ids?: number[];
 }
 
 export interface SubmitSolutionRequest {
