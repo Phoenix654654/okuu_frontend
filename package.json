@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "vite --port 3000",
-    "build": "tsc && vite build",
+    "start:prod": "vite --port 3000 --mode production",
+    "build": "tsc && vite build --mode production",
     "lint": "eslint ."
   },
   "dependencies": {

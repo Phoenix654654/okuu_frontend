@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKUU — University Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F1F5F9;
+            --fg-primary: #0F172A;
+            --fg-secondary: #475569;
+            --fg-muted: #94A3B8;
+            --accent: #1E40AF;
+            --accent-hover: #1E3A8A;
+            --accent-light: #DBEAFE;
+            --border: #E2E8F0;
+            --card-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.06);
+            --success: #059669;
+            --warning: #D97706;
+            --error: #DC2626;
+            --info: #0284C7;
+        }
+
+        .dark {
+            --bg-primary: #0B1120;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1F2937;
+            --fg-primary: #F8FAFC;
+            --fg-secondary: #CBD5E1;
+            --fg-muted: #64748B;
+            --accent: #3B82F6;
+            --accent-hover: #60A5FA;
+            --accent-light: #1E3A5F;
+            --border: #1F2937;
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6, .font-display {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--fg-primary);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .bg-primary { background: var(--bg-primary); }
+        .bg-secondary { background: var(--bg-secondary); }
+        .bg-tertiary { background: var(--bg-tertiary); }
+        .text-primary { color: var(--fg-primary); }
+        .text-secondary { color: var(--fg-secondary); }
+        .text-muted { color: var(--fg-muted); }
+        .bg-accent { background: var(--accent); }
+        .text-accent { color: var(--accent); }
+        .border-default { border-color: var(--border); }
+        .bg-accent-light { background: var(--accent-light); }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--fg-primary);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--fg-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-tertiary);
+            color: var(--fg-primary);
+        }
+
+        .input-field {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--fg-primary);
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .input-field::placeholder {
+            color: var(--fg-muted);
+        }
+
+        .sidebar-item {
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-item:hover, .sidebar-item.active {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .status-assigned { background: #DBEAFE; color: #1E40AF; }
+        .status-progress { background: #FEF3C7; color: #92400E; }
+        .status-submitted { background: #E0E7FF; color: #4338CA; }
+        .status-reviewed { background: #D1FAE5; color: #065F46; }
+
+        .dark .status-assigned { background: #1E3A5F; color: #93C5FD; }
+        .dark .status-progress { background: #422006; color: #FCD34D; }
+        .dark .status-submitted { background: #312E81; color: #A5B4FC; }
+        .dark .status-reviewed { background: #064E3B; color: #6EE7B7; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.2s ease forwards;
+        }
+
+        .stagger-1 { animation-delay: 0.05s; opacity: 0; }
+        .stagger-2 { animation-delay: 0.1s; opacity: 0; }
+        .stagger-3 { animation-delay: 0.15s; opacity: 0; }
+        .stagger-4 { animation-delay: 0.2s; opacity: 0; }
+        .stagger-5 { animation-delay: 0.25s; opacity: 0; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .chart-bar {
+            transition: all 0.3s ease;
+        }
+
+        .chart-bar:hover {
+            filter: brightness(1.1);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--fg-muted);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--fg-secondary);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<!-- Auth Page -->
+<div id="authPage" class="min-h-screen flex items-center justify-center p-4 bg-primary">
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-12 animate-fade-in">
+            <div class="inline-flex items-center gap-3">
+                <div class="w-12 h-12 bg-accent rounded-lg flex items-center justify-center">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <h1 class="font-display text-3xl font-bold tracking-tight">OKUU</h1>
+            </div>
+            <p class="text-secondary mt-3 text-sm">University Management Platform</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="card rounded-xl p-8 animate-fade-in stagger-1">
+            <h2 class="font-display text-xl font-semibold mb-6">Sign In</h2>
+
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-secondary">Email</label>
+                    <input type="email" class="input-field w-full px-4 py-3 rounded-lg text-sm" placeholder="name@university.edu" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-secondary">Password</label>
+                    <input type="password" class="input-field w-full px-4 py-3 rounded-lg text-sm" placeholder="Enter your password" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-secondary">Login as</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button type="button" class="role-btn btn-secondary px-4 py-3 rounded-lg text-sm font-medium" data-role="teacher">
+                            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                            </svg>
+                            Teacher
+                        </button>
+                        <button type="button" class="role-btn btn-secondary px-4 py-3 rounded-lg text-sm font-medium" data-role="student">
+                            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                            </svg>
+                            Student
+                        </button>
+                        <button type="button" class="role-btn btn-secondary px-4 py-3 rounded-lg text-sm font-medium" data-role="admin">
+                            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Admin
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-full py-3 rounded-lg font-medium text-sm">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-default">
+                <p class="text-center text-sm text-muted">
+                    Demo: Select any role and click Sign In
+                </p>
+            </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <div class="flex justify-center mt-6">
+            <button id="authThemeToggle" class="btn-ghost px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                <svg class="w-4 h-4 dark-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+                <svg class="w-4 h-4 light-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <span class="theme-text">Dark Mode</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Main App -->
+<div id="mainApp" class="hidden min-h-screen bg-primary">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 min-h-screen bg-secondary border-r border-default fixed left-0 top-0 z-40">
+            <div class="p-5 border-b border-default">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <span class="font-display text-xl font-bold">OKUU</span>
+                </div>
+            </div>
+
+            <nav class="p-4">
+                <p class="text-xs font-semibold text-muted uppercase tracking-wider mb-3 px-3">Main</p>
+                <ul class="space-y-1" id="navItems">
+                    <!-- Dynamic nav items -->
+                </ul>
+            </nav>
+
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-default">
+                <button id="logoutBtn" class="btn-ghost w-full px-3 py-2 rounded-lg text-sm flex items-center gap-3 text-left">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64">
+            <!-- Top Header -->
+            <header class="h-16 bg-secondary border-b border-default sticky top-0 z-30 flex items-center justify-between px-6">
+                <div class="flex items-center gap-4">
+                    <h2 id="pageTitle" class="font-display font-semibold text-lg">Dashboard</h2>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- Search -->
+                    <div class="relative hidden md:block">
+                        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input type="text" placeholder="Search..." class="input-field pl-10 pr-4 py-2 rounded-lg text-sm w-64">
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button id="mainThemeToggle" class="btn-ghost p-2 rounded-lg">
+                        <svg class="w-5 h-5 dark-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                        <svg class="w-5 h-5 light-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button class="btn-ghost p-2 rounded-lg relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full"></span>
+                    </button>
+
+                    <!-- User -->
+                    <div class="flex items-center gap-3 pl-4 border-l border-default">
+                        <div class="text-right hidden sm:block">
+                            <p id="userName" class="text-sm font-medium">User Name</p>
+                            <p id="userRole" class="text-xs text-muted capitalize">Role</p>
+                        </div>
+                        <div class="w-9 h-9 bg-accent-light rounded-full flex items-center justify-center">
+                            <span id="userInitials" class="text-accent font-medium text-sm">UN</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div id="pageContent" class="p-6">
+                <!-- Dynamic content -->
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal()"></div>
+    <div class="card rounded-xl w-full max-w-lg relative z-10 animate-scale-in">
+        <div class="p-6 border-b border-default flex items-center justify-between">
+            <h3 id="modalTitle" class="font-display font-semibold text-lg">Modal Title</h3>
+            <button onclick="closeModal()" class="btn-ghost p-2 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div id="modalContent" class="p-6">
+            <!-- Modal content -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data
+    const users = {
+        teacher: { name: 'Dr. Sarah Mitchell', initials: 'SM', role: 'Teacher', department: 'Computer Science' },
+        student: { name: 'Alex Johnson', initials: 'AJ', role: 'Student', group: 'CS-2024-A' },
+        admin: { name: 'Michael Chen', initials: 'MC', role: 'Administrator', department: 'IT Administration' }
+    };
+
+    const navConfig = {
+        teacher: [
+            { id: 'dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+            { id: 'tasks', label: 'Tasks', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+            { id: 'students', label: 'Students', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+            { id: 'analytics', label: 'Analytics', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' }
+        ],
+        student: [
+            { id: 'dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+            { id: 'tasks', label: 'My Tasks', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+            { id: 'submissions', label: 'Submissions', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+            { id: 'analytics', label: 'My Progress', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' }
+        ],
+        admin: [
+            { id: 'dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+            { id: 'users', label: 'Users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+            { id: 'groups', label: 'Groups', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
+            { id: 'analytics', label: 'Analytics', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' }
+        ]
+    };
+
+    const teacherTasks = [
+        { id: 1, title: 'Algorithm Analysis Report', course: 'Data Structures', status: 'assigned', students: 45, submitted: 0, due: '2025-02-15' },
+        { id: 2, title: 'Database Design Project', course: 'Database Systems', status: 'progress', students: 38, submitted: 12, due: '2025-02-10' },
+        { id: 3, title: 'Machine Learning Model', course: 'AI Fundamentals', status: 'submitted', students: 32, submitted: 32, due: '2025-02-05' },
+        { id: 4, title: 'Web Application Security', course: 'Cybersecurity', status: 'reviewed', students: 28, submitted: 28, due: '2025-01-28' }
+    ];
+
+    const studentTasks = [
+        { id: 1, title: 'Algorithm Analysis Report', course: 'Data Structures', status: 'assigned', due: '2025-02-15', description: 'Analyze time complexity of sorting algorithms' },
+        { id: 2, title: 'Database Design Project', course: 'Database Systems', status: 'progress', due: '2025-02-10', description: 'Design and implement a normalized database schema' },
+        { id: 3, title: 'Machine Learning Model', course: 'AI Fundamentals', status: 'submitted', due: '2025-02-05', description: 'Build a classification model using scikit-learn' },
+        { id: 4, title: 'Web Application Security', course: 'Cybersecurity', status: 'reviewed', due: '2025-01-28', grade: 92, description: 'Conduct security audit of web application' }
+    ];
+
+    const adminUsers = [
+        { id: 1, name: 'Dr. Sarah Mitchell', email: 's.mitchell@university.edu', role: 'teacher', status: 'active', group: 'Computer Science' },
+        { id: 2, name: 'Prof. James Wilson', email: 'j.wilson@university.edu', role: 'teacher', status: 'active', group: 'Mathematics' },
+        { id: 3, name: 'Alex Johnson', email: 'a.johnson@university.edu', role: 'student', status: 'active', group: 'CS-2024-A' },
+        { id: 4, name: 'Emma Davis', email: 'e.davis@university.edu', role: 'student', status: 'active', group: 'CS-2024-A' },
+        { id: 5, name: 'Michael Chen', email: 'm.chen@university.edu', role: 'admin', status: 'active', group: 'IT Administration' }
+    ];
+
+    // State
+    let currentRole = null;
+    let currentPage = 'dashboard';
+    let selectedRole = 'teacher';
+
+    // DOM Elements
+    const authPage = document.getElementById('authPage');
+    const mainApp = document.getElementById('mainApp');
+    const loginForm = document.getElementById('loginForm');
+    const pageContent = document.getElementById('pageContent');
+    const navItems = document.getElementById('navItems');
+    const pageTitle = document.getElementById('pageTitle');
+
+    // Theme Toggle
+    function toggleTheme() {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        document.querySelectorAll('.dark-icon').forEach(el => el.classList.toggle('hidden', !isDark));
+        document.querySelectorAll('.light-icon').forEach(el => el.classList.toggle('hidden', isDark));
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+
+    document.getElementById('authThemeToggle').addEventListener('click', toggleTheme);
+    document.getElementById('mainThemeToggle').addEventListener('click', toggleTheme);
+
+    // Initialize theme
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.querySelectorAll('.dark-icon').forEach(el => el.classList.remove('hidden'));
+        document.querySelectorAll('.light-icon').forEach(el => el.classList.add('hidden'));
+    }
+
+    // Role Selection
+    document.querySelectorAll('.role-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('bg-accent', 'text-white'));
+            btn.classList.add('bg-accent', 'text-white');
+            selectedRole = btn.dataset.role;
+        });
+    });
+
+    // Login
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        currentRole = selectedRole;
+        const user = users[currentRole];
+
+        document.getElementById('userName').textContent = user.name;
+        document.getElementById('userRole').textContent = user.role;
+        document.getElementById('userInitials').textContent = user.initials;
+
+        authPage.classList.add('hidden');
+        mainApp.classList.remove('hidden');
+
+        renderNav();
+        navigateTo('dashboard');
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        currentRole = null;
+        currentPage = 'dashboard';
+        mainApp.classList.add('hidden');
+        authPage.classList.remove('hidden');
+    });
+
+    // Navigation
+    function renderNav() {
+        const items = navConfig[currentRole];
+        navItems.innerHTML = items.map((item, index) => `
+        <li class="animate-slide-in stagger-${index + 1}">
+          <button onclick="navigateTo('${item.id}')" class="sidebar-item w-full px-3 py-2.5 rounded-lg flex items-center gap-3 text-sm text-left ${currentPage === item.id ? 'active' : ''}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${item.icon}"/>
+            </svg>
+            ${item.label}
+          </button>
+        </li>
+      `).join('');
+    }
+
+    function navigateTo(page) {
+        currentPage = page;
+        renderNav();
+
+        const navItem = navConfig[currentRole].find(item => item.id === page);
+        pageTitle.textContent = navItem ? navItem.label : 'Dashboard';
+
+        switch(currentRole) {
+            case 'teacher':
+                renderTeacherPage(page);
+                break;
+            case 'student':
+                renderStudentPage(page);
+                break;
+            case 'admin':
+                renderAdminPage(page);
+                break;
+        }
+    }
+
+    // Teacher Pages
+    function renderTeacherPage(page) {
+        switch(page) {
+            case 'dashboard':
+                renderTeacherDashboard();
+                break;
+            case 'tasks':
+                renderTeacherTasks();
+                break;
+            case 'students':
+                renderTeacherStudents();
+                break;
+            case 'analytics':
+                renderTeacherAnalytics();
+                break;
+        }
+    }
+
+    function renderTeacherDashboard() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="card rounded-xl p-5 animate-fade-in stagger-1">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-secondary">Total Tasks</p>
+                  <p class="text-2xl font-display font-bold mt-1">24</p>
+                </div>
+                <div class="w-12 h-12 bg-accent-light rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                  </svg>
+                </div>
+              </div>
+              <p class="text-xs text-muted mt-3">+3 this week</p>
+            </div>
+
+            <div class="card rounded-xl p-5 animate-fade-in stagger-2">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-secondary">Students</p>
+                  <p class="text-2xl font-display font-bold mt-1">143</p>
+                </div>
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: rgba(16, 185, 129, 0.1)">
+                  <svg class="w-6 h-6" style="color: #10B981" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                  </svg>
+                </div>
+              </div>
+              <p class="text-xs text-muted mt-3">4 groups</p>
+            </div>
+
+            <div class="card rounded-xl p-5 animate-fade-in stagger-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-secondary">Completion Rate</p>
+                  <p class="text-2xl font-display font-bold mt-1">87%</p>
+                </div>
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: rgba(245, 158, 11, 0.1)">
+                  <svg class="w-6 h-6" style="color: #F59E0B" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                  </svg>
+                </div>
+              </div>
+              <p class="text-xs text-muted mt-3">+5% from last month</p>
+            </div>
+
+            <div class="card rounded-xl p-5 animate-fade-in stagger-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-secondary">Pending Reviews</p>
+                  <p class="text-2xl font-display font-bold mt-1">18</p>
+                </div>
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: rgba(239, 68, 68, 0.1)">
+                  <svg class="w-6 h-6" style="color: #EF4444" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+              </div>
+              <p class="text-xs text-muted mt-3">Due this week</p>
+            </div>
+          </div>
+
+          <!-- Recent Tasks -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2">
+              <div class="card rounded-xl">
+                <div class="p-5 border-b border-default flex items-center justify-between">
+                  <h3 class="font-display font-semibold">Recent Tasks</h3>
+                  <button onclick="navigateTo('tasks')" class="btn-ghost px-3 py-1.5 rounded-lg text-sm">View All</button>
+                </div>
+                <div class="divide-y divide-default">
+                  ${teacherTasks.slice(0, 3).map(task => `
+                    <div class="p-5 flex items-center justify-between hover:bg-tertiary transition-colors">
+                      <div class="flex-1">
+                        <h4 class="font-medium text-sm">${task.title}</h4>
+                        <p class="text-xs text-secondary mt-1">${task.course}</p>
+                      </div>
+                      <div class="flex items-center gap-4">
+                        <div class="text-right">
+                          <p class="text-xs text-secondary">${task.submitted}/${task.students} submitted</p>
+                          <div class="w-20 h-1.5 bg-tertiary rounded-full mt-1 overflow-hidden">
+                            <div class="h-full bg-accent rounded-full" style="width: ${(task.submitted / task.students) * 100}%"></div>
+                          </div>
+                        </div>
+                        <span class="status-badge px-2.5 py-1 rounded-full status-${task.status}">${task.status}</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card rounded-xl p-5">
+              <h3 class="font-display font-semibold mb-4">Quick Actions</h3>
+              <div class="space-y-3">
+                <button onclick="openCreateTaskModal()" class="btn-primary w-full py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  Create New Task
+                </button>
+                <button class="btn-secondary w-full py-2.5 rounded-lg text-sm font-medium">Review Submissions</button>
+                <button class="btn-secondary w-full py-2.5 rounded-lg text-sm font-medium">Send Announcement</button>
+              </div>
+
+              <div class="mt-6 pt-6 border-t border-default">
+                <h4 class="text-sm font-medium mb-3">Top Students</h4>
+                <div class="space-y-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-accent-light rounded-full flex items-center justify-center text-xs font-medium text-accent">AJ</div>
+                    <div class="flex-1">
+                      <p class="text-sm font-medium">Alex Johnson</p>
+                      <p class="text-xs text-muted">Avg: 94%</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-accent-light rounded-full flex items-center justify-center text-xs font-medium text-accent">ED</div>
+                    <div class="flex-1">
+                      <p class="text-sm font-medium">Emma Davis</p>
+                      <p class="text-xs text-muted">Avg: 91%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTeacherTasks() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <select class="input-field px-4 py-2 rounded-lg text-sm">
+                <option>All Courses</option>
+                <option>Data Structures</option>
+                <option>Database Systems</option>
+                <option>AI Fundamentals</option>
+              </select>
+              <select class="input-field px-4 py-2 rounded-lg text-sm">
+                <option>All Status</option>
+                <option>Assigned</option>
+                <option>In Progress</option>
+                <option>Submitted</option>
+                <option>Reviewed</option>
+              </select>
+            </div>
+            <button onclick="openCreateTaskModal()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Create Task
+            </button>
+          </div>
+
+          <!-- Tasks Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${teacherTasks.map((task, i) => `
+              <div class="card rounded-xl p-5 animate-fade-in stagger-${i + 1}">
+                <div class="flex items-start justify-between mb-4">
+                  <div>
+                    <span class="status-badge px-2.5 py-1 rounded-full status-${task.status}">${task.status}</span>
+                  </div>
+                  <button class="btn-ghost p-1.5 rounded-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                    </svg>
+                  </button>
+                </div>
+                <h4 class="font-medium mb-1">${task.title}</h4>
+                <p class="text-sm text-secondary mb-4">${task.course}</p>
+
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-muted">Due: ${task.due}</span>
+                  <span class="text-secondary">${task.submitted}/${task.students}</span>
+                </div>
+
+                <div class="w-full h-1.5 bg-tertiary rounded-full mt-3 overflow-hidden">
+                  <div class="h-full bg-accent rounded-full transition-all duration-500" style="width: ${(task.submitted / task.students) * 100}%"></div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTeacherStudents() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- Filters -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="relative">
+              <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input type="text" placeholder="Search students..." class="input-field pl-10 pr-4 py-2 rounded-lg text-sm w-64">
+            </div>
+            <select class="input-field px-4 py-2 rounded-lg text-sm">
+              <option>All Groups</option>
+              <option>CS-2024-A</option>
+              <option>CS-2024-B</option>
+              <option>CS-2023-A</option>
+            </select>
+          </div>
+
+          <!-- Students Table -->
+          <div class="card rounded-xl overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-tertiary">
+                  <tr>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Student</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Group</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Tasks</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Average</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Status</th>
+                    <th class="text-right text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-default">
+                  ${[
+            { name: 'Alex Johnson', email: 'a.johnson@university.edu', group: 'CS-2024-A', tasks: '12/12', avg: 94, status: 'active' },
+            { name: 'Emma Davis', email: 'e.davis@university.edu', group: 'CS-2024-A', tasks: '11/12', avg: 91, status: 'active' },
+            { name: 'James Brown', email: 'j.brown@university.edu', group: 'CS-2024-A', tasks: '10/12', avg: 88, status: 'active' },
+            { name: 'Sophie Wilson', email: 's.wilson@university.edu', group: 'CS-2024-B', tasks: '12/12', avg: 96, status: 'active' },
+            { name: 'Oliver Taylor', email: 'o.taylor@university.edu', group: 'CS-2024-B', tasks: '9/12', avg: 82, status: 'warning' }
+        ].map((student, i) => `
+                    <tr class="hover:bg-tertiary transition-colors animate-fade-in stagger-${i + 1}">
+                      <td class="px-5 py-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-9 h-9 bg-accent-light rounded-full flex items-center justify-center text-sm font-medium text-accent">${student.name.split(' ').map(n => n[0]).join('')}</div>
+                          <div>
+                            <p class="font-medium text-sm">${student.name}</p>
+                            <p class="text-xs text-muted">${student.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-5 py-4 text-sm">${student.group}</td>
+                      <td class="px-5 py-4 text-sm">${student.tasks}</td>
+                      <td class="px-5 py-4">
+                        <span class="text-sm font-medium ${student.avg >= 90 ? 'text-green-600' : student.avg >= 80 ? 'text-yellow-600' : 'text-red-600'}">${student.avg}%</span>
+                      </td>
+                      <td class="px-5 py-4">
+                        <span class="status-badge px-2.5 py-1 rounded-full ${student.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${student.status}</span>
+                      </td>
+                      <td class="px-5 py-4 text-right">
+                        <button class="btn-ghost p-2 rounded-lg">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTeacherAnalytics() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            ${[
+            { label: 'Total Tasks Created', value: '24', change: '+3', trend: 'up' },
+            { label: 'Completion Rate', value: '87%', change: '+5%', trend: 'up' },
+            { label: 'Avg Completion Time', value: '4.2 days', change: '-0.8 days', trend: 'up' },
+            { label: 'Active Students', value: '138/143', change: '97%', trend: 'neutral' }
+        ].map((kpi, i) => `
+              <div class="card rounded-xl p-5 animate-fade-in stagger-${i + 1}">
+                <p class="text-sm text-secondary">${kpi.label}</p>
+                <p class="text-2xl font-display font-bold mt-1">${kpi.value}</p>
+                <p class="text-xs mt-2 ${kpi.trend === 'up' ? 'text-green-500' : 'text-muted'}">${kpi.change}</p>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Charts Row -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Task Completion Chart -->
+            <div class="card rounded-xl p-5">
+              <h3 class="font-display font-semibold mb-6">Task Completion Trend</h3>
+              <div class="h-48 flex items-end justify-between gap-2">
+                ${[65, 72, 68, 85, 78, 92, 88, 95, 87, 91, 89, 94].map((val, i) => `
+                  <div class="flex-1 flex flex-col items-center gap-2">
+                    <div class="chart-bar w-full bg-accent rounded-t" style="height: ${val * 1.6}px; opacity: ${0.5 + (i / 24)}"></div>
+                    <span class="text-xs text-muted">${['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][i]}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Student Performance Distribution -->
+            <div class="card rounded-xl p-5">
+              <h3 class="font-display font-semibold mb-6">Performance Distribution</h3>
+              <div class="flex items-center justify-center h-48">
+                <div class="relative w-40 h-40">
+                  <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-tertiary)" stroke-width="12"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#10B981" stroke-width="12" stroke-dasharray="75.4 251.2" stroke-linecap="round"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#F59E0B" stroke-width="12" stroke-dasharray="62.8 251.2" stroke-dashoffset="-75.4" stroke-linecap="round"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#EF4444" stroke-width="12" stroke-dasharray="25.1 251.2" stroke-dashoffset="-138.2" stroke-linecap="round"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center">
+                      <p class="text-2xl font-display font-bold">143</p>
+                      <p class="text-xs text-muted">Students</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-center gap-6 mt-4">
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span class="text-xs text-secondary">Excellent (30%)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <span class="text-xs text-secondary">Good (25%)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                  <span class="text-xs text-secondary">Needs Work (10%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Performers -->
+          <div class="card rounded-xl p-5">
+            <h3 class="font-display font-semibold mb-6">Top Performing Students</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              ${[
+            { name: 'Sophie Wilson', avg: 96, tasks: 12 },
+            { name: 'Alex Johnson', avg: 94, tasks: 12 },
+            { name: 'Emma Davis', avg: 91, tasks: 11 },
+            { name: 'James Brown', avg: 88, tasks: 10 },
+            { name: 'Oliver Taylor', avg: 85, tasks: 9 }
+        ].map((student, i) => `
+                <div class="text-center p-4 rounded-lg bg-tertiary animate-fade-in stagger-${i + 1}">
+                  <div class="w-12 h-12 bg-accent-light rounded-full flex items-center justify-center mx-auto mb-3 text-sm font-medium text-accent">${student.name.split(' ').map(n => n[0]).join('')}</div>
+                  <p class="font-medium text-sm">${student.name}</p>
+                  <p class="text-xs text-muted mt-1">${student.tasks} tasks</p>
+                  <p class="text-lg font-display font-bold text-accent mt-2">${student.avg}%</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Student Pages
+    function renderStudentPage(page) {
+        switch(page) {
+            case 'dashboard':
+                renderStudentDashboard();
+                break;
+            case 'tasks':
+                renderStudentTasks();
+                break;
+            case 'submissions':
+                renderStudentSubmissions();
+                break;
+            case 'analytics':
+                renderStudentAnalytics();
+                break;
+        }
+    }
+
+    function renderStudentDashboard() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- Welcome Banner -->
+          <div class="card rounded-xl p-6 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+            <h2 class="font-display text-xl font-bold mb-2">Welcome back, Alex</h2>
+            <p class="text-blue-100 text-sm">You have 2 pending tasks and 1 submission awaiting review.</p>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            ${[
+            { label: 'Completed Tasks', value: '12', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', color: '#10B981' },
+            { label: 'Pending Tasks', value: '2', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: '#F59E0B' },
+            { label: 'Average Score', value: '91%', icon: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z', color: '#3B82F6' },
+            { label: 'Group Rank', value: '#3', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', color: '#8B5CF6' }
+        ].map((stat, i) => `
+              <div class="card rounded-xl p-5 animate-fade-in stagger-${i + 1}">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm text-secondary">${stat.label}</p>
+                    <p class="text-2xl font-display font-bold mt-1">${stat.value}</p>
+                  </div>
+                  <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: ${stat.color}20">
+                    <svg class="w-6 h-6" style="color: ${stat.color}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${stat.icon}"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Current Tasks -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2">
+              <div class="card rounded-xl">
+                <div class="p-5 border-b border-default">
+                  <h3 class="font-display font-semibold">Current Tasks</h3>
+                </div>
+                <div class="divide-y divide-default">
+                  ${studentTasks.filter(t => t.status !== 'reviewed').map((task, i) => `
+                    <div class="p-5 animate-fade-in stagger-${i + 1}">
+                      <div class="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 class="font-medium">${task.title}</h4>
+                          <p class="text-sm text-secondary mt-1">${task.course}</p>
+                        </div>
+                        <span class="status-badge px-2.5 py-1 rounded-full status-${task.status}">${task.status}</span>
+                      </div>
+                      <p class="text-sm text-muted mb-4">${task.description}</p>
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs text-muted">Due: ${task.due}</span>
+                        <button class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">Submit</button>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="card rounded-xl p-5">
+              <h3 class="font-display font-semibold mb-4">Your Progress</h3>
+              <div class="space-y-4">
+                ${[
+            { label: 'Data Structures', progress: 92 },
+            { label: 'Database Systems', progress: 88 },
+            { label: 'AI Fundamentals', progress: 95 },
+            { label: 'Cybersecurity', progress: 78 }
+        ].map((course, i) => `
+                  <div class="animate-fade-in stagger-${i + 1}">
+                    <div class="flex items-center justify-between text-sm mb-2">
+                      <span class="text-secondary">${course.label}</span>
+                      <span class="font-medium">${course.progress}%</span>
+                    </div>
+                    <div class="w-full h-2 bg-tertiary rounded-full overflow-hidden">
+                      <div class="h-full bg-accent rounded-full transition-all duration-500" style="width: ${course.progress}%"></div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStudentTasks() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center gap-3">
+            <select class="input-field px-4 py-2 rounded-lg text-sm">
+              <option>All Courses</option>
+              <option>Data Structures</option>
+              <option>Database Systems</option>
+              <option>AI Fundamentals</option>
+            </select>
+            <select class="input-field px-4 py-2 rounded-lg text-sm">
+              <option>All Status</option>
+              <option>Assigned</option>
+              <option>In Progress</option>
+              <option>Submitted</option>
+              <option>Reviewed</option>
+            </select>
+          </div>
+
+          <div class="space-y-4">
+            ${studentTasks.map((task, i) => `
+              <div class="card rounded-xl p-5 animate-fade-in stagger-${i + 1}">
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                      <h4 class="font-medium">${task.title}</h4>
+                      <span class="status-badge px-2.5 py-1 rounded-full status-${task.status}">${task.status}</span>
+                    </div>
+                    <p class="text-sm text-secondary mb-2">${task.course}</p>
+                    <p class="text-sm text-muted">${task.description}</p>
+                  </div>
+                  <div class="flex flex-col items-end gap-3">
+                    <span class="text-sm text-muted">Due: ${task.due}</span>
+                    ${task.status === 'reviewed' ? `<span class="text-lg font-display font-bold text-green-500">${task.grade}%</span>` : ''}
+                    ${task.status !== 'reviewed' ? `<button class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">Submit Task</button>` : ''}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStudentSubmissions() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <div class="card rounded-xl overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-tertiary">
+                  <tr>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Task</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Course</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Submitted</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Status</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Grade</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-default">
+                  ${studentTasks.map((task, i) => `
+                    <tr class="hover:bg-tertiary transition-colors animate-fade-in stagger-${i + 1}">
+                      <td class="px-5 py-4">
+                        <p class="font-medium text-sm">${task.title}</p>
+                      </td>
+                      <td class="px-5 py-4 text-sm text-secondary">${task.course}</td>
+                      <td class="px-5 py-4 text-sm text-muted">${task.due}</td>
+                      <td class="px-5 py-4">
+                        <span class="status-badge px-2.5 py-1 rounded-full status-${task.status}">${task.status}</span>
+                      </td>
+                      <td class="px-5 py-4">
+                        ${task.grade ? `<span class="text-sm font-medium text-green-500">${task.grade}%</span>` : '<span class="text-sm text-muted">—</span>'}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStudentAnalytics() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- Personal Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="card rounded-xl p-5 animate-fade-in stagger-1">
+              <p class="text-sm text-secondary">Completed Tasks</p>
+              <p class="text-3xl font-display font-bold mt-1">12</p>
+              <div class="flex items-center gap-2 mt-3">
+                <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">+2 this month</span>
+              </div>
+            </div>
+            <div class="card rounded-xl p-5 animate-fade-in stagger-2">
+              <p class="text-sm text-secondary">Approval Rate</p>
+              <p class="text-3xl font-display font-bold mt-1">92%</p>
+              <div class="w-full h-2 bg-tertiary rounded-full mt-3 overflow-hidden">
+                <div class="h-full bg-green-500 rounded-full" style="width: 92%"></div>
+              </div>
+            </div>
+            <div class="card rounded-xl p-5 animate-fade-in stagger-3">
+              <p class="text-sm text-secondary">Average Score</p>
+              <p class="text-3xl font-display font-bold mt-1">91%</p>
+              <div class="w-full h-2 bg-tertiary rounded-full mt-3 overflow-hidden">
+                <div class="h-full bg-accent rounded-full" style="width: 91%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Performance Chart -->
+          <div class="card rounded-xl p-5">
+            <h3 class="font-display font-semibold mb-6">Performance Over Time</h3>
+            <div class="h-48 flex items-end justify-between gap-2">
+              ${[78, 82, 85, 88, 91, 89, 94, 92, 90, 93, 95, 91].map((val, i) => `
+                <div class="flex-1 flex flex-col items-center gap-2">
+                  <div class="chart-bar w-full bg-accent rounded-t" style="height: ${val * 1.6}px; opacity: ${0.5 + (i / 24)}"></div>
+                  <span class="text-xs text-muted">${['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][i]}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Group Comparison -->
+          <div class="card rounded-xl p-5">
+            <h3 class="font-display font-semibold mb-6">Group Progress Comparison</h3>
+            <div class="space-y-4">
+              ${[
+            { name: 'You', progress: 91, highlight: true },
+            { name: 'Group Average', progress: 84, highlight: false },
+            { name: 'Top Performer', progress: 96, highlight: false }
+        ].map((item, i) => `
+                <div class="animate-fade-in stagger-${i + 1}">
+                  <div class="flex items-center justify-between text-sm mb-2">
+                    <span class="${item.highlight ? 'font-medium' : 'text-secondary'}">${item.name}</span>
+                    <span class="font-medium">${item.progress}%</span>
+                  </div>
+                  <div class="w-full h-3 bg-tertiary rounded-full overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-500 ${item.highlight ? 'bg-accent' : 'bg-secondary'}" style="width: ${item.progress}%"></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Admin Pages
+    function renderAdminPage(page) {
+        switch(page) {
+            case 'dashboard':
+                renderAdminDashboard();
+                break;
+            case 'users':
+                renderAdminUsers();
+                break;
+            case 'groups':
+                renderAdminGroups();
+                break;
+            case 'analytics':
+                renderAdminAnalytics();
+                break;
+        }
+    }
+
+    function renderAdminDashboard() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            ${[
+            { label: 'Total Users', value: '1,247', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', color: '#3B82F6' },
+            { label: 'Active Tasks', value: '156', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', color: '#10B981' },
+            { label: 'Groups', value: '42', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10', color: '#8B5CF6' },
+            { label: 'Teachers', value: '89', icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z', color: '#F59E0B' }
+        ].map((stat, i) => `
+              <div class="card rounded-xl p-5 animate-fade-in stagger-${i + 1}">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm text-secondary">${stat.label}</p>
+                    <p class="text-2xl font-display font-bold mt-1">${stat.value}</p>
+                  </div>
+                  <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: ${stat.color}20">
+                    <svg class="w-6 h-6" style="color: ${stat.color}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${stat.icon}"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Charts Row -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- User Distribution -->
+            <div class="card rounded-xl p-5">
+              <h3 class="font-display font-semibold mb-6">Role Distribution</h3>
+              <div class="flex items-center justify-center h-48">
+                <div class="relative w-40 h-40">
+                  <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-tertiary)" stroke-width="12"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#3B82F6" stroke-width="12" stroke-dasharray="89.8 251.2" stroke-linecap="round"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#10B981" stroke-width="12" stroke-dasharray="143.6 251.2" stroke-dashoffset="-89.8" stroke-linecap="round"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#8B5CF6" stroke-width="12" stroke-dasharray="17.8 251.2" stroke-dashoffset="-233.4" stroke-linecap="round"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center">
+                      <p class="text-2xl font-display font-bold">1,247</p>
+                      <p class="text-xs text-muted">Users</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-center gap-6 mt-4">
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full" style="background: #3B82F6"></div>
+                  <span class="text-xs text-secondary">Students (892)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full" style="background: #10B981"></div>
+                  <span class="text-xs text-secondary">Teachers (266)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full" style="background: #8B5CF6"></div>
+                  <span class="text-xs text-secondary">Admins (89)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Chart -->
+            <div class="card rounded-xl p-5">
+              <h3 class="font-display font-semibold mb-6">Platform Activity</h3>
+              <div class="h-48 flex items-end justify-between gap-2">
+                ${[45, 52, 48, 61, 55, 67, 72, 68, 75, 82, 78, 85].map((val, i) => `
+                  <div class="flex-1 flex flex-col items-center gap-2">
+                    <div class="chart-bar w-full bg-accent rounded-t" style="height: ${val * 1.6}px; opacity: ${0.5 + (i / 24)}"></div>
+                    <span class="text-xs text-muted">${['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][i]}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card rounded-xl">
+            <div class="p-5 border-b border-default">
+              <h3 class="font-display font-semibold">Recent Activity</h3>
+            </div>
+            <div class="divide-y divide-default">
+              ${[
+            { action: 'New user registered', user: 'Emma Wilson', time: '5 minutes ago' },
+            { action: 'Task created', user: 'Dr. Sarah Mitchell', time: '15 minutes ago' },
+            { action: 'Submission reviewed', user: 'Prof. James Wilson', time: '32 minutes ago' },
+            { action: 'Group created', user: 'Admin', time: '1 hour ago' }
+        ].map((activity, i) => `
+                <div class="p-5 flex items-center justify-between animate-fade-in stagger-${i + 1}">
+                  <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                    <div>
+                      <p class="text-sm font-medium">${activity.action}</p>
+                      <p class="text-xs text-muted">by ${activity.user}</p>
+                    </div>
+                  </div>
+                  <span class="text-xs text-muted">${activity.time}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminUsers() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="relative">
+              <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input type="text" placeholder="Search users..." class="input-field pl-10 pr-4 py-2 rounded-lg text-sm w-64">
+            </div>
+            <div class="flex items-center gap-3">
+              <select class="input-field px-4 py-2 rounded-lg text-sm">
+                <option>All Roles</option>
+                <option>Teachers</option>
+                <option>Students</option>
+                <option>Admins</option>
+              </select>
+              <button class="btn-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add User
+              </button>
+            </div>
+          </div>
+
+          <!-- Users Table -->
+          <div class="card rounded-xl overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-tertiary">
+                  <tr>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">
+                      <input type="checkbox" class="rounded border-default">
+                    </th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">User</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Role</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Group</th>
+                    <th class="text-left text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Status</th>
+                    <th class="text-right text-xs font-semibold text-secondary uppercase tracking-wider px-5 py-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-default">
+                  ${adminUsers.map((user, i) => `
+                    <tr class="hover:bg-tertiary transition-colors animate-fade-in stagger-${i + 1}">
+                      <td class="px-5 py-4">
+                        <input type="checkbox" class="rounded border-default">
+                      </td>
+                      <td class="px-5 py-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-9 h-9 bg-accent-light rounded-full flex items-center justify-center text-sm font-medium text-accent">${user.name.split(' ').map(n => n[0]).join('')}</div>
+                          <div>
+                            <p class="font-medium text-sm">${user.name}</p>
+                            <p class="text-xs text-muted">${user.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-5 py-4">
+                        <span class="text-sm capitalize ${user.role === 'admin' ? 'text-purple-600' : user.role === 'teacher' ? 'text-green-600' : 'text-blue-600'}">${user.role}</span>
+                      </td>
+                      <td class="px-5 py-4 text-sm">${user.group}</td>
+                      <td class="px-5 py-4">
+                        <span class="status-badge px-2.5 py-1 rounded-full ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}">${user.status}</span>
+                      </td>
+                      <td class="px-5 py-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                          <button class="btn-ghost p-2 rounded-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
+                          </button>
+                          <button class="btn-ghost p-2 rounded-lg text-red-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            <div class="p-4 border-t border-default flex items-center justify-between">
+              <p class="text-sm text-muted">Showing 1-5 of 1,247 users</p>
+              <div class="flex items-center gap-2">
+                <button class="btn-secondary px-3 py-1.5 rounded-lg text-sm">Previous</button>
+                <button class="btn-primary px-3 py-1.5 rounded-lg text-sm">Next</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminGroups() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between">
+            <div class="relative">
+              <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input type="text" placeholder="Search groups..." class="input-field pl-10 pr-4 py-2 rounded-lg text-sm w-64">
+            </div>
+            <button class="btn-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Create Group
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${[
+            { name: 'CS-2024-A', students: 32, teacher: 'Dr. Sarah Mitchell', status: 'active' },
+            { name: 'CS-2024-B', students: 28, teacher: 'Prof. James Wilson', status: 'active' },
+            { name: 'CS-2023-A', students: 35, teacher: 'Dr. Emily Chen', status: 'active' },
+            { name: 'MATH-2024-A', students: 40, teacher: 'Prof. Robert Brown', status: 'active' },
+            { name: 'PHYS-2024-A', students: 25, teacher: 'Dr. Lisa Taylor', status: 'active' },
+            { name: 'ENG-2024-A', students: 30, teacher: 'Prof. David Miller', status: 'inactive' }
+        ].map((group, i) => `
+              <div class="card rounded-xl p-5 animate-fade-in stagger-${i + 1}">
+                <div class="flex items-start justify-between mb-4">
+                  <div>
+                    <h4 class="font-medium">${group.name}</h4>
+                    <p class="text-sm text-secondary mt-1">${group.teacher}</p>
+                  </div>
+                  <span class="status-badge px-2.5 py-1 rounded-full ${group.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}">${group.status}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span class="text-sm">${group.students} students</span>
+                  </div>
+                  <button class="btn-ghost px-3 py-1.5 rounded-lg text-sm">Manage</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminAnalytics() {
+        pageContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            ${[
+            { label: 'Total Users', value: '1,247', change: '+23 this week', trend: 'up' },
+            { label: 'Active Tasks', value: '156', change: 'Across 42 groups', trend: 'neutral' },
+            { label: 'Avg Completion', value: '84%', change: '+3% from last month', trend: 'up' },
+            { label: 'System Uptime', value: '99.9%', change: 'Last 30 days', trend: 'neutral' }
+        ].map((kpi, i) => `
+              <div class="card rounded-xl p-5 animate-fade-in stagger-${i + 1}">
+                <p class="text-sm text-secondary">${kpi.label}</p>
+                <p class="text-2xl font-display font-bold mt-1">${kpi.value}</p>
+                <p class="text-xs mt-2 ${kpi.trend === 'up' ? 'text-green-500' : 'text-muted'}">${kpi.change}</p>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Charts -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Teacher Workload -->
+            <div class="card rounded-xl p-5">
+              <h3 class="font-display font-semibold mb-6">Teacher Workload Distribution</h3>
+              <div class="space-y-4">
+                ${[
+            { name: 'Dr. Sarah Mitchell', tasks: 8 },
+            { name: 'Prof. James Wilson', tasks: 6 },
+            { name: 'Dr. Emily Chen', tasks: 7 },
+            { name: 'Prof. Robert Brown', tasks: 5 },
+            { name: 'Dr. Lisa Taylor', tasks: 4 }
+        ].map((teacher, i) => `
+                  <div class="animate-fade-in stagger-${i + 1}">
+                    <div class="flex items-center justify-between text-sm mb-2">
+                      <span class="text-secondary">${teacher.name}</span>
+                      <span class="font-medium">${teacher.tasks} tasks</span>
+                    </div>
+                    <div class="w-full h-2 bg-tertiary rounded-full overflow-hidden">
+                      <div class="h-full bg-accent rounded-full" style="width: ${teacher.tasks * 12.5}%"></div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Group Activity -->
+            <div class="card rounded-xl p-5">
+              <h3 class="font-display font-semibold mb-6">Group Activity Comparison</h3>
+              <div class="h-48 flex items-end justify-between gap-3">
+                ${[
+            { name: 'CS-A', value: 92 },
+            { name: 'CS-B', value: 85 },
+            { name: 'MATH', value: 78 },
+            { name: 'PHYS', value: 88 },
+            { name: 'ENG', value: 72 }
+        ].map((group, i) => `
+                  <div class="flex-1 flex flex-col items-center gap-2">
+                    <div class="chart-bar w-full bg-accent rounded-t" style="height: ${group.value * 1.6}px; opacity: ${0.6 + (i / 10)}"></div>
+                    <span class="text-xs text-muted">${group.name}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Modal Functions
+    function openCreateTaskModal() {
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+
+        modalTitle.textContent = 'Create New Task';
+        modalContent.innerHTML = `
+        <form class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium mb-2 text-secondary">Task Title</label>
+            <input type="text" class="input-field w-full px-4 py-3 rounded-lg text-sm" placeholder="Enter task title">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2 text-secondary">Course</label>
+            <select class="input-field w-full px-4 py-3 rounded-lg text-sm">
+              <option>Select course</option>
+              <option>Data Structures</option>
+              <option>Database Systems</option>
+              <option>AI Fundamentals</option>
+              <option>Cybersecurity</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2 text-secondary">Description</label>
+            <textarea class="input-field w-full px-4 py-3 rounded-lg text-sm h-24 resize-none" placeholder="Task description"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2 text-secondary">Due Date</label>
+              <input type="date" class="input-field w-full px-4 py-3 rounded-lg text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2 text-secondary">Assign To</label>
+              <select class="input-field w-full px-4 py-3 rounded-lg text-sm">
+                <option>All Students</option>
+                <option>CS-2024-A</option>
+                <option>CS-2024-B</option>
+                <option>Selected Students</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex gap-3 pt-4">
+            <button type="button" onclick="closeModal()" class="btn-secondary flex-1 py-2.5 rounded-lg text-sm font-medium">Cancel</button>
+            <button type="submit" class="btn-primary flex-1 py-2.5 rounded-lg text-sm font-medium">Create Task</button>
+          </div>
+        </form>
+      `;
+
+        modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.add('hidden');
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set initial theme toggle state
+        const isDark = document.documentElement.classList.contains('dark');
+        document.querySelectorAll('.dark-icon').forEach(el => el.classList.toggle('hidden', !isDark));
+        document.querySelectorAll('.light-icon').forEach(el => el.classList.toggle('hidden', isDark));
+    });
+</script>
+</body>
+</html>
