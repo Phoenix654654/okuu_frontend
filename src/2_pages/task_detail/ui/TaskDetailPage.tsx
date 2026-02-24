@@ -1,8 +1,10 @@
 import {useEffect, useState} from "react";
 import {Card, Tag, Table, Button, Space, Spin, Descriptions, message, Popconfirm} from "antd";
+import {ArrowLeftOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
+import {UserStore} from "@/5_entities/user";
 import type {DescriptionStatus, AssignmentStatus, ITaskDescriptionInline, ITaskAssignmentInline, ISubmission, IFile} from "@/5_entities/task";
 import {AssignDescriberModal, ReviewDescriptionModal, PublishTaskModal, GradeSubmissionModal} from "@/4_features/tasks";
 import {routes, taskStatusLabels, taskStatusColors, descriptionStatusLabels, assignmentStatusLabels} from "@/6_shared";
@@ -13,6 +15,7 @@ const TaskDetailPage = observer(() => {
     const navigate = useNavigate();
     const task = TaskStore.current$.value;
     const loading = TaskStore.current$.loading;
+    const canManageTask = UserStore.currentUser$.value?.role === "Teacher";
 
     const [assignDescriberOpen, setAssignDescriberOpen] = useState(false);
     const [reviewOpen, setReviewOpen] = useState(false);
@@ -86,7 +89,7 @@ const TaskDetailPage = observer(() => {
             title: "Действия",
             key: "actions",
             render: (_: unknown, r: ITaskDescriptionInline) =>
-                r.status === "submitted" ? (
+                canManageTask && r.status === "submitted" ? (
                     <Button
                         size="small"
                         onClick={() => {
@@ -154,7 +157,7 @@ const TaskDetailPage = observer(() => {
             title: "Действия",
             key: "actions",
             render: (_: unknown, r: ISubmission) =>
-                r.score === null ? (
+                canManageTask && r.score === null ? (
                     <Button
                         size="small"
                         onClick={() => {
@@ -170,25 +173,29 @@ const TaskDetailPage = observer(() => {
 
     return (
         <div className={cls.page}>
+            <button className={cls.backBtn} onClick={() => navigate(routes.tasks)}>
+                <ArrowLeftOutlined /> Назад к списку
+            </button>
+
             <div className={cls.header}>
                 <h1>{task.title}</h1>
                 <Space>
-                    {task.status === "draft" && (
+                    {canManageTask && task.status === "draft" && (
                         <Button type="primary" onClick={() => setAssignDescriberOpen(true)}>
                             Назначить описателя
                         </Button>
                     )}
-                    {task.status === "review" && (
+                    {canManageTask && task.status === "review" && (
                         <Button type="primary" onClick={() => setPublishOpen(true)}>
                             Опубликовать
                         </Button>
                     )}
-                    {task.status === "published" && (
+                    {canManageTask && task.status === "published" && (
                         <Popconfirm title="Закрыть задание?" onConfirm={handleClose} okText="Да" cancelText="Нет">
                             <Button>Закрыть задание</Button>
                         </Popconfirm>
                     )}
-                    {task.status === "draft" && (
+                    {canManageTask && task.status === "draft" && (
                         <Popconfirm title="Удалить задание?" onConfirm={handleDelete} okText="Да" cancelText="Нет">
                             <Button danger>Удалить</Button>
                         </Popconfirm>
@@ -273,31 +280,35 @@ const TaskDetailPage = observer(() => {
                 </Card>
             )}
 
-            <AssignDescriberModal
-                open={assignDescriberOpen}
-                taskId={task.id}
-                onClose={() => setAssignDescriberOpen(false)}
-                onSuccess={reload}
-            />
-            <ReviewDescriptionModal
-                open={reviewOpen}
-                taskId={task.id}
-                descriptionId={reviewDescId}
-                onClose={() => setReviewOpen(false)}
-                onSuccess={reload}
-            />
-            <PublishTaskModal
-                open={publishOpen}
-                taskId={task.id}
-                onClose={() => setPublishOpen(false)}
-                onSuccess={reload}
-            />
-            <GradeSubmissionModal
-                open={gradeOpen}
-                submissionId={gradeSubId}
-                onClose={() => setGradeOpen(false)}
-                onSuccess={reload}
-            />
+            {canManageTask && (
+                <>
+                    <AssignDescriberModal
+                        open={assignDescriberOpen}
+                        taskId={task.id}
+                        onClose={() => setAssignDescriberOpen(false)}
+                        onSuccess={reload}
+                    />
+                    <ReviewDescriptionModal
+                        open={reviewOpen}
+                        taskId={task.id}
+                        descriptionId={reviewDescId}
+                        onClose={() => setReviewOpen(false)}
+                        onSuccess={reload}
+                    />
+                    <PublishTaskModal
+                        open={publishOpen}
+                        taskId={task.id}
+                        onClose={() => setPublishOpen(false)}
+                        onSuccess={reload}
+                    />
+                    <GradeSubmissionModal
+                        open={gradeOpen}
+                        submissionId={gradeSubId}
+                        onClose={() => setGradeOpen(false)}
+                        onSuccess={reload}
+                    />
+                </>
+            )}
         </div>
     );
 });

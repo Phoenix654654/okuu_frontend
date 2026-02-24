@@ -35,6 +35,16 @@ export const studentItems = [
 
 export const adminItems = [
     {
+        key: routes.groups,
+        icon: createElement(TeamOutlined),
+        label: "Группы",
+    },
+    {
+        key: routes.tasks,
+        icon: createElement(FileTextOutlined),
+        label: "Задания",
+    },
+    {
         key: routes.adminUsers,
         icon: createElement(UsergroupAddOutlined),
         label: "Пользователи",

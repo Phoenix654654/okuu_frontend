@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {Card, Tag, Spin, Input, Descriptions, Alert, message} from "antd";
+import {ArrowLeftOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
@@ -59,6 +60,9 @@ const DescriptionDetailPage = observer(() => {
 
     return (
         <div className={cls.page}>
+            <button className={cls.backBtn} onClick={() => navigate(routes.descriptions)}>
+                <ArrowLeftOutlined /> Назад к списку
+            </button>
             <h1>{desc.task?.title || `Описание задания #${desc.id}`}</h1>
 
             <Descriptions bordered size="small" column={2}>

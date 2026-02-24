@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {Card, Tag, Spin, Input, Descriptions, message} from "antd";
+import {ArrowLeftOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
@@ -63,6 +64,9 @@ const AssignmentDetailPage = observer(() => {
 
     return (
         <div className={cls.page}>
+            <button className={cls.backBtn} onClick={() => navigate(routes.assignments)}>
+                <ArrowLeftOutlined /> Назад к списку
+            </button>
             <h1>{task?.title || `Задание #${assignment.id}`}</h1>
 
             <Descriptions bordered size="small" column={2}>

@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {Card, Tag, Spin, Descriptions, InputNumber, Input, message} from "antd";
+import {ArrowLeftOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
@@ -52,6 +53,9 @@ const SubmissionDetailPage = observer(() => {
 
     return (
         <div className={cls.page}>
+            <button className={cls.backBtn} onClick={() => navigate(routes.submissions)}>
+                <ArrowLeftOutlined /> Назад к списку
+            </button>
             <h1>{typeof submission.task === "object" ? (submission.task as any)?.title : submission.task || "Решение"}</h1>
 
             <Descriptions bordered size="small" column={2}>

@@ -49,16 +49,37 @@ const processQueue = (error: unknown) => {
     failedQueue = [];
 };
 
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const tryRefreshWithRetry = async () => {
+    try {
+        await $api.post("/auth/jwt/refresh/");
+    } catch (firstError) {
+        // Небольшой retry помогает при гонках ротации/сетевых всплесках.
+        await wait(200);
+        await $api.post("/auth/jwt/refresh/");
+        return firstError;
+    }
+    return null;
+};
+
 $api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
+        const isMeRequest = originalRequest.url?.includes("/auth/me");
+        const isAuthPage = ["/login", "/register", "/verify-otp"].some((path) => window.location.pathname.startsWith(path));
+
+        // На auth-страницах отсутствие сессии — нормальный кейс, refresh не нужен.
+        if (error.response?.status === 401 && isMeRequest && isAuthPage) {
+            const message = errorHandler(error);
+            return Promise.reject({ ...error, message });
+        }
 
         if (
             error.response?.status === 401
             && !originalRequest._retry
             && !originalRequest.url?.includes("/auth/jwt/refresh/")
-            && !originalRequest.url?.includes("/auth/me")
         ) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
@@ -70,12 +91,14 @@ $api.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                await $api.post("/auth/jwt/refresh/");
+                await tryRefreshWithRetry();
                 processQueue(null);
                 return $api(originalRequest);
             } catch (refreshError) {
                 processQueue(refreshError);
-                window.location.href = "/login";
+                if (window.location.pathname !== "/login") {
+                    window.location.href = "/login";
+                }
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;

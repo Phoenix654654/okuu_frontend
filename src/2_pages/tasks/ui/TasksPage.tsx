@@ -1,10 +1,10 @@
 import {useEffect, useState} from "react";
-import {Table, Button, Select, Tag, Space} from "antd";
+import {Table, Button, Tag, Space} from "antd";
 import {PlusOutlined, EyeOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
-import {GroupStore} from "@/5_entities/group";
+import {UserStore} from "@/5_entities/user";
 import type {ITask, TaskStatus} from "@/5_entities/task";
 import {CreateTaskModal} from "@/4_features/tasks";
 import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
@@ -15,22 +15,11 @@ const TasksPage = observer(() => {
     const navigate = useNavigate();
     const [createOpen, setCreateOpen] = useState(false);
     const {items, total, loading, page, pageSize} = TaskStore.list$;
-    const groups = GroupStore.list$.items;
+    const isAdmin = UserStore.currentUser$.value?.role === "Admin";
 
     useEffect(() => {
-        GroupStore.list$.setPageSize(50);
-        GroupStore.fetchGroups();
         TaskStore.fetchTasks();
     }, []);
-
-    const handleGroupFilter = (groupId: number | undefined) => {
-        if (groupId) {
-            TaskStore.list$.setFilter("group_id", groupId);
-        } else {
-            TaskStore.list$.resetFilters();
-        }
-        TaskStore.fetchTasks();
-    };
 
     const handlePageChange = (newPage: number, newPageSize: number) => {
         TaskStore.list$.setPage(newPage);
@@ -77,20 +66,15 @@ const TasksPage = observer(() => {
             <div className={cls.header}>
                 <h1>Задания</h1>
                 <Space>
-                    <Select
-                        allowClear
-                        placeholder="Фильтр по группе"
-                        style={{width: 200}}
-                        onChange={handleGroupFilter}
-                        options={groups.map(g => ({value: g.id, label: g.name}))}
-                    />
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => setCreateOpen(true)}
-                    >
-                        Создать задание
-                    </Button>
+                    {!isAdmin && (
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => setCreateOpen(true)}
+                        >
+                            Создать задание
+                        </Button>
+                    )}
                 </Space>
             </div>
             <Table
@@ -106,11 +90,13 @@ const TasksPage = observer(() => {
                 total={total}
                 onChange={handlePageChange}
             />
-            <CreateTaskModal
-                open={createOpen}
-                onClose={() => setCreateOpen(false)}
-                onSuccess={() => TaskStore.fetchTasks()}
-            />
+            {!isAdmin && (
+                <CreateTaskModal
+                    open={createOpen}
+                    onClose={() => setCreateOpen(false)}
+                    onSuccess={() => TaskStore.fetchTasks()}
+                />
+            )}
         </div>
     );
 });

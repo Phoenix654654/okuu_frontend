@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
-import {Table, Button, Popconfirm, Space, Tag, Tabs, Form, InputNumber, Spin, message} from "antd";
-import {EditOutlined, DeleteOutlined} from "@ant-design/icons";
+import {Table, Button, Popconfirm, Space, Tag, Tabs, Form, InputNumber, Spin, message, Select} from "antd";
+import {EditOutlined, DeleteOutlined, EyeOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
 import {GroupStore} from "@/5_entities/group";
@@ -13,7 +13,8 @@ import cls from "./GroupsPage.module.scss";
 
 const GroupList = observer(() => {
     const navigate = useNavigate();
-    const {items, total, loading, page, pageSize} = GroupStore.list$;
+    const {items, total, loading, page, pageSize, filters} = GroupStore.list$;
+    const isAdmin = UserStore.currentUser$.value?.role === "Admin";
 
     useEffect(() => {
         GroupStore.fetchGroups();
@@ -22,6 +23,11 @@ const GroupList = observer(() => {
     const handlePageChange = (newPage: number, newPageSize: number) => {
         GroupStore.list$.setPage(newPage);
         GroupStore.list$.setPageSize(newPageSize);
+        GroupStore.fetchGroups();
+    };
+
+    const handleYearFilter = (year: number | undefined) => {
+        GroupStore.list$.setFilter("year", year ?? undefined);
         GroupStore.fetchGroups();
     };
 
@@ -57,33 +63,57 @@ const GroupList = observer(() => {
             key: "teacher",
             render: (_: unknown, record: IGroup) => record.teacher?.full_name || "—",
         },
-        {
-            title: "Действия",
-            key: "actions",
-            width: 120,
-            render: (_: unknown, record: IGroup) => (
-                <Space>
-                    <Button
-                        type="text"
-                        icon={<EditOutlined />}
-                        onClick={() => handleEdit(record.id)}
-                    />
-                    <Popconfirm
-                        title="Удалить группу?"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Да"
-                        cancelText="Нет"
-                    >
-                        <Button type="text" danger icon={<DeleteOutlined />} />
-                    </Popconfirm>
-                </Space>
-            ),
-        },
     ];
+
+    columns.push({
+        title: "Действия",
+        key: "actions",
+        width: 140,
+        render: (_: unknown, record: IGroup) => (
+            <Space>
+                <Button
+                    type="text"
+                    icon={<EyeOutlined />}
+                    onClick={() => navigate(`/groups/${record.id}`)}
+                />
+                {!isAdmin && (
+                    <>
+                        <Button
+                            type="text"
+                            icon={<EditOutlined />}
+                            onClick={() => handleEdit(record.id)}
+                        />
+                        <Popconfirm
+                            title="Удалить группу?"
+                            onConfirm={() => handleDelete(record.id)}
+                            okText="Да"
+                            cancelText="Нет"
+                        >
+                            <Button type="text" danger icon={<DeleteOutlined />} />
+                        </Popconfirm>
+                    </>
+                )}
+            </Space>
+        ),
+    });
 
     return (
         <>
+            <div className={cls.filters}>
+                <Select
+                    allowClear
+                    placeholder="Фильтр по курсу"
+                    value={filters.year}
+                    onChange={handleYearFilter}
+                    style={{width: 220}}
+                    options={Array.from({length: 10}, (_, index) => {
+                        const year = index + 1;
+                        return {value: year, label: `${year} курс`};
+                    })}
+                />
+            </div>
             <Table
+                bordered
                 dataSource={items}
                 columns={columns}
                 rowKey="id"
@@ -95,6 +125,7 @@ const GroupList = observer(() => {
                 pageSize={pageSize}
                 total={total}
                 onChange={handlePageChange}
+                style={{marginTop: 16}}
             />
         </>
     );
@@ -193,18 +224,23 @@ const GroupForm = observer(() => {
 });
 
 const GroupsPage = observer(() => {
+    const isAdmin = UserStore.currentUser$.value?.role === "Admin";
+
     const tabItems = [
         {
             key: "list",
             label: "Список групп",
             children: <GroupList />,
         },
-        {
+    ];
+
+    if (!isAdmin) {
+        tabItems.push({
             key: "create",
             label: GroupStore.editingGroupId ? "Редактирование" : "Создание",
             children: <GroupForm />,
-        },
-    ];
+        });
+    }
 
     return (
         <div className={cls.page}>

@@ -5,7 +5,7 @@ import {groupService} from "@/5_entities/group";
 import type {CreateGroupRequest, IGroup, UpdateGroupRequest} from "@/5_entities/group";
 
 class GroupStore {
-    list$ = createListState<IGroup, { search?: string }>();
+    list$ = createListState<IGroup, { search?: string; year?: number }>();
     current$ = createAsyncState<IGroup>();
     editingGroupId: number | null = null;
 

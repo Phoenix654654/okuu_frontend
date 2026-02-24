@@ -3,6 +3,12 @@
     flex-direction: column;
     gap: 16px;
 
+    .filters {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
     .formWrapper {
         max-width: 500px;
 

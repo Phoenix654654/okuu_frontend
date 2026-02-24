@@ -14,15 +14,71 @@ import {useDebounce} from "@/6_shared/lib/hooks/useDebounce/useDebounce";
 import {roleLabels, roleColors} from "@/6_shared";
 import cls from "./UsersPage.module.scss";
 
+const GROUPS_PAGE_SIZE = 30;
+
 const UserList = observer(() => {
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize, filters} = UserAdminStore.list$;
     const [groups, setGroups] = useState<IGroup[]>([]);
+    const [groupsTotal, setGroupsTotal] = useState(0);
+    const [groupsOffset, setGroupsOffset] = useState(0);
+    const [groupsLoading, setGroupsLoading] = useState(false);
 
     useEffect(() => {
         UserAdminStore.fetchUsers();
-        groupService.getList({limit: 200, offset: 0}).then((res) => setGroups(res.results)).catch(() => {});
+        let cancelled = false;
+
+        const loadInitialGroups = async () => {
+            setGroupsLoading(true);
+            try {
+                const res = await groupService.getList({limit: GROUPS_PAGE_SIZE, offset: 0});
+                if (cancelled) return;
+                setGroups(res.results);
+                setGroupsTotal(res.count);
+                setGroupsOffset(res.results.length);
+            } finally {
+                if (!cancelled) {
+                    setGroupsLoading(false);
+                }
+            }
+        };
+
+        loadInitialGroups();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
+
+    const loadGroups = useCallback(async (reset = false) => {
+        if (groupsLoading) return;
+
+        const offset = reset ? 0 : groupsOffset;
+        setGroupsLoading(true);
+        try {
+            const res = await groupService.getList({limit: GROUPS_PAGE_SIZE, offset});
+            setGroupsTotal(res.count);
+            setGroups((prev) => {
+                if (reset) return res.results;
+                const existing = new Set(prev.map((g) => g.id));
+                const next = res.results.filter((g) => !existing.has(g.id));
+                return [...prev, ...next];
+            });
+            setGroupsOffset(offset + res.results.length);
+        } finally {
+            setGroupsLoading(false);
+        }
+    }, [groupsLoading, groupsOffset]);
+
+    const handleGroupsPopupScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const target = e.currentTarget;
+        const isBottomReached = target.scrollTop + target.clientHeight >= target.scrollHeight - 10;
+        const hasMore = groups.length < groupsTotal;
+
+        if (isBottomReached && hasMore && !groupsLoading) {
+            loadGroups();
+        }
+    };
 
     const debouncedFetch = useDebounce(() => {
         UserAdminStore.fetchUsers();
@@ -162,6 +218,8 @@ const UserList = observer(() => {
                     showSearch
                     optionFilterProp="label"
                     style={{width: 200}}
+                    loading={groupsLoading}
+                    onPopupScroll={handleGroupsPopupScroll}
                     options={groups.map((g) => ({value: g.id, label: g.name}))}
                 />
                 <Select
@@ -178,6 +236,8 @@ const UserList = observer(() => {
                 />
             </div>
             <Table
+                bordered
+                className={cls.table}
                 dataSource={items}
                 columns={columns}
                 rowKey="id"
@@ -189,6 +249,7 @@ const UserList = observer(() => {
                 pageSize={pageSize}
                 total={total}
                 onChange={handlePageChange}
+                style={{marginTop: 16}}
             />
         </>
     );
