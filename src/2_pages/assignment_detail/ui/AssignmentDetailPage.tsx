@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+﻿import {useEffect, useState} from "react";
 import {Card, Tag, Spin, Input, Descriptions, message} from "antd";
 import {ArrowLeftOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
@@ -61,6 +61,7 @@ const AssignmentDetailPage = observer(() => {
 
     const task = assignment.task;
     const submission = assignment.submission;
+    const selectedDescription = task?.selected_description ?? task?.approved_description;
 
     return (
         <div className={cls.page}>
@@ -83,12 +84,12 @@ const AssignmentDetailPage = observer(() => {
                 )}
             </Descriptions>
 
-            {task?.approved_description && (
+            {selectedDescription && (
                 <Card title="Описание задания" size="small">
                     <p style={{whiteSpace: "pre-wrap"}}>
-                        {typeof task.approved_description === "string"
-                            ? task.approved_description
-                            : (task.approved_description as any).description || "—"}
+                        {typeof selectedDescription === "string"
+                            ? selectedDescription
+                            : selectedDescription.description || "—"}
                     </p>
                 </Card>
             )}

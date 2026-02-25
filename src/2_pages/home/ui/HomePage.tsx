@@ -16,16 +16,11 @@ const HomePage = observer(() => {
 
     useEffect(() => {
         if (role === "Teacher") {
-            GroupStore.list$.setPageSize(1);
             GroupStore.fetchGroups();
-            TaskStore.list$.setPageSize(1);
             TaskStore.fetchTasks();
-            TaskStore.submissions$.setPageSize(1);
             TaskStore.fetchSubmissions();
         } else if (role === "Student") {
-            TaskStore.assignments$.setPageSize(1);
             TaskStore.fetchAssignments();
-            TaskStore.descriptions$.setPageSize(1);
             TaskStore.fetchDescriptions();
         }
     }, [role]);

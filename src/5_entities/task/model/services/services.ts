@@ -8,6 +8,7 @@ import type {
     ITask,
     ITaskDescription,
     ITaskAssignment,
+    TaskListVisibility,
     PublishTaskRequest,
     UpdateTaskRequest,
 } from "@/5_entities/task";
@@ -17,7 +18,7 @@ type ApiMessage = { message: string; extra?: Record<string, unknown> };
 export const taskService = {
     // === Задания (Teacher) ===
 
-    getList(params: PaginationParams & { group_id?: number }): Promise<PaginatedResponse<ITask>> {
+    getList(params: PaginationParams & { group_id?: number; visibility?: TaskListVisibility }): Promise<PaginatedResponse<ITask>> {
         return api.getPaginated<ITask>("/tasks/", params);
     },
 
@@ -87,7 +88,7 @@ export const taskService = {
 
     // === Решения (Teacher — оценивание) ===
 
-    getSubmissions(params: PaginationParams & { task_id?: number }): Promise<PaginatedResponse<ISubmission>> {
+    getSubmissions(params: PaginationParams & { task_id?: number; student_id?: number }): Promise<PaginatedResponse<ISubmission>> {
         return api.getPaginated<ISubmission>("/tasks/submissions/", params);
     },
 

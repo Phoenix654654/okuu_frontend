@@ -11,15 +11,16 @@ import type {
     ITask,
     ITaskAssignment,
     ITaskDescription,
+    TaskListVisibility,
     PublishTaskRequest,
     UpdateTaskRequest,
 } from "@/5_entities/task";
 
 class TaskStore {
     // Teacher
-    list$ = createListState<ITask, { group_id?: number }>();
+    list$ = createListState<ITask, { group_id?: number; visibility?: TaskListVisibility }>();
     current$ = createAsyncState<ITask>();
-    submissions$ = createListState<ISubmission, { task_id?: number }>();
+    submissions$ = createListState<ISubmission, { task_id?: number; student_id?: number }>();
     currentSubmission$ = createAsyncState<ISubmissionDetail>();
 
     // Student — описания

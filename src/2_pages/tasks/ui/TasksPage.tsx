@@ -1,29 +1,40 @@
-import {useEffect, useState} from "react";
-import {Table, Button, Tag, Space} from "antd";
+﻿import {useEffect, useState} from "react";
+import {Table, Button, Space, Tabs} from "antd";
 import {PlusOutlined, EyeOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
 import {UserStore} from "@/5_entities/user";
-import type {ITask, TaskStatus} from "@/5_entities/task";
+import type {ITask, TaskListVisibility} from "@/5_entities/task";
 import {CreateTaskModal} from "@/4_features/tasks";
 import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
-import {taskStatusLabels, taskStatusColors} from "@/6_shared";
 import cls from "./TasksPage.module.scss";
 
 const TasksPage = observer(() => {
     const navigate = useNavigate();
     const [createOpen, setCreateOpen] = useState(false);
+    const [visibility, setVisibility] = useState<TaskListVisibility>("shared");
     const {items, total, loading, page, pageSize} = TaskStore.list$;
     const isAdmin = UserStore.currentUser$.value?.role === "Admin";
 
     useEffect(() => {
+        TaskStore.list$.setPageSize(10);
+        TaskStore.list$.setFilters({visibility: "shared", group_id: undefined});
         TaskStore.fetchTasks();
     }, []);
 
     const handlePageChange = (newPage: number, newPageSize: number) => {
+        if (newPageSize !== TaskStore.list$.pageSize) {
+            TaskStore.list$.setPageSize(newPageSize);
+        }
         TaskStore.list$.setPage(newPage);
-        TaskStore.list$.setPageSize(newPageSize);
+        TaskStore.fetchTasks();
+    };
+
+    const handleVisibilityChange = (key: string) => {
+        const nextVisibility = key as TaskListVisibility;
+        setVisibility(nextVisibility);
+        TaskStore.list$.setFilter("visibility", nextVisibility);
         TaskStore.fetchTasks();
     };
 
@@ -32,14 +43,6 @@ const TasksPage = observer(() => {
             title: "Название",
             dataIndex: "title",
             key: "title",
-        },
-        {
-            title: "Статус",
-            dataIndex: "status",
-            key: "status",
-            render: (status: TaskStatus) => (
-                <Tag color={taskStatusColors[status]}>{taskStatusLabels[status]}</Tag>
-            ),
         },
         {
             title: "Создано",
@@ -77,6 +80,14 @@ const TasksPage = observer(() => {
                     )}
                 </Space>
             </div>
+            <Tabs
+                activeKey={visibility}
+                onChange={handleVisibilityChange}
+                items={[
+                    {key: "shared", label: "Общие задачи"},
+                    {key: "mine", label: "Мои задачи"},
+                ]}
+            />
             <Table
                 dataSource={items}
                 columns={columns}

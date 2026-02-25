@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from "react";
+﻿import {useCallback, useEffect, useState} from "react";
 import {Modal, Select, Form, DatePicker, message, Spin} from "antd";
 import type {Dayjs} from "dayjs";
 import {observer} from "mobx-react-lite";
@@ -7,17 +7,31 @@ import {userService} from "@/5_entities/user";
 import type {IUser} from "@/5_entities/user";
 import {useDebounce} from "@/6_shared/lib/hooks/useDebounce/useDebounce";
 
+interface DescriptionOption {
+    value: number;
+    label: string;
+}
+
 interface PublishTaskModalProps {
     open: boolean;
     taskId: number;
     onClose: () => void;
     onSuccess: () => void;
     defaultStudentIds?: number[];
+    descriptionOptions?: DescriptionOption[];
 }
 
-export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess, defaultStudentIds}: PublishTaskModalProps) => {
+export const PublishTaskModal = observer(({
+    open,
+    taskId,
+    onClose,
+    onSuccess,
+    defaultStudentIds,
+    descriptionOptions,
+}: PublishTaskModalProps) => {
     const [studentIds, setStudentIds] = useState<number[]>([]);
     const [deadline, setDeadline] = useState<Dayjs | null>(null);
+    const [descriptionId, setDescriptionId] = useState<number | undefined>(undefined);
     const [loading, setLoading] = useState(false);
 
     const [students, setStudents] = useState<IUser[]>([]);
@@ -44,8 +58,9 @@ export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess, def
             loadStudents();
             setStudentIds(defaultStudentIds ?? []);
             setDeadline(null);
+            setDescriptionId(descriptionOptions?.[0]?.value);
         }
-    }, [open, loadStudents, defaultStudentIds]);
+    }, [open, loadStudents, defaultStudentIds, descriptionOptions]);
 
     const handlePublish = async () => {
         if (studentIds.length === 0) {
@@ -61,6 +76,7 @@ export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess, def
         const success = await TaskStore.publishTask(taskId, {
             deadline: deadline.format("YYYY-MM-DDTHH:mm:ssZ"),
             student_ids: studentIds,
+            description_id: descriptionId,
         });
         setLoading(false);
 
@@ -68,6 +84,7 @@ export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess, def
             message.success("Задание опубликовано");
             setStudentIds([]);
             setDeadline(null);
+            setDescriptionId(undefined);
             onSuccess();
             onClose();
         } else {
@@ -87,6 +104,16 @@ export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess, def
             okButtonProps={{disabled: studentIds.length === 0 || !deadline}}
         >
             <Form layout="vertical">
+                {descriptionOptions && descriptionOptions.length > 0 && (
+                    <Form.Item label="Описание для публикации">
+                        <Select
+                            value={descriptionId}
+                            onChange={(value) => setDescriptionId(value)}
+                            options={descriptionOptions}
+                            placeholder="Выберите описание"
+                        />
+                    </Form.Item>
+                )}
                 <Form.Item label="Студенты">
                     <Select
                         mode="multiple"
@@ -101,7 +128,8 @@ export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess, def
                             value: s.id,
                             label: `${s.full_name}${s.student_code ? ` (${s.student_code})` : ""}`,
                         }))}
-                        style={{width: "100%"}}
+                        style={{width: "100%"}
+                        }
                     />
                 </Form.Item>
                 <Form.Item label="Дедлайн">
@@ -109,7 +137,8 @@ export const PublishTaskModal = observer(({open, taskId, onClose, onSuccess, def
                         showTime
                         value={deadline}
                         onChange={setDeadline}
-                        style={{width: "100%"}}
+                        style={{width: "100%"}
+                        }
                     />
                 </Form.Item>
             </Form>

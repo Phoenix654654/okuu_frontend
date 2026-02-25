@@ -7,6 +7,7 @@ export type {
     TaskStatus,
     DescriptionStatus,
     AssignmentStatus,
+    TaskListVisibility,
     IFile,
     ITask,
     ITaskListItem,

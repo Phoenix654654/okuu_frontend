@@ -1,16 +1,18 @@
-import {useEffect, useState} from "react";
+﻿import {useEffect, useState, type Key, type UIEvent} from "react";
 import {Table, Button, Spin, Descriptions, Tag, Space, Select, message} from "antd";
 import {ArrowLeftOutlined, EyeOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
 import {GroupStore} from "@/5_entities/group";
-import {TaskStore} from "@/5_entities/task";
+import {taskService} from "@/5_entities/task";
 import {UserStore, userService} from "@/5_entities/user";
 import type {IGroupStudent} from "@/5_entities/group";
 import type {ITask} from "@/5_entities/task";
 import {CreateTaskModal, AssignDescriberModal, PublishTaskModal} from "@/4_features/tasks";
-import {routes, taskStatusLabels} from "@/6_shared";
+import {routes} from "@/6_shared";
 import cls from "./GroupDetailPage.module.scss";
+
+const TASKS_PAGE_SIZE = 20;
 
 const GroupDetailPage = observer(() => {
     const {id} = useParams<{id: string}>();
@@ -28,21 +30,65 @@ const GroupDetailPage = observer(() => {
     const [publishOpen, setPublishOpen] = useState(false);
     const [students, setStudents] = useState<IGroupStudent[]>([]);
     const [studentsLoading, setStudentsLoading] = useState(false);
+    const [tasks, setTasks] = useState<ITask[]>([]);
+    const [tasksTotal, setTasksTotal] = useState(0);
+    const [tasksLoading, setTasksLoading] = useState(false);
+    const [tasksLoadingMore, setTasksLoadingMore] = useState(false);
+
+    const loadTasks = async (append = false) => {
+        if (!canManageTasks) return;
+        if (append && (tasksLoading || tasksLoadingMore || tasks.length >= tasksTotal)) return;
+
+        const offset = append ? tasks.length : 0;
+
+        if (append) {
+            setTasksLoadingMore(true);
+        } else {
+            setTasksLoading(true);
+        }
+
+        try {
+            const response = await taskService.getList({
+                limit: TASKS_PAGE_SIZE,
+                offset,
+            });
+
+            if (append) {
+                setTasks((prev) => [...prev, ...response.results]);
+            } else {
+                setTasks(response.results);
+            }
+            setTasksTotal(response.count);
+        } finally {
+            if (append) {
+                setTasksLoadingMore(false);
+            } else {
+                setTasksLoading(false);
+            }
+        }
+    };
 
     useEffect(() => {
         if (id) {
             GroupStore.fetchGroup(Number(id));
-            if (canManageTasks) {
-                TaskStore.list$.setPageSize(50);
-                TaskStore.fetchTasks();
-            }
         }
+
         return () => {
             GroupStore.current$.clear();
             setStudents([]);
             setStudentsLoading(false);
+            setTasks([]);
+            setTasksTotal(0);
+            setTasksLoading(false);
+            setTasksLoadingMore(false);
         };
-    }, [id, canManageTasks]);
+    }, [id]);
+
+    useEffect(() => {
+        if (canManageTasks) {
+            loadTasks(false);
+        }
+    }, [canManageTasks]);
 
     useEffect(() => {
         let cancelled = false;
@@ -95,7 +141,9 @@ const GroupDetailPage = observer(() => {
         return <Spin size="large" style={{display: "block", margin: "40px auto"}} />;
     }
 
-    const tasks = canManageTasks ? TaskStore.list$.items : [];
+    const hasMoreTasks = tasks.length < tasksTotal;
+    const selectedTask = tasks.find((task) => task.id === selectedTaskId);
+    const selectedTaskHasDescription = selectedTask?.has_description === true;
 
     const studentColumns = isAdmin
         ? [
@@ -159,12 +207,14 @@ const GroupDetailPage = observer(() => {
 
     const rowSelection = {
         selectedRowKeys: selectedStudentIds,
-        onChange: (keys: React.Key[]) => {
+        onChange: (keys: Key[]) => {
             setSelectedStudentIds(keys as number[]);
         },
     };
 
     const hasSelection = canManageTasks && selectedStudentIds.length > 0;
+    const disableGiveTask = !selectedTaskId || !selectedTaskHasDescription;
+    const disableAssignDescription = !selectedTaskId || selectedTaskHasDescription || selectedStudentIds.length !== 1;
 
     const handlePublishFromGroup = () => {
         if (!selectedTaskId) {
@@ -180,6 +230,15 @@ const GroupDetailPage = observer(() => {
             return;
         }
         setAssignDescriberOpen(true);
+    };
+
+    const handleTaskSelectScroll = (event: UIEvent<HTMLDivElement>) => {
+        const target = event.currentTarget;
+        const nearBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 24;
+
+        if (nearBottom && hasMoreTasks) {
+            loadTasks(true);
+        }
     };
 
     return (
@@ -224,15 +283,19 @@ const GroupDetailPage = observer(() => {
                         onChange={setSelectedTaskId}
                         style={{minWidth: 250}}
                         allowClear
+                        showSearch
+                        loading={tasksLoading || tasksLoadingMore}
+                        onPopupScroll={handleTaskSelectScroll}
+                        notFoundContent={tasksLoading ? <Spin size="small" /> : undefined}
                         options={tasks.map((t: ITask) => ({
                             value: t.id,
-                            label: `${t.title} (${taskStatusLabels[t.status]})`,
+                            label: t.title,
                         }))}
                     />
-                    <Button type="primary" onClick={handlePublishFromGroup} disabled={!selectedTaskId}>
+                    <Button type="primary" onClick={handlePublishFromGroup} disabled={disableGiveTask}>
                         Дать задачу
                     </Button>
-                    <Button onClick={handleAssignDescriber} disabled={!selectedTaskId || selectedStudentIds.length !== 1}>
+                    <Button onClick={handleAssignDescriber} disabled={disableAssignDescription}>
                         Описание задачи
                     </Button>
                 </Space>
@@ -255,7 +318,7 @@ const GroupDetailPage = observer(() => {
                         onClose={() => setCreateTaskOpen(false)}
                         onSuccess={() => {
                             setCreateTaskOpen(false);
-                            TaskStore.fetchTasks();
+                            loadTasks(false);
                         }}
                     />
 

@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+﻿import {useEffect} from "react";
 import {Table, Tag, Button} from "antd";
 import {EyeOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
@@ -13,13 +13,18 @@ const SubmissionsPage = observer(() => {
     const {items, total, loading, page, pageSize} = TaskStore.submissions$;
 
     useEffect(() => {
-        TaskStore.submissions$.setFilter("task_id", undefined);
+        TaskStore.submissions$.setFilters({
+            task_id: undefined,
+            student_id: undefined,
+        });
         TaskStore.fetchSubmissions();
     }, []);
 
     const handlePageChange = (newPage: number, newPageSize: number) => {
+        if (newPageSize !== TaskStore.submissions$.pageSize) {
+            TaskStore.submissions$.setPageSize(newPageSize);
+        }
         TaskStore.submissions$.setPage(newPage);
-        TaskStore.submissions$.setPageSize(newPageSize);
         TaskStore.fetchSubmissions();
     };
 

@@ -3,6 +3,7 @@ import type {IUser} from "@/5_entities/user";
 export type TaskStatus = "draft" | "describing" | "review" | "published" | "closed";
 export type DescriptionStatus = "pending" | "submitted" | "revision" | "approved" | "rejected";
 export type AssignmentStatus = "pending" | "submitted" | "graded";
+export type TaskListVisibility = "mine" | "shared";
 
 export interface IFile {
     id: number;
@@ -16,8 +17,10 @@ export interface ITaskListItem {
     id: number;
     teacher: IUser;
     title: string;
-    status: TaskStatus;
+    status?: TaskStatus;
     is_shared: boolean;
+    has_description?: boolean;
+    selected_description?: string | ITaskDescriptionInline | null;
     created_at: string;
 }
 
@@ -105,11 +108,13 @@ export interface ITask {
     teacher: IUser;
     title: string;
     description?: string;
-    status: TaskStatus;
+    status?: TaskStatus;
     is_shared?: boolean;
+    has_description?: boolean;
     files?: IFile[];
     descriptions: ITaskDescriptionInline[];
     assignments: ITaskAssignmentInline[];
+    selected_description?: string | ITaskDescriptionInline | null;
     approved_description: string | ITaskDescriptionInline | null;
     created_at: string;
     updated_at: string;
@@ -142,6 +147,7 @@ export interface SubmitDescriptionRequest {
 
 export interface PublishTaskRequest {
     deadline: string;
+    description_id?: number;
     group_ids?: number[];
     student_ids?: number[];
 }
