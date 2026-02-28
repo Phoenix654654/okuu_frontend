@@ -250,6 +250,9 @@ const GroupDetailPage = observer(() => {
             <div className={cls.header}>
                 <h1>{group.name}</h1>
                 <Space>
+                    <Tag color={group.is_finished ? "orange" : "green"}>
+                        {group.is_finished ? "Завершила обучение" : "Активна"}
+                    </Tag>
                     {canManageTasks && (
                         <Button type="primary" onClick={() => setCreateTaskOpen(true)}>
                             Создать задание
@@ -271,6 +274,11 @@ const GroupDetailPage = observer(() => {
                 </Descriptions.Item>
                 <Descriptions.Item label="Кол-во студентов">
                     {students.length}
+                </Descriptions.Item>
+                <Descriptions.Item label="Статус">
+                    <Tag color={group.is_finished ? "orange" : "green"}>
+                        {group.is_finished ? "Завершила обучение" : "Активна"}
+                    </Tag>
                 </Descriptions.Item>
             </Descriptions>
 

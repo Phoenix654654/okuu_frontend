@@ -16,6 +16,7 @@ export interface IGroup {
     students?: IGroupStudent[];
     created_at: string;
     updated_at: string;
+    is_finished?: boolean;
 }
 
 export interface CreateGroupRequest {
@@ -28,4 +29,8 @@ export interface UpdateGroupRequest {
     teacher?: number;
     name?: string;
     year?: number;
+}
+
+export interface MarkFinishedRequest {
+    is_finished: boolean;
 }

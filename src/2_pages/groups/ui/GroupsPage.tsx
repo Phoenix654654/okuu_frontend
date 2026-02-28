@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Table, Button, Popconfirm, Space, Tag, Tabs, Form, InputNumber, Spin, message, Select} from "antd";
-import {EditOutlined, DeleteOutlined, EyeOutlined} from "@ant-design/icons";
+import {EditOutlined, DeleteOutlined, EyeOutlined, ClockCircleOutlined, PlayCircleOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
 import {GroupStore} from "@/5_entities/group";
@@ -15,32 +15,50 @@ const GroupList = observer(() => {
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize, filters} = GroupStore.list$;
     const isAdmin = UserStore.currentUser$.value?.role === "Admin";
+    const [activeTab, setActiveTab] = useState<string>("active");
 
     useEffect(() => {
-        GroupStore.fetchGroups();
-    }, []);
+        GroupStore.fetchGroups({ is_finished: activeTab === "active" ? false : true });
+    }, [activeTab]);
 
     const handlePageChange = (newPage: number, newPageSize: number) => {
         GroupStore.list$.setPage(newPage);
         GroupStore.list$.setPageSize(newPageSize);
-        GroupStore.fetchGroups();
+        GroupStore.fetchGroups({ is_finished: activeTab === "active" ? false : true });
     };
 
     const handleYearFilter = (year: number | undefined) => {
         GroupStore.list$.setFilter("year", year ?? undefined);
-        GroupStore.fetchGroups();
+        GroupStore.fetchGroups({ is_finished: activeTab === "active" ? false : true });
     };
 
     const handleDelete = async (id: number) => {
         const success = await GroupStore.deleteGroup(id);
         if (success) {
-            GroupStore.fetchGroups();
+            GroupStore.fetchGroups({ is_finished: activeTab === "active" ? false : true });
         }
     };
 
     const handleEdit = (id: number) => {
         GroupStore.fetchGroup(id);
         GroupStore.editingGroupId = id;
+    };
+
+    const handleMarkFinished = async (id: number, isFinished: boolean) => {
+        const success = await GroupStore.markFinished(id, { is_finished: isFinished });
+        if (success) {
+            message.success(isFinished ? "Группа отмечена как завершившая обучение" : "Группа отмечена как активная");
+            GroupStore.fetchGroups({ is_finished: activeTab === "active" ? false : true });
+        } else {
+            message.error("Произошла ошибка");
+        }
+    };
+
+    const handleTabChange = (key: string) => {
+        setActiveTab(key);
+        GroupStore.list$.setPage(1);
+        GroupStore.list$.setFilters({ year: undefined, is_finished: key === "active" ? false : true });
+        GroupStore.fetchGroups({ is_finished: key === "active" ? false : true });
     };
 
     const columns = [
@@ -63,12 +81,21 @@ const GroupList = observer(() => {
             key: "teacher",
             render: (_: unknown, record: IGroup) => record.teacher?.full_name || "—",
         },
+        {
+            title: "Статус",
+            key: "is_finished",
+            render: (_: unknown, record: IGroup) => (
+                <Tag color={record.is_finished ? "orange" : "green"}>
+                    {record.is_finished ? "Завершена" : "Активна"}
+                </Tag>
+            ),
+        },
     ];
 
     columns.push({
         title: "Действия",
         key: "actions",
-        width: 140,
+        width: 240,
         render: (_: unknown, record: IGroup) => (
             <Space>
                 <Button
@@ -76,13 +103,27 @@ const GroupList = observer(() => {
                     icon={<EyeOutlined />}
                     onClick={() => navigate(`/groups/${record.id}`)}
                 />
-                {!isAdmin && (
+                {isAdmin && (
                     <>
                         <Button
                             type="text"
                             icon={<EditOutlined />}
                             onClick={() => handleEdit(record.id)}
                         />
+                        <Popconfirm
+                            title={record.is_finished ? "Отметить группу как активную?" : "Отметить группу как завершившую обучение?"}
+                            onConfirm={() => handleMarkFinished(record.id, !record.is_finished)}
+                            okText="Да"
+                            cancelText="Нет"
+                        >
+                            <Button
+                                type="text"
+                                danger={!record.is_finished}
+                                icon={record.is_finished ? <PlayCircleOutlined /> : <ClockCircleOutlined />}
+                            >
+                                {record.is_finished ? "Активировать" : "Завершить"}
+                            </Button>
+                        </Popconfirm>
                         <Popconfirm
                             title="Удалить группу?"
                             onConfirm={() => handleDelete(record.id)}
@@ -112,6 +153,14 @@ const GroupList = observer(() => {
                     })}
                 />
             </div>
+            <Tabs
+                activeKey={activeTab}
+                onChange={handleTabChange}
+                items={[
+                    { key: "active", label: "Активные" },
+                    { key: "finished", label: "Завершившие" },
+                ]}
+            />
             <Table
                 bordered
                 dataSource={items}

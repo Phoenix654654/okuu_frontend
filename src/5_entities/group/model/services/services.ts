@@ -1,9 +1,9 @@
 import {api} from "@/6_shared";
 import type {PaginatedResponse, PaginationParams} from "@/6_shared";
-import type {CreateGroupRequest, IGroup, UpdateGroupRequest} from "@/5_entities/group";
+import type {CreateGroupRequest, IGroup, UpdateGroupRequest, MarkFinishedRequest} from "@/5_entities/group";
 
 export const groupService = {
-    getList(params: PaginationParams & Record<string, unknown>): Promise<PaginatedResponse<IGroup>> {
+    getList(params: PaginationParams & { is_finished?: boolean; search?: string; year?: number }): Promise<PaginatedResponse<IGroup>> {
         return api.getPaginated<IGroup>("/groups/", params);
     },
 
@@ -21,5 +21,9 @@ export const groupService = {
 
     delete(id: number): Promise<{ message: string }> {
         return api.delete(`/groups/${id}/`);
+    },
+
+    markFinished(id: number, data: MarkFinishedRequest): Promise<{ message: string }> {
+        return api.post(`/groups/${id}/mark-finished/`, data);
     },
 };
