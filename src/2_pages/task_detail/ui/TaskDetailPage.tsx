@@ -81,6 +81,11 @@ const TaskDetailPage = observer(() => {
                 ) : "-",
         },
         {
+            title: "Студент",
+            key: "student",
+            render: (_: unknown, r: ITaskDescriptionInline) => r.describer?.student_code || "-",
+        },
+        {
             title: "Действия",
             key: "actions",
             render: (_: unknown, r: ITaskDescriptionInline) =>

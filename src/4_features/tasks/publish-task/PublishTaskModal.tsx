@@ -15,6 +15,7 @@ interface DescriptionOption {
 interface PublishTaskModalProps {
     open: boolean;
     taskId: number;
+    descriptionId?: number;
     onClose: () => void;
     onSuccess: () => void;
     defaultStudentIds?: number[];
@@ -24,6 +25,7 @@ interface PublishTaskModalProps {
 export const PublishTaskModal = observer(({
     open,
     taskId,
+    descriptionId: propDescriptionId,
     onClose,
     onSuccess,
     defaultStudentIds,
@@ -31,7 +33,7 @@ export const PublishTaskModal = observer(({
 }: PublishTaskModalProps) => {
     const [studentIds, setStudentIds] = useState<number[]>([]);
     const [deadline, setDeadline] = useState<Dayjs | null>(null);
-    const [descriptionId, setDescriptionId] = useState<number | undefined>(undefined);
+    const [descriptionId, setDescriptionId] = useState<number | undefined>(propDescriptionId);
     const [loading, setLoading] = useState(false);
 
     const [students, setStudents] = useState<IUser[]>([]);
@@ -58,9 +60,10 @@ export const PublishTaskModal = observer(({
             loadStudents();
             setStudentIds(defaultStudentIds ?? []);
             setDeadline(null);
-            setDescriptionId(descriptionOptions?.[0]?.value);
+            // Если передан descriptionId извне, используем его, иначе берём первый из options
+            setDescriptionId(propDescriptionId ?? descriptionOptions?.[0]?.value);
         }
-    }, [open, loadStudents, defaultStudentIds, descriptionOptions]);
+    }, [open, loadStudents, defaultStudentIds, propDescriptionId, descriptionOptions]);
 
     const handlePublish = async () => {
         if (studentIds.length === 0) {
@@ -69,6 +72,10 @@ export const PublishTaskModal = observer(({
         }
         if (!deadline) {
             message.warning("Укажите дедлайн");
+            return;
+        }
+        if (!descriptionId) {
+            message.warning("Выберите описание");
             return;
         }
 
@@ -101,10 +108,10 @@ export const PublishTaskModal = observer(({
             okText="Опубликовать"
             cancelText="Отмена"
             confirmLoading={loading}
-            okButtonProps={{disabled: studentIds.length === 0 || !deadline}}
+            okButtonProps={{disabled: studentIds.length === 0 || !deadline || !descriptionId}}
         >
             <Form layout="vertical">
-                {descriptionOptions && descriptionOptions.length > 0 && (
+                {descriptionOptions && descriptionOptions.length > 0 && !propDescriptionId && (
                     <Form.Item label="Описание для публикации">
                         <Select
                             value={descriptionId}
@@ -112,6 +119,11 @@ export const PublishTaskModal = observer(({
                             options={descriptionOptions}
                             placeholder="Выберите описание"
                         />
+                    </Form.Item>
+                )}
+                {propDescriptionId && (
+                    <Form.Item label="Описание">
+                        <span>Описание #{propDescriptionId}</span>
                     </Form.Item>
                 )}
                 <Form.Item label="Студенты">

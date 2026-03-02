@@ -868,6 +868,34 @@
         }
       ]
     },
+    "/tasks/publish/": {
+      "post": {
+        "operationId": "tasks_publish",
+        "description": "Опубликовать задание студентам",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PublishTask"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PublishTask"
+            }
+          }
+        },
+        "tags": [
+          "tasks"
+        ]
+      },
+      "parameters": []
+    },
     "/tasks/submissions/": {
       "get": {
         "operationId": "tasks_submissions_list",
@@ -1200,41 +1228,6 @@
         },
         {
           "name": "desc_id",
-          "in": "path",
-          "required": true,
-          "type": "string"
-        }
-      ]
-    },
-    "/tasks/{id}/publish/": {
-      "post": {
-        "operationId": "tasks_publish",
-        "description": "Опубликовать задание студентам",
-        "parameters": [
-          {
-            "name": "data",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/PublishTask"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/PublishTask"
-            }
-          }
-        },
-        "tags": [
-          "tasks"
-        ]
-      },
-      "parameters": [
-        {
-          "name": "id",
           "in": "path",
           "required": true,
           "type": "string"
@@ -2527,6 +2520,31 @@
         }
       }
     },
+    "PublishTask": {
+      "required": [
+        "deadline",
+        "student_ids",
+        "description_id"
+      ],
+      "type": "object",
+      "properties": {
+        "deadline": {
+          "title": "Deadline",
+          "type": "string",
+          "format": "date-time"
+        },
+        "student_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "description_id": {
+          "title": "Description id",
+          "type": "integer"
+        }
+      }
+    },
     "TaskSubmissionList": {
       "required": [
         "task_title"
@@ -2693,37 +2711,6 @@
           "title": "Comment",
           "type": "string",
           "minLength": 1
-        }
-      }
-    },
-    "PublishTask": {
-      "required": [
-        "deadline"
-      ],
-      "type": "object",
-      "properties": {
-        "deadline": {
-          "title": "Deadline",
-          "type": "string",
-          "format": "date-time"
-        },
-        "group_ids": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          },
-          "default": []
-        },
-        "student_ids": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          },
-          "default": []
-        },
-        "description_id": {
-          "title": "Description id",
-          "type": "integer"
         }
       }
     },

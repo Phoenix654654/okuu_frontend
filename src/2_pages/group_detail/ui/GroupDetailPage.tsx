@@ -1,5 +1,5 @@
 ﻿import {useEffect, useState, type Key, type UIEvent} from "react";
-import {Table, Button, Spin, Descriptions, Tag, Space, Select, message} from "antd";
+import {Table, Button, Spin, Descriptions, Tag, Space, TreeSelect, message} from "antd";
 import {ArrowLeftOutlined, EyeOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
@@ -7,12 +7,31 @@ import {GroupStore} from "@/5_entities/group";
 import {taskService} from "@/5_entities/task";
 import {UserStore, userService} from "@/5_entities/user";
 import type {IGroupStudent} from "@/5_entities/group";
-import type {ITask} from "@/5_entities/task";
+import type {ITask, ITaskDescription} from "@/5_entities/task";
 import {CreateTaskModal, AssignDescriberModal, PublishTaskModal} from "@/4_features/tasks";
 import {routes} from "@/6_shared";
 import cls from "./GroupDetailPage.module.scss";
 
 const TASKS_PAGE_SIZE = 20;
+
+interface DescriptionOption {
+    value: number;
+    label: string;
+}
+
+interface TaskTreeItem {
+    id: string;
+    value: string;
+    title: string | React.ReactNode;
+    label?: string;
+    isTask: boolean;
+    taskId?: number;
+    descriptionId?: number;
+    hasDescription?: boolean;
+    selectable?: boolean;
+    isLeaf?: boolean;
+    children?: TaskTreeItem[];
+}
 
 const GroupDetailPage = observer(() => {
     const {id} = useParams<{id: string}>();
@@ -25,6 +44,7 @@ const GroupDetailPage = observer(() => {
 
     const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
     const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+    const [selectedDescriptionId, setSelectedDescriptionId] = useState<number | null>(null);
     const [createTaskOpen, setCreateTaskOpen] = useState(false);
     const [assignDescriberOpen, setAssignDescriberOpen] = useState(false);
     const [publishOpen, setPublishOpen] = useState(false);
@@ -34,6 +54,10 @@ const GroupDetailPage = observer(() => {
     const [tasksTotal, setTasksTotal] = useState(0);
     const [tasksLoading, setTasksLoading] = useState(false);
     const [tasksLoadingMore, setTasksLoadingMore] = useState(false);
+    const [taskTree, setTaskTree] = useState<TaskTreeItem[]>([]);
+    const [descriptionsByTask, setDescriptionsByTask] = useState<Record<number, ITaskDescription[]>>({});
+    const [descriptionsLoading, setDescriptionsLoading] = useState<Record<number, boolean>>({});
+    const [expandedTaskKeys, setExpandedTaskKeys] = useState<string[]>([]);
 
     const loadTasks = async (append = false) => {
         if (!canManageTasks) return;
@@ -68,6 +92,64 @@ const GroupDetailPage = observer(() => {
         }
     };
 
+    const loadDescriptions = async (taskId: number) => {
+        if (descriptionsByTask[taskId]) {
+            console.log('Описания уже загружены для задачи', taskId);
+            return;
+        }
+
+        console.log('Загрузка описаний для задачи', taskId);
+        setDescriptionsLoading((prev) => ({...prev, [taskId]: true}));
+        try {
+            const response = await taskService.getDescriptionsByTask(taskId);
+            console.log('Получены описания:', response);
+            setDescriptionsByTask((prev) => ({...prev, [taskId]: response}));
+        } catch (error) {
+            console.error('Error loading descriptions:', error);
+        } finally {
+            setDescriptionsLoading((prev) => ({...prev, [taskId]: false}));
+        }
+    };
+
+    const buildTaskTree = (): TaskTreeItem[] => {
+        const tree = tasks.map((task) => {
+            // has_description может приходить как строка "true"/"false" или boolean
+            const taskHasDescriptions = task.has_description === true || task.has_description === "true";
+            const descriptions = descriptionsByTask[task.id] || [];
+            const isExpanded = expandedTaskKeys.includes(`task-${task.id}`);
+
+            console.log(`Задача ${task.id}: has_description=${taskHasDescriptions}, описаний=${descriptions.length}, expanded=${isExpanded}`);
+
+            const children: TaskTreeItem[] = descriptions.map((desc) => ({
+                id: `desc-${desc.id}`,
+                value: `desc-${desc.id}`,
+                title: `Описание (${desc.describer?.student_code || "—"})`,
+                label: `Описание (${desc.describer?.student_code || "—"})`,
+                isTask: false,
+                taskId: task.id,
+                descriptionId: desc.id,
+                isLeaf: true,
+            }));
+
+            // Если задача не имеет описания (has_description=false), не показываем children
+            // и не даем раскрыть узел. Если has_description=true, показываем стрелку
+            return {
+                id: `task-${task.id}`,
+                value: `task-${task.id}`,
+                title: task.title,
+                label: task.title,
+                isTask: true,
+                taskId: task.id,
+                hasDescription: taskHasDescriptions,
+                isLeaf: !taskHasDescriptions,
+                // Всегда передаем children для задач с описаниями, чтобы была стрелка раскрытия
+                children: taskHasDescriptions ? children : undefined,
+            };
+        });
+        console.log('Дерево задач:', tree);
+        return tree;
+    };
+
     useEffect(() => {
         if (id) {
             GroupStore.fetchGroup(Number(id));
@@ -81,6 +163,12 @@ const GroupDetailPage = observer(() => {
             setTasksTotal(0);
             setTasksLoading(false);
             setTasksLoadingMore(false);
+            setTaskTree([]);
+            setDescriptionsByTask({});
+            setDescriptionsLoading({});
+            setExpandedTaskKeys([]);
+            setSelectedTaskId(null);
+            setSelectedDescriptionId(null);
         };
     }, [id]);
 
@@ -89,6 +177,20 @@ const GroupDetailPage = observer(() => {
             loadTasks(false);
         }
     }, [canManageTasks]);
+
+    useEffect(() => {
+        setTaskTree(buildTaskTree());
+    }, [tasks, descriptionsByTask]);
+
+    // Автоматически раскрывать задачу, когда описания загружены
+    useEffect(() => {
+        if (selectedTaskId && descriptionsByTask[selectedTaskId]) {
+            const taskKey = `task-${selectedTaskId}`;
+            if (!expandedTaskKeys.includes(taskKey)) {
+                setExpandedTaskKeys((prev) => [...prev, taskKey]);
+            }
+        }
+    }, [descriptionsByTask, selectedTaskId]);
 
     useEffect(() => {
         let cancelled = false;
@@ -142,8 +244,6 @@ const GroupDetailPage = observer(() => {
     }
 
     const hasMoreTasks = tasks.length < tasksTotal;
-    const selectedTask = tasks.find((task) => task.id === selectedTaskId);
-    const selectedTaskHasDescription = selectedTask?.has_description === true;
 
     const studentColumns = isAdmin
         ? [
@@ -213,12 +313,67 @@ const GroupDetailPage = observer(() => {
     };
 
     const hasSelection = canManageTasks && selectedStudentIds.length > 0;
-    const disableGiveTask = !selectedTaskId || !selectedTaskHasDescription;
-    const disableAssignDescription = !selectedTaskId || selectedTaskHasDescription || selectedStudentIds.length !== 1;
+
+    const isTaskSelected = selectedTaskId !== null && selectedDescriptionId === null;
+    const isDescriptionSelected = selectedDescriptionId !== null;
+
+    // "Дать задачу" — только когда выбрано описание
+    const disableGiveTask = !isDescriptionSelected;
+    // "Назначить описателя" — только когда выбрана задача (не описание)
+    const disableAssignDescription = !isTaskSelected;
+
+    // Формируем опции описаний для модального окна публикации
+    const descriptionOptions: DescriptionOption[] = selectedTaskId && descriptionsByTask[selectedTaskId]
+        ? descriptionsByTask[selectedTaskId].map((desc) => ({
+            value: desc.id,
+            label: `Описание #${desc.id} (${desc.describer?.full_name || "—"})`,
+        }))
+        : [];
+
+    const handleTreeSelect = (value: string, info: { selected?: boolean; node?: TaskTreeItem }) => {
+        console.log('handleTreeSelect:', value, info);
+        if (!info.node || !info.selected) {
+            setSelectedTaskId(null);
+            setSelectedDescriptionId(null);
+            return;
+        }
+
+        if (info.node.isTask) {
+            setSelectedDescriptionId(null);
+            // Если задача не имеет описания (has_description=false), только выбираем её
+            // has_description может приходить как строка "true"/"false" или boolean
+            const hasDescription = info.node.hasDescription === true || info.node.hasDescription === "true";
+            if (!hasDescription) {
+                setSelectedTaskId(info.node.taskId ?? null);
+            } else {
+                // Задача имеет описания - выбираем и загружаем описания
+                setSelectedTaskId(info.node.taskId ?? null);
+                loadDescriptions(info.node.taskId ?? 0);
+            }
+        } else {
+            // Выбрано описание
+            setSelectedTaskId(info.node.taskId ?? null);
+            setSelectedDescriptionId(info.node.descriptionId ?? null);
+        }
+    };
+
+    const handleTreeExpand = (expandedKeys: string[]) => {
+        console.log('handleTreeExpand:', expandedKeys);
+        setExpandedTaskKeys(expandedKeys);
+        // При раскрытии узла задачи загружаем описания
+        expandedKeys.forEach((key) => {
+            if (key.startsWith('task-')) {
+                const taskId = Number(key.replace('task-', ''));
+                if (taskId && !descriptionsByTask[taskId]) {
+                    loadDescriptions(taskId);
+                }
+            }
+        });
+    };
 
     const handlePublishFromGroup = () => {
-        if (!selectedTaskId) {
-            message.warning("Выберите задание");
+        if (!selectedDescriptionId) {
+            message.warning("Выберите описание задачи");
             return;
         }
         setPublishOpen(true);
@@ -230,15 +385,6 @@ const GroupDetailPage = observer(() => {
             return;
         }
         setAssignDescriberOpen(true);
-    };
-
-    const handleTaskSelectScroll = (event: UIEvent<HTMLDivElement>) => {
-        const target = event.currentTarget;
-        const nearBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 24;
-
-        if (nearBottom && hasMoreTasks) {
-            loadTasks(true);
-        }
     };
 
     return (
@@ -285,26 +431,27 @@ const GroupDetailPage = observer(() => {
             {hasSelection && (
                 <Space className={cls.actions} wrap>
                     <span>Выбрано студентов: {selectedStudentIds.length}</span>
-                    <Select
-                        placeholder="Выберите задание"
-                        value={selectedTaskId}
-                        onChange={setSelectedTaskId}
-                        style={{minWidth: 250}}
+                    <TreeSelect
+                        placeholder="Выберите задание или описание"
+                        value={selectedDescriptionId ? `desc-${selectedDescriptionId}` : (selectedTaskId ? `task-${selectedTaskId}` : undefined)}
+                        onChange={handleTreeSelect}
+                        onTreeExpand={handleTreeExpand}
+                        expandedKeys={expandedTaskKeys}
+                        treeData={taskTree}
+                        style={{minWidth: 300}}
                         allowClear
                         showSearch
+                        treeDefaultExpandAll={false}
                         loading={tasksLoading || tasksLoadingMore}
-                        onPopupScroll={handleTaskSelectScroll}
                         notFoundContent={tasksLoading ? <Spin size="small" /> : undefined}
-                        options={tasks.map((t: ITask) => ({
-                            value: t.id,
-                            label: t.title,
-                        }))}
+                        treeNodeFilterProp="label"
+                        treeIcon
                     />
                     <Button type="primary" onClick={handlePublishFromGroup} disabled={disableGiveTask}>
                         Дать задачу
                     </Button>
                     <Button onClick={handleAssignDescriber} disabled={disableAssignDescription}>
-                        Описание задачи
+                        Назначить описателя
                     </Button>
                 </Space>
             )}
@@ -333,23 +480,27 @@ const GroupDetailPage = observer(() => {
                     <PublishTaskModal
                         open={publishOpen}
                         taskId={selectedTaskId ?? 0}
+                        descriptionId={selectedDescriptionId ?? undefined}
                         onClose={() => setPublishOpen(false)}
                         onSuccess={() => {
                             setPublishOpen(false);
                             setSelectedStudentIds([]);
                             setSelectedTaskId(null);
+                            setSelectedDescriptionId(null);
                         }}
                         defaultStudentIds={selectedStudentIds}
+                        descriptionOptions={descriptionOptions}
                     />
 
                     <AssignDescriberModal
                         open={assignDescriberOpen}
-                        taskId={selectedTaskId ?? 0}
+                        taskId={selectedTaskId ?? undefined}
                         onClose={() => setAssignDescriberOpen(false)}
                         onSuccess={() => {
                             setAssignDescriberOpen(false);
                             setSelectedStudentIds([]);
                             setSelectedTaskId(null);
+                            setSelectedDescriptionId(null);
                         }}
                         defaultDescriberId={selectedStudentIds[0]}
                     />

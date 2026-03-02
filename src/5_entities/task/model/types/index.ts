@@ -110,7 +110,7 @@ export interface ITask {
     description?: string;
     status?: TaskStatus;
     is_shared?: boolean;
-    has_description?: boolean;
+    has_description?: boolean | string;
     files?: IFile[];
     descriptions: ITaskDescriptionInline[];
     assignments: ITaskAssignmentInline[];
@@ -147,9 +147,8 @@ export interface SubmitDescriptionRequest {
 
 export interface PublishTaskRequest {
     deadline: string;
-    description_id?: number;
-    group_ids?: number[];
-    student_ids?: number[];
+    description_id: number;
+    student_ids: number[];
 }
 
 export interface SubmitSolutionRequest {

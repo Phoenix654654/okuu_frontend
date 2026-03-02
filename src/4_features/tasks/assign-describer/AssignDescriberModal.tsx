@@ -9,13 +9,14 @@ import {useDebounce} from "@/6_shared/lib/hooks/useDebounce/useDebounce";
 
 interface AssignDescriberModalProps {
     open: boolean;
-    taskId: number;
+    taskId?: number;
+    descriptionId?: number;
     onClose: () => void;
     onSuccess: () => void;
     defaultDescriberId?: number;
 }
 
-export const AssignDescriberModal = observer(({open, taskId, onClose, onSuccess, defaultDescriberId}: AssignDescriberModalProps) => {
+export const AssignDescriberModal = observer(({open, taskId, descriptionId, onClose, onSuccess, defaultDescriberId}: AssignDescriberModalProps) => {
     const [describerId, setDescriberId] = useState<number | null>(defaultDescriberId ?? null);
 
     useEffect(() => {
@@ -53,12 +54,23 @@ export const AssignDescriberModal = observer(({open, taskId, onClose, onSuccess,
 
     const handleOk = async () => {
         if (!describerId || !deadline) return;
+        if (!taskId && !descriptionId) return;
 
         setLoading(true);
-        const success = await TaskStore.assignDescriber(taskId, {
-            describer_id: describerId,
-            deadline: deadline.format("YYYY-MM-DDTHH:mm:ssZ"),
-        });
+        let success = false;
+        
+        if (descriptionId) {
+            success = await TaskStore.assignDescriberToDescription(descriptionId, {
+                describer_id: describerId,
+                deadline: deadline.format("YYYY-MM-DDTHH:mm:ssZ"),
+            });
+        } else if (taskId) {
+            success = await TaskStore.assignDescriber(taskId, {
+                describer_id: describerId,
+                deadline: deadline.format("YYYY-MM-DDTHH:mm:ssZ"),
+            });
+        }
+        
         setLoading(false);
 
         if (success) {

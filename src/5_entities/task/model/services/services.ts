@@ -42,6 +42,10 @@ export const taskService = {
         return api.post(`/tasks/${taskId}/assign_describer/`, data);
     },
 
+    assignDescriberToDescription(descriptionId: number, data: AssignDescriberRequest): Promise<ApiMessage> {
+        return api.post(`/tasks/descriptions/${descriptionId}/assign_describer/`, data);
+    },
+
     approveDescription(taskId: number, descId: number): Promise<ApiMessage> {
         return api.post(`/tasks/${taskId}/descriptions/${descId}/approve/`);
     },
@@ -62,6 +66,10 @@ export const taskService = {
 
     getDescriptions(params: PaginationParams): Promise<PaginatedResponse<ITaskDescription>> {
         return api.getPaginated<ITaskDescription>("/tasks/descriptions/", params);
+    },
+
+    getDescriptionsByTask(taskId: number): Promise<ITaskDescription[]> {
+        return api.get<ITaskDescription[]>(`/tasks/descriptions/by-task/${taskId}/`);
     },
 
     getDescription(id: number): Promise<ITaskDescription> {

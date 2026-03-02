@@ -81,6 +81,15 @@ class TaskStore {
         }
     };
 
+    assignDescriberToDescription = async (descriptionId: number, data: AssignDescriberRequest): Promise<boolean> => {
+        try {
+            await taskService.assignDescriberToDescription(descriptionId, data);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
     approveDescription = async (taskId: number, descId: number): Promise<boolean> => {
         try {
             await taskService.approveDescription(taskId, descId);
