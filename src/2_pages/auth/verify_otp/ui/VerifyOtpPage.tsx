@@ -5,6 +5,7 @@ import type { OtpPurpose } from "@/5_entities/user";
 import { routes } from "@/6_shared";
 import { AppInput } from "@/6_shared/ui/input/AppInput";
 import { AppButton } from "@/6_shared/ui/button/AppButton";
+import { useTranslation } from "react-i18next";
 import cls from "./VerifyOtpPage.module.scss";
 
 const PURPOSE_LABELS: Record<OtpPurpose, string> = {
@@ -19,6 +20,7 @@ const VerifyOtpPage = () => {
     const purpose = (searchParams.get("purpose") ?? "Account_verify") as OtpPurpose;
     const email = searchParams.get("email") ?? "";
 
+    const {t} = useTranslation();
     const [code, setCode] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -35,7 +37,7 @@ const VerifyOtpPage = () => {
         if (success) {
             navigate(routes.login);
         } else {
-            setError("Неверный код");
+            setError(t("verifyOtp.error"));
         }
     };
 
@@ -43,10 +45,10 @@ const VerifyOtpPage = () => {
         <div className={cls.wrapper}>
             <div className={cls.card}>
                 <h1 className={cls.title}>{PURPOSE_LABELS[purpose]}</h1>
-                <p className={cls.subtitle}>Введите код, отправленный на вашу почту</p>
+                <p className={cls.subtitle}>{t("verifyOtp.otp")}</p>
                 <form className={cls.form} onSubmit={onSubmit}>
                     <AppInput
-                        placeholder="Код подтверждения"
+                        placeholder={t("verifyOtp.otp")}
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
                     />
@@ -57,7 +59,7 @@ const VerifyOtpPage = () => {
                         disabled={!code || loading}
                         loading={loading}
                     >
-                        Подтвердить
+                        {t("verifyOtp.submit")}
                     </AppButton>
                 </form>
             </div>

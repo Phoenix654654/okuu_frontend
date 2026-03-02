@@ -11,18 +11,21 @@ import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
 import {AppInput} from "@/6_shared/ui/input/AppInput";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
 import {useDebounce} from "@/6_shared/lib/hooks/useDebounce/useDebounce";
-import {roleLabels, roleColors} from "@/6_shared";
+import {roleColors, getRoleLabels} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./UsersPage.module.scss";
 
 const GROUPS_PAGE_SIZE = 30;
 
 const UserList = observer(() => {
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize, filters} = UserAdminStore.list$;
     const [groups, setGroups] = useState<IGroup[]>([]);
     const [groupsTotal, setGroupsTotal] = useState(0);
     const [groupsOffset, setGroupsOffset] = useState(0);
     const [groupsLoading, setGroupsLoading] = useState(false);
+    const roleLabels = getRoleLabels();
 
     useEffect(() => {
         UserAdminStore.fetchUsers();

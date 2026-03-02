@@ -7,10 +7,12 @@ import {groupService} from "@/5_entities/group";
 import type {IGroup} from "@/5_entities/group";
 import {AppInput} from "@/6_shared/ui/input/AppInput";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
-import {roleLabels} from "@/6_shared";
+import {getRoleLabels} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./ProfilePage.module.scss";
 
-const ProfilePage = observer(() => {
+const ProfileContent = observer(() => {
+    const {t, i18n} = useTranslation();
     const user = UserStore.currentUser$.value;
     const [editing, setEditing] = useState(false);
     const [fullName, setFullName] = useState("");
@@ -79,10 +81,10 @@ const ProfilePage = observer(() => {
             }
             await userService.updateUser(user.id, data as Parameters<typeof userService.updateUser>[1]);
             await UserStore.fetchCurrentUser();
-            message.success("Профиль обновлён");
+            message.success(t("common.save"));
             setEditing(false);
         } catch {
-            message.error("Ошибка при обновлении");
+            message.error(t("common.error"));
         } finally {
             setSaving(false);
         }
@@ -91,7 +93,7 @@ const ProfilePage = observer(() => {
     const handleChangePassword = async () => {
         if (!user) return;
         if (password !== passwordConfirm) {
-            message.error("Пароли не совпадают");
+            message.error(t("register.passwordMismatch"));
             return;
         }
         setSavingPassword(true);
@@ -124,6 +126,7 @@ const ProfilePage = observer(() => {
 
     if (!user) return null;
 
+    const roleLabels = getRoleLabels();
     const initials = user.full_name
         .split(" ")
         .slice(0, 2)
@@ -140,7 +143,7 @@ const ProfilePage = observer(() => {
                 <div className={cls.headerInfo}>
                     <h1 className={cls.name}>{user.full_name}</h1>
                     <Tag color="blue" className={cls.roleTag}>
-                        {roleLabels[user.role] || user.role}
+                        {roleLabels[user.role as keyof typeof roleLabels] || user.role}
                     </Tag>
                 </div>
                 {!editing && (
@@ -150,7 +153,7 @@ const ProfilePage = observer(() => {
                         onClick={handleEdit}
                         className={cls.editBtn}
                     >
-                        Редактировать
+                        {t("profile.edit")}
                     </AppButton>
                 )}
             </div>
@@ -158,28 +161,28 @@ const ProfilePage = observer(() => {
             {!editing ? (
                 <div className={cls.card}>
                     <div className={cls.infoGrid}>
-                        <InfoRow icon={<MailOutlined />} label="Email" value={user.email} />
-                        <InfoRow icon={<PhoneOutlined />} label="Телефон" value={user.phone || "—"} />
+                        <InfoRow icon={<MailOutlined />} label={t("profile.email")} value={user.email} />
+                        <InfoRow icon={<PhoneOutlined />} label={t("profile.phone")} value={user.phone || "—"} />
                         {user.role === "Student" && (
                             <InfoRow
                                 icon={<TeamOutlined />}
-                                label="Группа"
-                                value={user.group?.name || "Не указана"}
+                                label={t("profile.group")}
+                                value={user.group?.name || t("profile.notSpecified")}
                             />
                         )}
                         {user.student_code && (
                             <div className={cls.infoRow}>
                                 <span className={cls.infoIcon}><IdcardOutlined /></span>
                                 <div className={cls.infoContent}>
-                                    <span className={cls.infoLabel}>Код студента</span>
+                                    <span className={cls.infoLabel}>{t("profile.studentCode")}</span>
                                     <span className={cls.infoValue}>{user.student_code}</span>
                                 </div>
                                 <Popconfirm
-                                    title="Сменить код студента?"
-                                    description="Текущий код будет заменён на новый. Это действие нельзя отменить."
+                                    title={t("profile.changeStudentCodeConfirm")}
+                                    description={t("profile.changeStudentCodeDesc")}
                                     onConfirm={handleChangeStudentCode}
-                                    okText="Сменить"
-                                    cancelText="Отмена"
+                                    okText={t("profile.change")}
+                                    cancelText={t("common.cancel")}
                                     okButtonProps={{danger: true}}
                                 >
                                     <AppButton
@@ -189,40 +192,40 @@ const ProfilePage = observer(() => {
                                         loading={changingCode}
                                         className={cls.changeCodeBtn}
                                     >
-                                        Сменить
+                                        {t("profile.change")}
                                     </AppButton>
                                 </Popconfirm>
                             </div>
                         )}
                         <InfoRow
                             icon={<CalendarOutlined />}
-                            label="Дата регистрации"
+                            label={t("profile.registrationDate")}
                             value={new Date(user.created_at).toLocaleDateString("ru-RU")}
                         />
                     </div>
                 </div>
             ) : (
                 <div className={cls.card}>
-                    <h2 className={cls.cardTitle}>Редактирование профиля</h2>
+                    <h2 className={cls.cardTitle}>{t("profile.editProfile")}</h2>
                     <Form layout="vertical" onFinish={handleSave} className={cls.form}>
                         <Form.Item label="ФИО">
                             <AppInput value={fullName} onChange={(e) => setFullName(e.target.value)} />
                         </Form.Item>
-                        <Form.Item label="Email">
+                        <Form.Item label={t("profile.email")}>
                             <AppInput value={email} onChange={(e) => setEmail(e.target.value)} />
                         </Form.Item>
-                        <Form.Item label="Телефон">
+                        <Form.Item label={t("profile.phone")}>
                             <AppInput value={phone} onChange={(e) => setPhone(e.target.value)} />
                         </Form.Item>
                         {user.role === "Student" && (
-                            <Form.Item label="Группа">
+                            <Form.Item label={t("profile.group")}>
                                 <Select
                                     value={groupId}
                                     onChange={(val) => setGroupId(val)}
-                                    placeholder="Выберите группу"
+                                    placeholder={t("profile.group")}
                                     allowClear
                                     loading={groupsLoading}
-                                    notFoundContent={groupsLoading ? <Spin size="small" /> : "Нет групп"}
+                                    notFoundContent={groupsLoading ? <Spin size="small" /> : t("profile.notSpecified")}
                                     options={groups.map((g) => ({
                                         value: g.id,
                                         label: g.name,
@@ -231,9 +234,9 @@ const ProfilePage = observer(() => {
                             </Form.Item>
                         )}
                         <div className={cls.actions}>
-                            <AppButton onClick={handleCancel}>Отмена</AppButton>
+                            <AppButton onClick={handleCancel}>{t("common.cancel")}</AppButton>
                             <AppButton type="primary" htmlType="submit" loading={saving}>
-                                Сохранить
+                                {t("common.save")}
                             </AppButton>
                         </div>
                     </Form>
@@ -242,13 +245,13 @@ const ProfilePage = observer(() => {
 
             <div className={cls.card}>
                 <div className={cls.passwordHeader}>
-                    <h2 className={cls.cardTitle}>Безопасность</h2>
+                    <h2 className={cls.cardTitle}>{t("profile.security")}</h2>
                 </div>
                 {!changingPassword ? (
                     <div className={cls.infoRow}>
                         <span className={cls.infoIcon}><LockOutlined /></span>
                         <div className={cls.infoContent}>
-                            <span className={cls.infoLabel}>Пароль</span>
+                            <span className={cls.infoLabel}>{t("profile.password")}</span>
                             <span className={cls.infoValue}>••••••••</span>
                         </div>
                         <AppButton
@@ -257,25 +260,25 @@ const ProfilePage = observer(() => {
                             onClick={() => setChangingPassword(true)}
                             className={cls.changeCodeBtn}
                         >
-                            Изменить
+                            {t("profile.changePassword")}
                         </AppButton>
                     </div>
                 ) : (
                     <Form layout="vertical" onFinish={handleChangePassword} className={cls.form}>
-                        <Form.Item label="Новый пароль">
+                        <Form.Item label={t("profile.newPassword")}>
                             <AppInput
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Введите новый пароль"
+                                placeholder={t("profile.enterPassword")}
                             />
                         </Form.Item>
-                        <Form.Item label="Подтверждение пароля">
+                        <Form.Item label={t("profile.confirmPassword")}>
                             <AppInput
                                 type="password"
                                 value={passwordConfirm}
                                 onChange={(e) => setPasswordConfirm(e.target.value)}
-                                placeholder="Повторите пароль"
+                                placeholder={t("profile.repeatPassword")}
                             />
                         </Form.Item>
                         <div className={cls.actions}>
@@ -284,7 +287,7 @@ const ProfilePage = observer(() => {
                                 setPassword("");
                                 setPasswordConfirm("");
                             }}>
-                                Отмена
+                                {t("common.cancel")}
                             </AppButton>
                             <AppButton
                                 type="primary"
@@ -292,7 +295,7 @@ const ProfilePage = observer(() => {
                                 loading={savingPassword}
                                 disabled={!password || !passwordConfirm}
                             >
-                                Сохранить
+                                {t("common.save")}
                             </AppButton>
                         </div>
                     </Form>
@@ -314,4 +317,4 @@ function InfoRow({icon, label, value}: {icon: React.ReactNode; label: string; va
     );
 }
 
-export default ProfilePage;
+export default ProfileContent;

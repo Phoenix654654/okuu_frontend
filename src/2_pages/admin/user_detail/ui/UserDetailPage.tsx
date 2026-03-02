@@ -14,13 +14,16 @@ import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
 import {UserAdminStore} from "@/5_entities/user";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
-import {routes, roleLabels, roleColors} from "@/6_shared";
+import {routes, roleColors, getRoleLabels} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./UserDetailPage.module.scss";
 
 const UserDetailPage = observer(() => {
+    const {t} = useTranslation();
     const {id} = useParams<{id: string}>();
     const navigate = useNavigate();
     const {value: user, loading} = UserAdminStore.current$;
+    const roleLabels = getRoleLabels();
 
     useEffect(() => {
         if (id) {

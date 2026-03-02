@@ -7,15 +7,18 @@ import {TaskStore} from "@/5_entities/task";
 import {UserStore} from "@/5_entities/user";
 import type {AssignmentStatus, ITaskDescriptionInline, ITaskAssignmentInline, ISubmission, IFile} from "@/5_entities/task";
 import {AssignDescriberModal, ReviewDescriptionModal, GradeSubmissionModal} from "@/4_features/tasks";
-import {routes, assignmentStatusLabels} from "@/6_shared";
+import {routes, getAssignmentStatusLabels} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./TaskDetailPage.module.scss";
 
 const TaskDetailPage = observer(() => {
+    const {t} = useTranslation();
     const {id} = useParams<{id: string}>();
     const navigate = useNavigate();
     const task = TaskStore.current$.value;
     const loading = TaskStore.current$.loading;
     const canManageTask = UserStore.currentUser$.value?.role === "Teacher";
+    const assignmentStatusLabels = getAssignmentStatusLabels();
 
     const [assignDescriberOpen, setAssignDescriberOpen] = useState(false);
     const [reviewOpen, setReviewOpen] = useState(false);

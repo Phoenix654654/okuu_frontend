@@ -3,7 +3,9 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {observer} from "mobx-react-lite";
 import {UserStore} from "@/5_entities/user";
 import cls from "./Sidebar.module.scss";
-import {studentItems, teacherItems, adminItems, commonItems, LogoKNU} from "@/6_shared";
+import {getStudentItems, getTeacherItems, getAdminItems, getCommonItems, LogoKNU} from "@/6_shared";
+import {useEffect, useState} from "react";
+import i18next from "i18next";
 
 
 export const Sidebar = observer(() => {
@@ -11,12 +13,21 @@ export const Sidebar = observer(() => {
     const location = useLocation();
     const user = UserStore.currentUser$.value;
     const role = user?.role;
+    const [, forceUpdate] = useState({});
 
-    const roleItems = role === "Admin" ? adminItems
-        : role === "Teacher" ? teacherItems
-        : role === "Student" ? studentItems
+    useEffect(() => {
+        const handleLanguageChanged = () => forceUpdate({});
+        i18next.on('languageChanged', handleLanguageChanged);
+        return () => {
+            i18next.off('languageChanged', handleLanguageChanged);
+        };
+    }, []);
+
+    const roleItems = role === "Admin" ? getAdminItems()
+        : role === "Teacher" ? getTeacherItems()
+        : role === "Student" ? getStudentItems()
         : [];
-    const menuItems = [...roleItems, ...commonItems];
+    const menuItems = [...roleItems, ...getCommonItems()];
 
     const selectedKey = menuItems.find(item => location.pathname.startsWith(item.key))?.key || "";
 

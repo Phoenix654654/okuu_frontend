@@ -1,0 +1,113 @@
+{
+    "header": {
+        "logout": "Чыгуу",
+        "logoutConfirm": "Чындап эле чыккыңыз келеби?",
+        "yes": "Ооба",
+        "no": "Жок",
+        "studentCode": "Коду: {{code}}",
+        "notifications": "Билдирүүлөр"
+    },
+    "sidebar": {
+        "logo": "OKUU",
+        "home": "Башкы",
+        "profile": "Профиль",
+        "tasks": "Тапшырмалар",
+        "submissions": "Жөнөтүүлөр",
+        "descriptions": "Сүрөттөмөлөр",
+        "groups": "Топтор",
+        "assignments": "Дайындоолор",
+        "admin": "Администрлөө",
+        "users": "Колдонуучулар"
+    },
+    "roles": {
+        "Admin": "Администратор",
+        "Teacher": "Мугалим",
+        "Student": "Студент"
+    },
+    "login": {
+        "title": "Кирүү",
+        "email": "Email",
+        "password": "Сырсөз",
+        "submit": "Кирүү",
+        "noAccount": "Аккаунт жокпу?",
+        "register": "Каттоодон өтүү",
+        "error": "Туура эмес email же сырсөз"
+    },
+    "register": {
+        "title": "Каттоодон өтүү",
+        "fullName": "Аты-жөнү",
+        "email": "Email",
+        "phone": "Телефон",
+        "group": "Топту тандаңыз",
+        "password": "Сырсөз",
+        "passwordConfirm": "Сырсөздү ырастаңыз",
+        "submit": "Каттоодон өтүү",
+        "haveAccount": "Аккаунт барбы?",
+        "login": "Кирүү",
+        "error": "Каттоодо ката кетти",
+        "passwordMismatch": "Сырсөздөр дал келген жок",
+        "selectGroup": "Топту тандаңыз"
+    },
+    "verifyOtp": {
+        "title": "Кодду ырастоо",
+        "otp": "Ырастоо коду",
+        "submit": "Ырастоо",
+        "error": "Туура эмес код",
+        "backToLogin": "Кирүүгө кайтуу"
+    },
+    "taskStatus": {
+        "draft": "Черновик",
+        "describing": "Сүрөттөмөдө",
+        "review": "Текшерүүдө",
+        "published": "Жарыяланды",
+        "closed": "Жабылды"
+    },
+    "descriptionStatus": {
+        "pending": "Күтүүдө",
+        "submitted": "Жөнөтүлдү",
+        "revision": "Түзөтүүдө",
+        "approved": "Бекитилди",
+        "rejected": "Баш тартылды"
+    },
+    "assignmentStatus": {
+        "pending": "Чечим күтүүдө",
+        "submitted": "Жөнөтүлдү",
+        "graded": "Бааланды"
+    },
+    "common": {
+        "loading": "Жүктөлүүдө...",
+        "error": "Ката",
+        "save": "Сактоо",
+        "cancel": "Айнуу",
+        "delete": "Өчүрүү",
+        "edit": "Редакциялоо",
+        "create": "Түзүү",
+        "close": "Жабуу"
+    },
+    "profile": {
+        "edit": "Редактировать",
+        "email": "Email",
+        "phone": "Телефон",
+        "group": "Группа",
+        "studentCode": "Код студента",
+        "changeStudentCode": "Сменить код студента",
+        "changeStudentCodeConfirm": "Сменить код студента?",
+        "changeStudentCodeDesc": "Текущий код будет заменён на новый. Это действие нельзя отменить.",
+        "change": "Сменить",
+        "registrationDate": "Дата регистрации",
+        "notSpecified": "Не указана",
+        "editProfile": "Редактирование профиля",
+        "security": "Безопасность",
+        "password": "Пароль",
+        "changePassword": "Изменить пароль",
+        "newPassword": "Новый пароль",
+        "confirmPassword": "Подтверждение пароля",
+        "enterPassword": "Введите новый пароль",
+        "repeatPassword": "Повторите пароль"
+    },
+    "language": {
+        "switcher": "Тил",
+        "ru": "Орусча",
+        "kg": "Кыргызча"
+    }
+}

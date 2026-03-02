@@ -1,65 +1,68 @@
 ﻿import {routes} from "@/6_shared";
 import {BookOutlined, CheckSquareOutlined, EditOutlined, FileTextOutlined, HomeOutlined, TeamOutlined, UserOutlined, UsergroupAddOutlined} from "@ant-design/icons";
 import {createElement} from "react";
+import i18next from "i18next";
 
-export const teacherItems = [
+const getT = () => i18next.t;
+
+export const getTeacherItems = () => [
     {
         key: routes.groups,
         icon: createElement(TeamOutlined),
-        label: "Группы",
+        label: getT()("sidebar.groups"),
     },
     {
         key: routes.tasks,
         icon: createElement(FileTextOutlined),
-        label: "Задания",
+        label: getT()("sidebar.tasks"),
     },
     {
         key: routes.submissions,
         icon: createElement(CheckSquareOutlined),
-        label: "Решения",
+        label: getT()("sidebar.submissions"),
     },
 ];
 
-export const studentItems = [
+export const getStudentItems = () => [
     {
         key: routes.assignments,
         icon: createElement(BookOutlined),
-        label: "Мои задания",
+        label: getT()("sidebar.assignments"),
     },
     {
         key: routes.descriptions,
         icon: createElement(EditOutlined),
-        label: "Мои описания",
+        label: getT()("sidebar.descriptions"),
     },
 ];
 
-export const adminItems = [
+export const getAdminItems = () => [
     {
         key: routes.groups,
         icon: createElement(TeamOutlined),
-        label: "Группы",
+        label: getT()("sidebar.groups"),
     },
     {
         key: routes.tasks,
         icon: createElement(FileTextOutlined),
-        label: "Задания",
+        label: getT()("sidebar.tasks"),
     },
     {
         key: routes.adminUsers,
         icon: createElement(UsergroupAddOutlined),
-        label: "Пользователи",
+        label: getT()("sidebar.users"),
     },
 ];
 
-export const commonItems = [
+export const getCommonItems = () => [
     {
         key: routes.home,
         icon: createElement(HomeOutlined),
-        label: "Главная",
+        label: getT()("sidebar.home"),
     },
     {
         key: routes.profile,
         icon: createElement(UserOutlined),
-        label: "Профиль",
+        label: getT()("sidebar.profile"),
     },
 ];

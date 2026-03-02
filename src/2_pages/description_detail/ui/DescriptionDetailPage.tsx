@@ -6,14 +6,17 @@ import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
 import {FileUpload} from "@/4_features/file-upload/FileUpload";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
-import {routes, descriptionStatusLabels, descriptionStatusColors} from "@/6_shared";
+import {routes, descriptionStatusColors, getDescriptionStatusLabels} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./DescriptionDetailPage.module.scss";
 
 const DescriptionDetailPage = observer(() => {
+    const {t} = useTranslation();
     const {id} = useParams<{id: string}>();
     const navigate = useNavigate();
     const desc = TaskStore.currentDescription$.value;
     const loading = TaskStore.currentDescription$.loading;
+    const descriptionStatusLabels = getDescriptionStatusLabels();
 
     const [text, setText] = useState("");
     const [fileIds, setFileIds] = useState<number[]>([]);

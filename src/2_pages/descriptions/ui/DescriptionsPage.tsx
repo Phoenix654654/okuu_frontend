@@ -6,12 +6,15 @@ import {useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
 import type {ITaskDescription, DescriptionStatus} from "@/5_entities/task";
 import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
-import {descriptionStatusLabels, descriptionStatusColors} from "@/6_shared";
+import {descriptionStatusColors, getDescriptionStatusLabels} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./DescriptionsPage.module.scss";
 
 const DescriptionsPage = observer(() => {
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize} = TaskStore.descriptions$;
+    const descriptionStatusLabels = getDescriptionStatusLabels();
 
     useEffect(() => {
         TaskStore.fetchDescriptions();

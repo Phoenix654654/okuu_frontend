@@ -7,11 +7,13 @@ import {UserStore} from "@/5_entities/user";
 import {groupService} from "@/5_entities/group";
 import type {IGroup} from "@/5_entities/group";
 import {Select} from "antd";
+import {useTranslation} from "react-i18next";
 import cls from "./RegisterForm.module.scss";
 import {observer} from "mobx-react-lite";
 
 export const RegisterForm = observer(() => {
     const navigate = useNavigate();
+    const {t} = useTranslation();
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
@@ -35,12 +37,12 @@ export const RegisterForm = observer(() => {
         setError("");
 
         if (password !== passwordConfirm) {
-            setError("Пароли не совпадают");
+            setError(t("register.passwordMismatch"));
             return;
         }
 
         if (!groupId) {
-            setError("Выберите группу");
+            setError(t("register.selectGroup"));
             return;
         }
 
@@ -61,42 +63,42 @@ export const RegisterForm = observer(() => {
         if (success) {
             navigate(`${routes.verifyOtp}?purpose=Account_verify&email=${encodeURIComponent(email)}`);
         } else {
-            setError("Ошибка при регистрации");
+            setError(t("register.error"));
         }
     };
 
     return (
         <form className={cls.form} onSubmit={onSubmit}>
             <AppInput
-                placeholder="ФИО"
+                placeholder={t("register.fullName")}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
             />
             <AppInput
-                placeholder="Email"
+                placeholder={t("register.email")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
             />
             <AppInput
-                placeholder="Телефон"
+                placeholder={t("register.phone")}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
             />
             <Select
-                placeholder="Выберите группу"
+                placeholder={t("register.group")}
                 value={groupId}
                 onChange={setGroupId}
                 options={groups.map((g) => ({value: g.id, label: g.name}))}
             />
             <AppInput
                 type="password"
-                placeholder="Пароль"
+                placeholder={t("register.password")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
             <AppInput
                 type="password"
-                placeholder="Подтвердите пароль"
+                placeholder={t("register.passwordConfirm")}
                 value={passwordConfirm}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
             />
@@ -107,10 +109,10 @@ export const RegisterForm = observer(() => {
                 disabled={isDisabled}
                 loading={loading}
             >
-                Зарегистрироваться
+                {t("register.submit")}
             </AppButton>
             <div className={cls.link}>
-                Уже есть аккаунт? <Link to={routes.login}>Войти</Link>
+                {t("register.haveAccount")} <Link to={routes.login}>{t("register.login")}</Link>
             </div>
         </form>
     );

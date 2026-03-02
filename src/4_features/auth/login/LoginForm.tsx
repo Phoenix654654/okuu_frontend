@@ -5,10 +5,12 @@ import {Link, useNavigate} from "react-router-dom";
 import {routes} from "@/6_shared";
 import {UserStore} from "@/5_entities/user";
 import {observer} from "mobx-react-lite";
+import {useTranslation} from "react-i18next";
 import cls from "./LoginForm.module.scss";
 
 export const LoginForm = observer(() => {
     const navigate = useNavigate();
+    const {t} = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -25,20 +27,20 @@ export const LoginForm = observer(() => {
         if (success) {
             navigate(routes.home);
         } else {
-            setError("Неверный email или пароль");
+            setError(t("login.error"));
         }
     };
 
     return (
         <form className={cls.form} onSubmit={onSubmit}>
             <AppInput
-                placeholder="Email"
+                placeholder={t("login.email")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
             />
             <AppInput
                 type="password"
-                placeholder="Пароль"
+                placeholder={t("login.password")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
@@ -49,10 +51,10 @@ export const LoginForm = observer(() => {
                 disabled={isDisabled}
                 loading={loading}
             >
-                Войти
+                {t("login.submit")}
             </AppButton>
             <div className={cls.link}>
-                Нет аккаунта? <Link to={routes.register}>Зарегистрироваться</Link>
+                {t("login.noAccount")} <Link to={routes.register}>{t("login.register")}</Link>
             </div>
         </form>
     );

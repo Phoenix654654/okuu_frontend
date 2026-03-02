@@ -6,12 +6,15 @@ import {useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
 import type {ITaskAssignment, AssignmentStatus} from "@/5_entities/task";
 import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
-import {assignmentStatusLabels, assignmentStatusColors} from "@/6_shared";
+import {assignmentStatusColors, getAssignmentStatusLabels} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./AssignmentsPage.module.scss";
 
 const AssignmentsPage = observer(() => {
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize} = TaskStore.assignments$;
+    const assignmentStatusLabels = getAssignmentStatusLabels();
 
     useEffect(() => {
         TaskStore.fetchAssignments();

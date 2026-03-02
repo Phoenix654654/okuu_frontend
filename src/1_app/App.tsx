@@ -4,9 +4,9 @@ import {Spin} from "antd";
 import {observer} from "mobx-react-lite";
 import {AppRouter} from "@/1_app/providers/router";
 import {UserStore} from "@/5_entities/user";
+import {useTranslation} from "react-i18next";
 
-const App = observer(() => {
-
+const AppContent = observer(() => {
     useEffect(() => {
         UserStore.initAuthData();
     }, []);
@@ -15,13 +15,21 @@ const App = observer(() => {
         return <Spin size="large" fullscreen />;
     }
 
-    console.log(UserStore.currentUser$)
+    return <AppRouter />;
+});
+
+const App = observer(() => {
+    const {ready} = useTranslation();
+
+    if (!ready) {
+        return <Spin size="large" fullscreen />;
+    }
 
     return (
         <Suspense fallback={<Spin size="large" />}>
-            <AppRouter />
+            <AppContent />
         </Suspense>
-    )
+    );
 });
 
-export default App
+export default App;

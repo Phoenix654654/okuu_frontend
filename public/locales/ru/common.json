@@ -1,0 +1,113 @@
+{
+    "header": {
+        "logout": "Выход",
+        "logoutConfirm": "Вы уверены, что хотите выйти?",
+        "yes": "Да",
+        "no": "Нет",
+        "studentCode": "Код: {{code}}",
+        "notifications": "Уведомления"
+    },
+    "sidebar": {
+        "logo": "OKUU",
+        "home": "Главная",
+        "profile": "Профиль",
+        "tasks": "Задания",
+        "submissions": "Отправки",
+        "descriptions": "Описания",
+        "groups": "Группы",
+        "assignments": "Назначения",
+        "admin": "Администрирование",
+        "users": "Пользователи"
+    },
+    "roles": {
+        "Admin": "Администратор",
+        "Teacher": "Преподаватель",
+        "Student": "Студент"
+    },
+    "login": {
+        "title": "Вход",
+        "email": "Email",
+        "password": "Пароль",
+        "submit": "Войти",
+        "noAccount": "Нет аккаунта?",
+        "register": "Зарегистрироваться",
+        "error": "Неверный email или пароль"
+    },
+    "register": {
+        "title": "Регистрация",
+        "fullName": "ФИО",
+        "email": "Email",
+        "phone": "Телефон",
+        "group": "Выберите группу",
+        "password": "Пароль",
+        "passwordConfirm": "Подтвердите пароль",
+        "submit": "Зарегистрироваться",
+        "haveAccount": "Уже есть аккаунт?",
+        "login": "Войти",
+        "error": "Ошибка при регистрации",
+        "passwordMismatch": "Пароли не совпадают",
+        "selectGroup": "Выберите группу"
+    },
+    "verifyOtp": {
+        "title": "Подтверждение кода",
+        "otp": "Код подтверждения",
+        "submit": "Подтвердить",
+        "error": "Неверный код",
+        "backToLogin": "Вернуться ко входу"
+    },
+    "taskStatus": {
+        "draft": "Черновик",
+        "describing": "На описании",
+        "review": "На проверке",
+        "published": "Опубликовано",
+        "closed": "Закрыто"
+    },
+    "descriptionStatus": {
+        "pending": "Ожидает",
+        "submitted": "Отправлено",
+        "revision": "На доработке",
+        "approved": "Одобрено",
+        "rejected": "Отклонено"
+    },
+    "assignmentStatus": {
+        "pending": "Ожидает решения",
+        "submitted": "Отправлено",
+        "graded": "Оценено"
+    },
+    "common": {
+        "loading": "Загрузка...",
+        "error": "Ошибка",
+        "save": "Сохранить",
+        "cancel": "Отмена",
+        "delete": "Удалить",
+        "edit": "Редактировать",
+        "create": "Создать",
+        "close": "Закрыть"
+    },
+    "profile": {
+        "edit": "Редактировать",
+        "email": "Email",
+        "phone": "Телефон",
+        "group": "Группа",
+        "studentCode": "Код студента",
+        "changeStudentCode": "Сменить код студента",
+        "changeStudentCodeConfirm": "Сменить код студента?",
+        "changeStudentCodeDesc": "Текущий код будет заменён на новый. Это действие нельзя отменить.",
+        "change": "Сменить",
+        "registrationDate": "Дата регистрации",
+        "notSpecified": "Не указана",
+        "editProfile": "Редактирование профиля",
+        "security": "Безопасность",
+        "password": "Пароль",
+        "changePassword": "Изменить пароль",
+        "newPassword": "Новый пароль",
+        "confirmPassword": "Подтверждение пароля",
+        "enterPassword": "Введите новый пароль",
+        "repeatPassword": "Повторите пароль"
+    },
+    "language": {
+        "switcher": "Язык",
+        "ru": "Русский",
+        "kg": "Кыргызча"
+    }
+}

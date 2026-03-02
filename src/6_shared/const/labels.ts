@@ -1,23 +1,38 @@
 import type {TaskStatus, DescriptionStatus, AssignmentStatus} from "@/5_entities/task";
+import i18next from "i18next";
 
-export const roleLabels: Record<string, string> = {
-    Admin: "Администратор",
-    Teacher: "Преподаватель",
-    Student: "Студент",
-};
+export const getRoleLabels = () => ({
+    Admin: i18next.t("roles.Admin"),
+    Teacher: i18next.t("roles.Teacher"),
+    Student: i18next.t("roles.Student"),
+});
+
+export const getTaskStatusLabels = () => ({
+    draft: i18next.t("taskStatus.draft"),
+    describing: i18next.t("taskStatus.describing"),
+    review: i18next.t("taskStatus.review"),
+    published: i18next.t("taskStatus.published"),
+    closed: i18next.t("taskStatus.closed"),
+});
+
+export const getDescriptionStatusLabels = () => ({
+    pending: i18next.t("descriptionStatus.pending"),
+    submitted: i18next.t("descriptionStatus.submitted"),
+    revision: i18next.t("descriptionStatus.revision"),
+    approved: i18next.t("descriptionStatus.approved"),
+    rejected: i18next.t("descriptionStatus.rejected"),
+});
+
+export const getAssignmentStatusLabels = () => ({
+    pending: i18next.t("assignmentStatus.pending"),
+    submitted: i18next.t("assignmentStatus.submitted"),
+    graded: i18next.t("assignmentStatus.graded"),
+});
 
 export const roleColors: Record<string, string> = {
     Admin: "red",
     Teacher: "blue",
     Student: "green",
-};
-
-export const taskStatusLabels: Record<TaskStatus, string> = {
-    draft: "Черновик",
-    describing: "На описании",
-    review: "На проверке",
-    published: "Опубликовано",
-    closed: "Закрыто",
 };
 
 export const taskStatusColors: Record<TaskStatus, string> = {
@@ -28,26 +43,12 @@ export const taskStatusColors: Record<TaskStatus, string> = {
     closed: "error",
 };
 
-export const descriptionStatusLabels: Record<DescriptionStatus, string> = {
-    pending: "Ожидает",
-    submitted: "Отправлено",
-    revision: "На доработке",
-    approved: "Одобрено",
-    rejected: "Отклонено",
-};
-
 export const descriptionStatusColors: Record<DescriptionStatus, string> = {
     pending: "default",
     submitted: "processing",
     revision: "warning",
     approved: "success",
     rejected: "error",
-};
-
-export const assignmentStatusLabels: Record<AssignmentStatus, string> = {
-    pending: "Ожидает решения",
-    submitted: "Отправлено",
-    graded: "Оценено",
 };
 
 export const assignmentStatusColors: Record<AssignmentStatus, string> = {
