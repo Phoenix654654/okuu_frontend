@@ -1,0 +1,37 @@
+{
+  "back": "Назад к списку",
+  "status": {
+    "active": "Активна",
+    "finished": "Завершила обучение"
+  },
+  "buttons": {
+    "createTask": "Создать задание",
+    "giveTask": "Дать задачу",
+    "assignDescriber": "Назначить описателя"
+  },
+  "labels": {
+    "name": "Название",
+    "year": "Курс",
+    "teacher": "Преподаватель",
+    "createdAt": "Дата создания",
+    "studentsCount": "Кол-во студентов",
+    "status": "Статус"
+  },
+  "yearValue": "{{year}} курс",
+  "table": {
+    "fullName": "ФИО",
+    "studentCode": "Код студента",
+    "phone": "Телефон",
+    "actions": "Действия"
+  },
+  "selectedStudents": "Выбрано студентов: {{count}}",
+  "tree": {
+    "placeholder": "Выберите задание или описание",
+    "descriptionLabel": "Описание ({{code}})",
+    "descriptionOption": "Описание #{{id}} ({{name}})"
+  },
+  "messages": {
+    "selectDescription": "Выберите описание задачи",
+    "selectTask": "Выберите задание"
+  }
+}

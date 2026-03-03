@@ -11,7 +11,7 @@ import {useTranslation} from "react-i18next";
 import cls from "./AssignmentsPage.module.scss";
 
 const AssignmentsPage = observer(() => {
-    const {t} = useTranslation();
+    const {t} = useTranslation("assignments");
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize} = TaskStore.assignments$;
     const assignmentStatusLabels = getAssignmentStatusLabels();
@@ -28,12 +28,12 @@ const AssignmentsPage = observer(() => {
 
     const columns = [
         {
-            title: "Задание",
+            title: t("table.task"),
             key: "task",
             render: (_: unknown, record: ITaskAssignment) => record.task?.title || `#${record.id}`,
         },
         {
-            title: "Статус",
+            title: t("table.status"),
             dataIndex: "status",
             key: "status",
             render: (status: AssignmentStatus) => (
@@ -41,7 +41,7 @@ const AssignmentsPage = observer(() => {
             ),
         },
         {
-            title: "Дата назначения",
+            title: t("table.assignedAt"),
             dataIndex: "created_at",
             key: "created_at",
             render: (date: string) => new Date(date).toLocaleDateString("ru-RU"),
@@ -62,7 +62,7 @@ const AssignmentsPage = observer(() => {
 
     return (
         <div className={cls.page}>
-            <h1>Мои задания</h1>
+            <h1>{t("title")}</h1>
             <Table
                 dataSource={items}
                 columns={columns}

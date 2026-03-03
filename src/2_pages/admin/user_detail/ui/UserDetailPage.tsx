@@ -19,7 +19,7 @@ import {useTranslation} from "react-i18next";
 import cls from "./UserDetailPage.module.scss";
 
 const UserDetailPage = observer(() => {
-    const {t} = useTranslation();
+    const {t} = useTranslation("userDetail");
     const {id} = useParams<{id: string}>();
     const navigate = useNavigate();
     const {value: user, loading} = UserAdminStore.current$;
@@ -35,7 +35,7 @@ const UserDetailPage = observer(() => {
         if (!user) return;
         const success = await UserAdminStore.activateUser(user.id);
         if (success) {
-            message.success("Пользователь активирован");
+            message.success(t("messages.activated"));
             UserAdminStore.fetchUser(user.id);
         }
     };
@@ -44,7 +44,7 @@ const UserDetailPage = observer(() => {
         if (!user) return;
         const success = await UserAdminStore.deactivateUser(user.id);
         if (success) {
-            message.success("Пользователь деактивирован");
+            message.success(t("messages.deactivated"));
             UserAdminStore.fetchUser(user.id);
         }
     };
@@ -65,7 +65,7 @@ const UserDetailPage = observer(() => {
     return (
         <div className={cls.page}>
             <button className={cls.backBtn} onClick={() => navigate(routes.adminUsers)}>
-                <ArrowLeftOutlined /> Назад к списку
+                <ArrowLeftOutlined /> {t("back")}
             </button>
 
             <div className={cls.header}>
@@ -77,35 +77,35 @@ const UserDetailPage = observer(() => {
                     <div className={cls.headerTags}>
                         <Tag color={roleColors[user.role]}>{roleLabels[user.role] || user.role}</Tag>
                         {user.is_active
-                            ? <Tag color="green">Активен</Tag>
-                            : <Tag color="red">Неактивен</Tag>
+                            ? <Tag color="green">{t("status.active")}</Tag>
+                            : <Tag color="red">{t("status.inactive")}</Tag>
                         }
                     </div>
                 </div>
                 <div className={cls.headerActions}>
                     {user.is_active ? (
                         <Popconfirm
-                            title="Деактивировать пользователя?"
-                            description="Пользователь не сможет войти в систему."
+                            title={t("confirm.deactivateTitle")}
+                            description={t("confirm.deactivateDescription")}
                             onConfirm={handleDeactivate}
-                            okText="Деактивировать"
-                            cancelText="Отмена"
+                            okText={t("confirm.deactivate")}
+                            cancelText={t("confirm.cancel")}
                             okButtonProps={{danger: true}}
                         >
                             <AppButton danger icon={<StopOutlined />}>
-                                Деактивировать
+                                {t("confirm.deactivate")}
                             </AppButton>
                         </Popconfirm>
                     ) : (
                         <Popconfirm
-                            title="Активировать пользователя?"
-                            description="Пользователь сможет войти в систему."
+                            title={t("confirm.activateTitle")}
+                            description={t("confirm.activateDescription")}
                             onConfirm={handleActivate}
-                            okText="Активировать"
-                            cancelText="Отмена"
+                            okText={t("confirm.activate")}
+                            cancelText={t("confirm.cancel")}
                         >
                             <AppButton type="primary" icon={<CheckCircleOutlined />}>
-                                Активировать
+                                {t("confirm.activate")}
                             </AppButton>
                         </Popconfirm>
                     )}
@@ -113,23 +113,23 @@ const UserDetailPage = observer(() => {
             </div>
 
             <div className={cls.card}>
-                <h2 className={cls.cardTitle}>Информация</h2>
+                <h2 className={cls.cardTitle}>{t("infoTitle")}</h2>
                 <div className={cls.infoGrid}>
                     <InfoRow icon={<MailOutlined />} label="Email" value={user.email} />
-                    <InfoRow icon={<PhoneOutlined />} label="Телефон" value={user.phone || "—"} />
+                    <InfoRow icon={<PhoneOutlined />} label={t("labels.phone")} value={user.phone || "—"} />
                     {user.role === "Student" && (
                         <InfoRow
                             icon={<TeamOutlined />}
-                            label="Группа"
-                            value={user.group?.name || "Не указана"}
+                            label={t("labels.group")}
+                            value={user.group?.name || t("labels.notSpecified")}
                         />
                     )}
                     {user.student_code && (
-                        <InfoRow icon={<IdcardOutlined />} label="Код студента" value={user.student_code} />
+                        <InfoRow icon={<IdcardOutlined />} label={t("labels.studentCode")} value={user.student_code} />
                     )}
                     <InfoRow
                         icon={<CalendarOutlined />}
-                        label="Дата регистрации"
+                        label={t("labels.registrationDate")}
                         value={new Date(user.created_at).toLocaleDateString("ru-RU")}
                     />
                 </div>

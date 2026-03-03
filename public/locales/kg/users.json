@@ -1,0 +1,56 @@
+{
+  "messages": {
+    "activated": "Колдонуучу активдештирилди",
+    "deactivated": "Колдонуучу деактивдештирилди",
+    "passwordMismatch": "Сырсөздөр дал келбейт",
+    "created": "Колдонуучу түзүлдү",
+    "error": "Ката кетти"
+  },
+  "table": {
+    "fullName": "Аты-жөнү",
+    "studentCode": "Студент коду",
+    "role": "Роль",
+    "status": "Статус",
+    "actions": "Аракеттер"
+  },
+  "status": {
+    "active": "Активдүү",
+    "inactive": "Активдүү эмес"
+  },
+  "confirm": {
+    "deactivateTitle": "Колдонуучуну деактивдештиресизби?",
+    "deactivateDescription": "Колдонуучу системага кире албай калат.",
+    "activateTitle": "Колдонуучуну активдештиресизби?",
+    "activateDescription": "Колдонуучу системага кире алат.",
+    "deactivate": "Деактивдештирүү",
+    "activate": "Активдештирүү",
+    "cancel": "Жокко чыгаруу"
+  },
+  "filters": {
+    "fullName": "Аты-жөнү",
+    "studentCode": "Студент коду",
+    "status": "Статус",
+    "group": "Топ",
+    "role": "Роль"
+  },
+  "roles": {
+    "student": "Студент",
+    "teacher": "Мугалим",
+    "admin": "Администратор"
+  },
+  "form": {
+    "fullName": "Аты-жөнү",
+    "fullNamePlaceholder": "Иванов Иван Иванович",
+    "phone": "Телефон",
+    "role": "Роль",
+    "password": "Сырсөз",
+    "passwordPlaceholder": "Сырсөздү киргизиңиз",
+    "passwordConfirm": "Сырсөздү ырастоо",
+    "passwordConfirmPlaceholder": "Сырсөздү кайталаңыз",
+    "create": "Түзүү"
+  },
+  "tabs": {
+    "list": "Колдонуучулар тизмеси",
+    "create": "Колдонуучу түзүү"
+  }
+}

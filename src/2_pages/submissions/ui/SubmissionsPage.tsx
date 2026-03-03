@@ -6,9 +6,11 @@ import {useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
 import type {ISubmission} from "@/5_entities/task";
 import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
+import {useTranslation} from "react-i18next";
 import cls from "./SubmissionsPage.module.scss";
 
 const SubmissionsPage = observer(() => {
+    const {t} = useTranslation("submissions");
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize} = TaskStore.submissions$;
 
@@ -30,27 +32,27 @@ const SubmissionsPage = observer(() => {
 
     const columns = [
         {
-            title: "Задание",
+            title: t("table.task"),
             dataIndex: "task_title",
             key: "task_title",
         },
         {
-            title: "Студент",
+            title: t("table.student"),
             dataIndex: "student",
             key: "student",
         },
         {
-            title: "Дата отправки",
+            title: t("table.submittedAt"),
             dataIndex: "submitted_at",
             key: "submitted_at",
             render: (date: string) => date ? new Date(date).toLocaleString("ru-RU") : "—",
         },
         {
-            title: "Оценка",
+            title: t("table.score"),
             dataIndex: "score",
             key: "score",
             render: (score: number | null) =>
-                score !== null ? <Tag color="green">{score}/5</Tag> : <Tag>Не оценено</Tag>,
+                score !== null ? <Tag color="green">{score}/5</Tag> : <Tag>{t("notGraded")}</Tag>,
         },
         {
             title: "",
@@ -68,7 +70,7 @@ const SubmissionsPage = observer(() => {
 
     return (
         <div className={cls.page}>
-            <h1>Решения студентов</h1>
+            <h1>{t("title")}</h1>
             <Table
                 dataSource={items}
                 columns={columns}

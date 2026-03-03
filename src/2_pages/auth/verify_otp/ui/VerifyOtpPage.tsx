@@ -5,14 +5,8 @@ import type { OtpPurpose } from "@/5_entities/user";
 import { routes } from "@/6_shared";
 import { AppInput } from "@/6_shared/ui/input/AppInput";
 import { AppButton } from "@/6_shared/ui/button/AppButton";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
 import cls from "./VerifyOtpPage.module.scss";
-
-const PURPOSE_LABELS: Record<OtpPurpose, string> = {
-    Account_verify: "Подтверждение аккаунта",
-    Reset_password: "Сброс пароля",
-    Change_email: "Смена email",
-};
 
 const VerifyOtpPage = () => {
     const navigate = useNavigate();
@@ -20,7 +14,7 @@ const VerifyOtpPage = () => {
     const purpose = (searchParams.get("purpose") ?? "Account_verify") as OtpPurpose;
     const email = searchParams.get("email") ?? "";
 
-    const {t} = useTranslation();
+    const {t} = useTranslation("auth");
     const [code, setCode] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -44,7 +38,7 @@ const VerifyOtpPage = () => {
     return (
         <div className={cls.wrapper}>
             <div className={cls.card}>
-                <h1 className={cls.title}>{PURPOSE_LABELS[purpose]}</h1>
+                <h1 className={cls.title}>{t(`verifyOtp.purpose.${purpose}`)}</h1>
                 <p className={cls.subtitle}>{t("verifyOtp.otp")}</p>
                 <form className={cls.form} onSubmit={onSubmit}>
                     <AppInput

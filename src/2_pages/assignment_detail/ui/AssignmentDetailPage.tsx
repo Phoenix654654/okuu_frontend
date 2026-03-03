@@ -8,15 +8,11 @@ import type {AssignmentStatus} from "@/5_entities/task";
 import {FileUpload} from "@/4_features/file-upload/FileUpload";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
 import {routes} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./AssignmentDetailPage.module.scss";
 
-const statusLabels: Record<AssignmentStatus, string> = {
-    pending: "Ожидает решения",
-    submitted: "Отправлено",
-    graded: "Оценено",
-};
-
 const AssignmentDetailPage = observer(() => {
+    const {t} = useTranslation("assignmentDetail");
     const {id} = useParams<{id: string}>();
     const navigate = useNavigate();
     const assignment = TaskStore.currentAssignment$.value;
@@ -25,6 +21,11 @@ const AssignmentDetailPage = observer(() => {
     const [content, setContent] = useState("");
     const [fileIds, setFileIds] = useState<number[]>([]);
     const [submitting, setSubmitting] = useState(false);
+    const statusLabels: Record<AssignmentStatus, string> = {
+        pending: t("status.pending"),
+        submitted: t("status.submitted"),
+        graded: t("status.graded"),
+    };
 
     const canSubmit = assignment?.status === "pending";
 
@@ -48,10 +49,10 @@ const AssignmentDetailPage = observer(() => {
         setSubmitting(false);
 
         if (success) {
-            message.success("Решение отправлено");
+            message.success(t("messages.sent"));
             navigate(routes.assignments);
         } else {
-            message.error("Ошибка при отправке");
+            message.error(t("messages.error"));
         }
     };
 
@@ -66,26 +67,26 @@ const AssignmentDetailPage = observer(() => {
     return (
         <div className={cls.page}>
             <button className={cls.backBtn} onClick={() => navigate(routes.assignments)}>
-                <ArrowLeftOutlined /> Назад к списку
+                <ArrowLeftOutlined /> {t("back")}
             </button>
-            <h1>{task?.title || `Задание #${assignment.id}`}</h1>
+            <h1>{task?.title || t("taskFallback", {id: assignment.id})}</h1>
 
             <Descriptions bordered size="small" column={2}>
-                <Descriptions.Item label="Статус">
+                <Descriptions.Item label={t("labels.status")}>
                     <Tag>{statusLabels[assignment.status]}</Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label="Дата назначения">
+                <Descriptions.Item label={t("labels.assignedAt")}>
                     {new Date(assignment.created_at).toLocaleString("ru-RU")}
                 </Descriptions.Item>
                 {assignment.deadline && (
-                    <Descriptions.Item label="Дедлайн">
+                    <Descriptions.Item label={t("labels.deadline")}>
                         {new Date(assignment.deadline).toLocaleString("ru-RU")}
                     </Descriptions.Item>
                 )}
             </Descriptions>
 
             {selectedDescription && (
-                <Card title="Описание задания" size="small">
+                <Card title={t("cards.taskDescription")} size="small">
                     <p style={{whiteSpace: "pre-wrap"}}>
                         {typeof selectedDescription === "string"
                             ? selectedDescription
@@ -95,12 +96,12 @@ const AssignmentDetailPage = observer(() => {
             )}
 
             {canSubmit ? (
-                <Card title="Отправить решение" size="small">
+                <Card title={t("cards.sendSolution")} size="small">
                     <div className={cls.form}>
                         <Input.TextArea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
-                            placeholder="Введите ваше решение..."
+                            placeholder={t("solutionPlaceholder")}
                             rows={6}
                         />
                         <FileUpload fileIds={fileIds} onChange={setFileIds} />
@@ -111,17 +112,17 @@ const AssignmentDetailPage = observer(() => {
                                 disabled={!content.trim()}
                                 onClick={handleSubmit}
                             >
-                                Отправить решение
+                                {t("send")}
                             </AppButton>
                         </div>
                     </div>
                 </Card>
             ) : submission ? (
-                <Card title="Ваше решение" size="small">
+                <Card title={t("cards.yourSolution")} size="small">
                     <p style={{whiteSpace: "pre-wrap"}}>{submission.content}</p>
                     {submission.files && submission.files.length > 0 && (
                         <div style={{marginTop: 8}}>
-                            <strong>Файлы:</strong>
+                            <strong>{t("labels.files")}:</strong>
                             {submission.files.map(f => (
                                 <div key={f.id}>
                                     <a href={f.file} target="_blank" rel="noopener noreferrer">{f.original_name}</a>
@@ -131,11 +132,11 @@ const AssignmentDetailPage = observer(() => {
                     )}
                     {submission.score !== null && (
                         <Descriptions bordered size="small" column={1} style={{marginTop: 16}}>
-                            <Descriptions.Item label="Оценка">
+                            <Descriptions.Item label={t("labels.score")}>
                                 <Tag color="green">{submission.score}/5</Tag>
                             </Descriptions.Item>
                             {submission.teacher_comment && (
-                                <Descriptions.Item label="Комментарий преподавателя">
+                                <Descriptions.Item label={t("labels.teacherComment")}>
                                     {submission.teacher_comment}
                                 </Descriptions.Item>
                             )}
@@ -143,8 +144,8 @@ const AssignmentDetailPage = observer(() => {
                     )}
                 </Card>
             ) : (
-                <Card title="Решение отправлено" size="small">
-                    <p>Ваше решение было отправлено и ожидает проверки преподавателем.</p>
+                <Card title={t("cards.sent")} size="small">
+                    <p>{t("sentInfo")}</p>
                 </Card>
             )}
         </div>

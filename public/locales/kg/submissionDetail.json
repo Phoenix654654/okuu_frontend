@@ -1,0 +1,23 @@
+{
+  "messages": {
+    "graded": "Баа коюлду",
+    "error": "Баалоодо ката кетти"
+  },
+  "back": "Тизмеге кайтуу",
+  "solution": "Чечим",
+  "labels": {
+    "student": "Студент",
+    "submittedAt": "Жөнөтүлгөн күнү",
+    "score": "Баа",
+    "teacherComment": "Мугалимдин комментарийи",
+    "files": "Файлдар",
+    "scoreInput": "Баа (1-5)",
+    "comment": "Комментарий"
+  },
+  "cards": {
+    "studentSolution": "Студенттин чечими",
+    "gradeSolution": "Чечимди баалоо"
+  },
+  "commentPlaceholder": "Баа боюнча комментарий",
+  "grade": "Баалоо"
+}

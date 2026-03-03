@@ -9,9 +9,11 @@ import type {IGroup} from "@/5_entities/group";
 import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
 import {AppInput} from "@/6_shared/ui/input/AppInput";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
+import {useTranslation} from "react-i18next";
 import cls from "./GroupsPage.module.scss";
 
 const GroupList = observer(() => {
+    const {t} = useTranslation("groups");
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize, filters} = GroupStore.list$;
     const isAdmin = UserStore.currentUser$.value?.role === "Admin";
@@ -47,10 +49,10 @@ const GroupList = observer(() => {
     const handleMarkFinished = async (id: number, isFinished: boolean) => {
         const success = await GroupStore.markFinished(id, { is_finished: isFinished });
         if (success) {
-            message.success(isFinished ? "Группа отмечена как завершившая обучение" : "Группа отмечена как активная");
+            message.success(isFinished ? t("messages.markFinished") : t("messages.markActive"));
             GroupStore.fetchGroups({ is_finished: activeTab === "active" ? false : true });
         } else {
-            message.error("Произошла ошибка");
+            message.error(t("messages.error"));
         }
     };
 
@@ -63,7 +65,7 @@ const GroupList = observer(() => {
 
     const columns = [
         {
-            title: "Название",
+            title: t("table.name"),
             dataIndex: "name",
             key: "name",
             render: (name: string, record: IGroup) => (
@@ -71,29 +73,29 @@ const GroupList = observer(() => {
             ),
         },
         {
-            title: "Курс",
+            title: t("table.year"),
             dataIndex: "year",
             key: "year",
-            render: (year: number) => <Tag color="blue">{year} курс</Tag>,
+            render: (year: number) => <Tag color="blue">{t("table.yearValue", {year})}</Tag>,
         },
         {
-            title: "Преподаватель",
+            title: t("table.teacher"),
             key: "teacher",
             render: (_: unknown, record: IGroup) => record.teacher?.full_name || "—",
         },
         {
-            title: "Статус",
+            title: t("table.status"),
             key: "is_finished",
             render: (_: unknown, record: IGroup) => (
                 <Tag color={record.is_finished ? "orange" : "green"}>
-                    {record.is_finished ? "Завершена" : "Активна"}
+                    {record.is_finished ? t("status.finished") : t("status.active")}
                 </Tag>
             ),
         },
     ];
 
     columns.push({
-        title: "Действия",
+        title: t("table.actions"),
         key: "actions",
         width: 240,
         render: (_: unknown, record: IGroup) => (
@@ -111,24 +113,24 @@ const GroupList = observer(() => {
                             onClick={() => handleEdit(record.id)}
                         />
                         <Popconfirm
-                            title={record.is_finished ? "Отметить группу как активную?" : "Отметить группу как завершившую обучение?"}
+                            title={record.is_finished ? t("confirm.markActive") : t("confirm.markFinished")}
                             onConfirm={() => handleMarkFinished(record.id, !record.is_finished)}
-                            okText="Да"
-                            cancelText="Нет"
+                            okText={t("confirm.yes")}
+                            cancelText={t("confirm.no")}
                         >
                             <Button
                                 type="text"
                                 danger={!record.is_finished}
                                 icon={record.is_finished ? <PlayCircleOutlined /> : <ClockCircleOutlined />}
                             >
-                                {record.is_finished ? "Активировать" : "Завершить"}
+                                {record.is_finished ? t("buttons.activate") : t("buttons.finish")}
                             </Button>
                         </Popconfirm>
                         <Popconfirm
-                            title="Удалить группу?"
+                            title={t("confirm.delete")}
                             onConfirm={() => handleDelete(record.id)}
-                            okText="Да"
-                            cancelText="Нет"
+                            okText={t("confirm.yes")}
+                            cancelText={t("confirm.no")}
                         >
                             <Button type="text" danger icon={<DeleteOutlined />} />
                         </Popconfirm>
@@ -143,13 +145,13 @@ const GroupList = observer(() => {
             <div className={cls.filters}>
                 <Select
                     allowClear
-                    placeholder="Фильтр по курсу"
+                    placeholder={t("filters.year")}
                     value={filters.year}
                     onChange={handleYearFilter}
                     style={{width: 220}}
                     options={Array.from({length: 10}, (_, index) => {
                         const year = index + 1;
-                        return {value: year, label: `${year} курс`};
+                        return {value: year, label: t("table.yearValue", {year})};
                     })}
                 />
             </div>
@@ -157,8 +159,8 @@ const GroupList = observer(() => {
                 activeKey={activeTab}
                 onChange={handleTabChange}
                 items={[
-                    { key: "active", label: "Активные" },
-                    { key: "finished", label: "Завершившие" },
+                    { key: "active", label: t("tabs.active") },
+                    { key: "finished", label: t("tabs.finished") },
                 ]}
             />
             <Table
@@ -181,6 +183,7 @@ const GroupList = observer(() => {
 });
 
 const GroupForm = observer(() => {
+    const {t} = useTranslation("groups");
     const editingId = GroupStore.editingGroupId;
     const isEdit = Boolean(editingId);
     const group = GroupStore.current$.value;
@@ -220,11 +223,11 @@ const GroupForm = observer(() => {
         setSubmitting(false);
 
         if (success) {
-            message.success(isEdit ? "Группа обновлена" : "Группа создана");
+            message.success(isEdit ? t("messages.updated") : t("messages.created"));
             resetForm();
             GroupStore.fetchGroups();
         } else {
-            message.error("Произошла ошибка");
+            message.error(t("messages.error"));
         }
     };
 
@@ -234,16 +237,16 @@ const GroupForm = observer(() => {
 
     return (
         <div className={cls.formWrapper}>
-            <h2>{isEdit ? "Редактирование группы" : "Создание группы"}</h2>
+            <h2>{isEdit ? t("form.editTitle") : t("form.createTitle")}</h2>
             <Form layout="vertical" className={cls.form} onFinish={handleSubmit}>
-                <Form.Item label="Название группы">
+                <Form.Item label={t("form.groupName")}>
                     <AppInput
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="Например: ИТ-1-23"
+                        placeholder={t("form.groupPlaceholder")}
                     />
                 </Form.Item>
-                <Form.Item label="Курс">
+                <Form.Item label={t("form.year")}>
                     <InputNumber
                         min={1}
                         max={10}
@@ -255,7 +258,7 @@ const GroupForm = observer(() => {
                 <div className={cls.actions}>
                     {isEdit && (
                         <AppButton onClick={resetForm}>
-                            Отмена
+                            {t("form.cancel")}
                         </AppButton>
                     )}
                     <AppButton
@@ -264,7 +267,7 @@ const GroupForm = observer(() => {
                         loading={submitting}
                         disabled={!name.trim()}
                     >
-                        {isEdit ? "Сохранить" : "Создать"}
+                        {isEdit ? t("form.save") : t("form.create")}
                     </AppButton>
                 </div>
             </Form>
@@ -273,12 +276,13 @@ const GroupForm = observer(() => {
 });
 
 const GroupsPage = observer(() => {
+    const {t} = useTranslation("groups");
     const isAdmin = UserStore.currentUser$.value?.role === "Admin";
 
     const tabItems = [
         {
             key: "list",
-            label: "Список групп",
+            label: t("page.listTab"),
             children: <GroupList />,
         },
     ];
@@ -286,7 +290,7 @@ const GroupsPage = observer(() => {
     if (!isAdmin) {
         tabItems.push({
             key: "create",
-            label: GroupStore.editingGroupId ? "Редактирование" : "Создание",
+            label: GroupStore.editingGroupId ? t("page.editTab") : t("page.createTab"),
             children: <GroupForm />,
         });
     }

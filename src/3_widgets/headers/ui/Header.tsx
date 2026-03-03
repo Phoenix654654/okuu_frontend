@@ -10,7 +10,7 @@ import cls from "./Header.module.scss";
 
 export const Header = observer(() => {
     const navigate = useNavigate();
-    const {t, i18n} = useTranslation();
+    const {t} = useTranslation("layout");
     const user = UserStore.currentUser$.value;
     const roleLabels = getRoleLabels();
 

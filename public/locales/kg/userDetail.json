@@ -1,0 +1,28 @@
+{
+  "messages": {
+    "activated": "Колдонуучу активдештирилди",
+    "deactivated": "Колдонуучу деактивдештирилди"
+  },
+  "back": "Тизмеге кайтуу",
+  "status": {
+    "active": "Активдүү",
+    "inactive": "Активдүү эмес"
+  },
+  "confirm": {
+    "deactivateTitle": "Колдонуучуну деактивдештиресизби?",
+    "deactivateDescription": "Колдонуучу системага кире албай калат.",
+    "activateTitle": "Колдонуучуну активдештиресизби?",
+    "activateDescription": "Колдонуучу системага кире алат.",
+    "deactivate": "Деактивдештирүү",
+    "activate": "Активдештирүү",
+    "cancel": "Жокко чыгаруу"
+  },
+  "infoTitle": "Маалымат",
+  "labels": {
+    "phone": "Телефон",
+    "group": "Топ",
+    "notSpecified": "Көрсөтүлгөн эмес",
+    "studentCode": "Студент коду",
+    "registrationDate": "Катталган күнү"
+  }
+}

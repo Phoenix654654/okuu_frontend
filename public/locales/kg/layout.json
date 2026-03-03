@@ -1,0 +1,61 @@
+{
+  "header": {
+    "logout": "Чыгуу",
+    "logoutConfirm": "Чындап эле чыккыңыз келеби?",
+    "yes": "Ооба",
+    "no": "Жок",
+    "studentCode": "Коду: {{code}}",
+    "notifications": "Билдирүүлөр"
+  },
+  "sidebar": {
+    "logo": "OKUU",
+    "home": "Башкы",
+    "profile": "Профиль",
+    "tasks": "Тапшырмалар",
+    "submissions": "Жөнөтүүлөр",
+    "descriptions": "Сүрөттөмөлөр",
+    "groups": "Топтор",
+    "assignments": "Дайындоолор",
+    "admin": "Администрлөө",
+    "users": "Колдонуучулар"
+  },
+  "roles": {
+    "Admin": "Администратор",
+    "Teacher": "Мугалим",
+    "Student": "Студент"
+  },
+  "taskStatus": {
+    "draft": "Черновик",
+    "describing": "Сүрөттөмөдө",
+    "review": "Текшерүүдө",
+    "published": "Жарыяланды",
+    "closed": "Жабылды"
+  },
+  "descriptionStatus": {
+    "pending": "Күтүүдө",
+    "submitted": "Жөнөтүлдү",
+    "revision": "Түзөтүүдө",
+    "approved": "Бекитилди",
+    "rejected": "Баш тартылды"
+  },
+  "assignmentStatus": {
+    "pending": "Чечим күтүүдө",
+    "submitted": "Жөнөтүлдү",
+    "graded": "Бааланды"
+  },
+  "common": {
+    "loading": "Жүктөлүүдө...",
+    "error": "Ката",
+    "save": "Сактоо",
+    "cancel": "Айнуу",
+    "delete": "Өчүрүү",
+    "edit": "Редакциялоо",
+    "create": "Түзүү",
+    "close": "Жабуу"
+  },
+  "language": {
+    "switcher": "Тил",
+    "ru": "Орусча",
+    "kg": "Кыргызча"
+  }
+}

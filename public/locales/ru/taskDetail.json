@@ -1,0 +1,45 @@
+{
+  "messages": {
+    "deleted": "Задание удалено"
+  },
+  "back": "Назад к списку",
+  "table": {
+    "description": "Описание",
+    "files": "Файлы",
+    "student": "Студент",
+    "actions": "Действия",
+    "status": "Статус",
+    "solution": "Решение",
+    "score": "Оценка",
+    "task": "Задание",
+    "submittedAt": "Отправлено"
+  },
+  "buttons": {
+    "review": "Проверить",
+    "grade": "Оценить",
+    "assignDescriber": "Назначить описателя",
+    "delete": "Удалить"
+  },
+  "values": {
+    "yes": "Есть",
+    "no": "Нет"
+  },
+  "confirm": {
+    "deleteTask": "Удалить задание?",
+    "yes": "Да",
+    "no": "Нет"
+  },
+  "labels": {
+    "teacher": "Преподаватель",
+    "createdAt": "Создано",
+    "updatedAt": "Обновлено"
+  },
+  "cards": {
+    "taskDescription": "Описание задания",
+    "taskFiles": "Файлы задания",
+    "selectedDescription": "Выбранное описание",
+    "descriptions": "Описания",
+    "assignments": "Назначения",
+    "submissions": "Решения"
+  }
+}

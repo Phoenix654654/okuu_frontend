@@ -1,0 +1,12 @@
+{
+  "welcome": "Добро пожаловать, {{name}}!",
+  "teacher": {
+    "groups": "Группы",
+    "tasks": "Задания",
+    "submissions": "Решения"
+  },
+  "student": {
+    "assignments": "Мои задания",
+    "descriptions": "Мои описания"
+  }
+}

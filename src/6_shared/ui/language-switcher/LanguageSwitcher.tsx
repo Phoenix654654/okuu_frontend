@@ -4,11 +4,11 @@ import {GlobalOutlined} from "@ant-design/icons";
 import cls from "./LanguageSwitcher.module.scss";
 
 export const LanguageSwitcher = () => {
-    const {i18n} = useTranslation();
+    const {i18n, t} = useTranslation("layout");
 
     const options = [
-        {value: "ru", label: "Русский"},
-        {value: "kg", label: "Кыргызча"},
+        {value: "ru", label: t("language.ru")},
+        {value: "kg", label: t("language.kg")},
     ];
 
     const handleChange = (lng: string) => {

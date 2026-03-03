@@ -1,0 +1,23 @@
+{
+  "messages": {
+    "graded": "Оценка выставлена",
+    "error": "Ошибка при оценивании"
+  },
+  "back": "Назад к списку",
+  "solution": "Решение",
+  "labels": {
+    "student": "Студент",
+    "submittedAt": "Дата отправки",
+    "score": "Оценка",
+    "teacherComment": "Комментарий преподавателя",
+    "files": "Файлы",
+    "scoreInput": "Оценка (1-5)",
+    "comment": "Комментарий"
+  },
+  "cards": {
+    "studentSolution": "Решение студента",
+    "gradeSolution": "Оценить решение"
+  },
+  "commentPlaceholder": "Комментарий к оценке",
+  "grade": "Оценить"
+}

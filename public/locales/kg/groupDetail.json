@@ -1,0 +1,37 @@
+{
+  "back": "Тизмеге кайтуу",
+  "status": {
+    "active": "Активдүү",
+    "finished": "Окууну аяктаган"
+  },
+  "buttons": {
+    "createTask": "Тапшырма түзүү",
+    "giveTask": "Тапшырма берүү",
+    "assignDescriber": "Сүрөттөөчү дайындоо"
+  },
+  "labels": {
+    "name": "Аталышы",
+    "year": "Курс",
+    "teacher": "Мугалим",
+    "createdAt": "Түзүлгөн күнү",
+    "studentsCount": "Студенттер саны",
+    "status": "Статус"
+  },
+  "yearValue": "{{year}}-курс",
+  "table": {
+    "fullName": "Аты-жөнү",
+    "studentCode": "Студент коду",
+    "phone": "Телефон",
+    "actions": "Аракеттер"
+  },
+  "selectedStudents": "Тандалган студенттер: {{count}}",
+  "tree": {
+    "placeholder": "Тапшырманы же сүрөттөмөнү тандаңыз",
+    "descriptionLabel": "Сүрөттөмө ({{code}})",
+    "descriptionOption": "Сүрөттөмө #{{id}} ({{name}})"
+  },
+  "messages": {
+    "selectDescription": "Тапшырманын сүрөттөмөсүн тандаңыз",
+    "selectTask": "Тапшырманы тандаңыз"
+  }
+}

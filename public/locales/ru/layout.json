@@ -1,0 +1,61 @@
+{
+  "header": {
+    "logout": "Выход",
+    "logoutConfirm": "Вы уверены, что хотите выйти?",
+    "yes": "Да",
+    "no": "Нет",
+    "studentCode": "Код: {{code}}",
+    "notifications": "Уведомления"
+  },
+  "sidebar": {
+    "logo": "OKUU",
+    "home": "Главная",
+    "profile": "Профиль",
+    "tasks": "Задания",
+    "submissions": "Отправки",
+    "descriptions": "Описания",
+    "groups": "Группы",
+    "assignments": "Назначения",
+    "admin": "Администрирование",
+    "users": "Пользователи"
+  },
+  "roles": {
+    "Admin": "Администратор",
+    "Teacher": "Преподаватель",
+    "Student": "Студент"
+  },
+  "taskStatus": {
+    "draft": "Черновик",
+    "describing": "На описании",
+    "review": "На проверке",
+    "published": "Опубликовано",
+    "closed": "Закрыто"
+  },
+  "descriptionStatus": {
+    "pending": "Ожидает",
+    "submitted": "Отправлено",
+    "revision": "На доработке",
+    "approved": "Одобрено",
+    "rejected": "Отклонено"
+  },
+  "assignmentStatus": {
+    "pending": "Ожидает решения",
+    "submitted": "Отправлено",
+    "graded": "Оценено"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "create": "Создать",
+    "close": "Закрыть"
+  },
+  "language": {
+    "switcher": "Язык",
+    "ru": "Русский",
+    "kg": "Кыргызча"
+  }
+}

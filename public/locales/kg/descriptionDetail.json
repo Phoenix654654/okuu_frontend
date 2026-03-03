@@ -1,0 +1,20 @@
+{
+  "messages": {
+    "sent": "Сүрөттөмө жөнөтүлдү",
+    "error": "Жөнөтүүдө ката кетти"
+  },
+  "back": "Тизмеге кайтуу",
+  "titleFallback": "Тапшырманын сүрөттөмөсү #{{id}}",
+  "labels": {
+    "status": "Статус",
+    "deadline": "Мөөнөт",
+    "teacherComment": "Мугалимдин комментарийи",
+    "files": "Файлдар"
+  },
+  "cards": {
+    "sendDescription": "Сүрөттөмө жөнөтүү",
+    "description": "Сүрөттөмө"
+  },
+  "descriptionPlaceholder": "Тапшырманын сүрөттөмөсүн жазыңыз...",
+  "send": "Жөнөтүү"
+}

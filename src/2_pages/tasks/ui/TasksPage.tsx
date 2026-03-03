@@ -8,9 +8,11 @@ import {UserStore} from "@/5_entities/user";
 import type {ITask, TaskListVisibility} from "@/5_entities/task";
 import {CreateTaskModal} from "@/4_features/tasks";
 import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
+import {useTranslation} from "react-i18next";
 import cls from "./TasksPage.module.scss";
 
 const TasksPage = observer(() => {
+    const {t} = useTranslation("tasks");
     const navigate = useNavigate();
     const [createOpen, setCreateOpen] = useState(false);
     const [visibility, setVisibility] = useState<TaskListVisibility>("shared");
@@ -40,18 +42,18 @@ const TasksPage = observer(() => {
 
     const columns = [
         {
-            title: "Название",
+            title: t("table.title"),
             dataIndex: "title",
             key: "title",
         },
         {
-            title: "Создано",
+            title: t("table.createdAt"),
             dataIndex: "created_at",
             key: "created_at",
             render: (date: string) => new Date(date).toLocaleDateString("ru-RU"),
         },
         {
-            title: "Действия",
+            title: t("table.actions"),
             key: "actions",
             width: 80,
             render: (_: unknown, record: ITask) => (
@@ -67,7 +69,7 @@ const TasksPage = observer(() => {
     return (
         <div className={cls.page}>
             <div className={cls.header}>
-                <h1>Задания</h1>
+                <h1>{t("title")}</h1>
                 <Space>
                     {!isAdmin && (
                         <Button
@@ -75,7 +77,7 @@ const TasksPage = observer(() => {
                             icon={<PlusOutlined />}
                             onClick={() => setCreateOpen(true)}
                         >
-                            Создать задание
+                            {t("create")}
                         </Button>
                     )}
                 </Space>
@@ -84,8 +86,8 @@ const TasksPage = observer(() => {
                 activeKey={visibility}
                 onChange={handleVisibilityChange}
                 items={[
-                    {key: "shared", label: "Общие задачи"},
-                    {key: "mine", label: "Мои задачи"},
+                    {key: "shared", label: t("tabs.shared")},
+                    {key: "mine", label: t("tabs.mine")},
                 ]}
             />
             <Table

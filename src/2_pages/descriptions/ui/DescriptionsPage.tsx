@@ -11,7 +11,7 @@ import {useTranslation} from "react-i18next";
 import cls from "./DescriptionsPage.module.scss";
 
 const DescriptionsPage = observer(() => {
-    const {t} = useTranslation();
+    const {t} = useTranslation("descriptions");
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize} = TaskStore.descriptions$;
     const descriptionStatusLabels = getDescriptionStatusLabels();
@@ -28,12 +28,12 @@ const DescriptionsPage = observer(() => {
 
     const columns = [
         {
-            title: "Задание",
+            title: t("table.task"),
             key: "task",
             render: (_: unknown, record: ITaskDescription) => record.task?.title || `#${record.id}`,
         },
         {
-            title: "Статус",
+            title: t("table.status"),
             dataIndex: "status",
             key: "status",
             render: (s: DescriptionStatus) => (
@@ -41,14 +41,14 @@ const DescriptionsPage = observer(() => {
             ),
         },
         {
-            title: "Дедлайн",
+            title: t("table.deadline"),
             dataIndex: "deadline",
             key: "deadline",
             render: (deadline: string) =>
                 deadline ? new Date(deadline).toLocaleDateString("ru-RU") : "—",
         },
         {
-            title: "Создано",
+            title: t("table.createdAt"),
             dataIndex: "created_at",
             key: "created_at",
             render: (date: string) =>
@@ -70,7 +70,7 @@ const DescriptionsPage = observer(() => {
 
     return (
         <div className={cls.page}>
-            <h1>Мои описания</h1>
+            <h1>{t("title")}</h1>
             <Table
                 dataSource={items}
                 columns={columns}

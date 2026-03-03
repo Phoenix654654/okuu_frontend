@@ -10,6 +10,7 @@ import type {IGroupStudent} from "@/5_entities/group";
 import type {ITask, ITaskDescription} from "@/5_entities/task";
 import {CreateTaskModal, AssignDescriberModal, PublishTaskModal} from "@/4_features/tasks";
 import {routes} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./GroupDetailPage.module.scss";
 
 const TASKS_PAGE_SIZE = 20;
@@ -34,6 +35,7 @@ interface TaskTreeItem {
 }
 
 const GroupDetailPage = observer(() => {
+    const {t} = useTranslation("groupDetail");
     const {id} = useParams<{id: string}>();
     const navigate = useNavigate();
     const group = GroupStore.current$.value;
@@ -123,8 +125,8 @@ const GroupDetailPage = observer(() => {
             const children: TaskTreeItem[] = descriptions.map((desc) => ({
                 id: `desc-${desc.id}`,
                 value: `desc-${desc.id}`,
-                title: `Описание (${desc.describer?.student_code || "—"})`,
-                label: `Описание (${desc.describer?.student_code || "—"})`,
+                title: t("tree.descriptionLabel", {code: desc.describer?.student_code || "—"}),
+                label: t("tree.descriptionLabel", {code: desc.describer?.student_code || "—"}),
                 isTask: false,
                 taskId: task.id,
                 descriptionId: desc.id,
@@ -137,7 +139,7 @@ const GroupDetailPage = observer(() => {
                 id: `task-${task.id}`,
                 value: `task-${task.id}`,
                 title: task.title,
-                label: task.title,
+            label: task.title,
                 isTask: true,
                 taskId: task.id,
                 hasDescription: taskHasDescriptions,
@@ -254,25 +256,25 @@ const GroupDetailPage = observer(() => {
                 render: (email: string) => email || "—",
             },
             {
-                title: "ФИО",
+                title: t("table.fullName"),
                 dataIndex: "full_name",
                 key: "full_name",
                 render: (fullName: string) => fullName || "—",
             },
             {
-                title: "Код студента",
+                title: t("table.studentCode"),
                 dataIndex: "student_code",
                 key: "student_code",
                 render: (code: string) => code || "—",
             },
             {
-                title: "Телефон",
+                title: t("table.phone"),
                 dataIndex: "phone",
                 key: "phone",
                 render: (phone: string) => phone || "—",
             },
             {
-                title: "Действия",
+                title: t("table.actions"),
                 key: "actions",
                 width: 120,
                 render: (_: unknown, record: IGroupStudent) => (
@@ -286,13 +288,13 @@ const GroupDetailPage = observer(() => {
         ]
         : [
             {
-                title: "Код студента",
+                title: t("table.studentCode"),
                 dataIndex: "student_code",
                 key: "student_code",
                 render: (code: string) => code || "—",
             },
             {
-                title: "Действия",
+                title: t("table.actions"),
                 key: "actions",
                 width: 120,
                 render: (_: unknown, record: IGroupStudent) => (
@@ -326,7 +328,7 @@ const GroupDetailPage = observer(() => {
     const descriptionOptions: DescriptionOption[] = selectedTaskId && descriptionsByTask[selectedTaskId]
         ? descriptionsByTask[selectedTaskId].map((desc) => ({
             value: desc.id,
-            label: `Описание #${desc.id} (${desc.describer?.full_name || "—"})`,
+            label: t("tree.descriptionOption", {id: desc.id, name: desc.describer?.full_name || "—"}),
         }))
         : [];
 
@@ -373,7 +375,7 @@ const GroupDetailPage = observer(() => {
 
     const handlePublishFromGroup = () => {
         if (!selectedDescriptionId) {
-            message.warning("Выберите описание задачи");
+            message.warning(t("messages.selectDescription"));
             return;
         }
         setPublishOpen(true);
@@ -381,7 +383,7 @@ const GroupDetailPage = observer(() => {
 
     const handleAssignDescriber = () => {
         if (!selectedTaskId) {
-            message.warning("Выберите задание");
+            message.warning(t("messages.selectTask"));
             return;
         }
         setAssignDescriberOpen(true);
@@ -390,49 +392,49 @@ const GroupDetailPage = observer(() => {
     return (
         <div className={cls.page}>
             <button className={cls.backBtn} onClick={() => navigate(routes.groups)}>
-                <ArrowLeftOutlined /> Назад к списку
+                <ArrowLeftOutlined /> {t("back")}
             </button>
 
             <div className={cls.header}>
                 <h1>{group.name}</h1>
                 <Space>
                     <Tag color={group.is_finished ? "orange" : "green"}>
-                        {group.is_finished ? "Завершила обучение" : "Активна"}
+                        {group.is_finished ? t("status.finished") : t("status.active")}
                     </Tag>
                     {canManageTasks && (
                         <Button type="primary" onClick={() => setCreateTaskOpen(true)}>
-                            Создать задание
+                            {t("buttons.createTask")}
                         </Button>
                     )}
                 </Space>
             </div>
 
             <Descriptions bordered column={2}>
-                <Descriptions.Item label="Название">{group.name}</Descriptions.Item>
-                <Descriptions.Item label="Курс">
-                    <Tag color="blue">{group.year} курс</Tag>
+                <Descriptions.Item label={t("labels.name")}>{group.name}</Descriptions.Item>
+                <Descriptions.Item label={t("labels.year")}>
+                    <Tag color="blue">{t("yearValue", {year: group.year})}</Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label="Преподаватель">
+                <Descriptions.Item label={t("labels.teacher")}>
                     {group.teacher?.full_name || "—"}
                 </Descriptions.Item>
-                <Descriptions.Item label="Дата создания">
+                <Descriptions.Item label={t("labels.createdAt")}>
                     {new Date(group.created_at).toLocaleDateString("ru-RU")}
                 </Descriptions.Item>
-                <Descriptions.Item label="Кол-во студентов">
+                <Descriptions.Item label={t("labels.studentsCount")}>
                     {students.length}
                 </Descriptions.Item>
-                <Descriptions.Item label="Статус">
+                <Descriptions.Item label={t("labels.status")}>
                     <Tag color={group.is_finished ? "orange" : "green"}>
-                        {group.is_finished ? "Завершила обучение" : "Активна"}
+                        {group.is_finished ? t("status.finished") : t("status.active")}
                     </Tag>
                 </Descriptions.Item>
             </Descriptions>
 
             {hasSelection && (
                 <Space className={cls.actions} wrap>
-                    <span>Выбрано студентов: {selectedStudentIds.length}</span>
+                    <span>{t("selectedStudents", {count: selectedStudentIds.length})}</span>
                     <TreeSelect
-                        placeholder="Выберите задание или описание"
+                        placeholder={t("tree.placeholder")}
                         value={selectedDescriptionId ? `desc-${selectedDescriptionId}` : (selectedTaskId ? `task-${selectedTaskId}` : undefined)}
                         onChange={handleTreeSelect}
                         onTreeExpand={handleTreeExpand}
@@ -448,10 +450,10 @@ const GroupDetailPage = observer(() => {
                         treeIcon
                     />
                     <Button type="primary" onClick={handlePublishFromGroup} disabled={disableGiveTask}>
-                        Дать задачу
+                        {t("buttons.giveTask")}
                     </Button>
                     <Button onClick={handleAssignDescriber} disabled={disableAssignDescription}>
-                        Назначить описателя
+                        {t("buttons.assignDescriber")}
                     </Button>
                 </Space>
             )}

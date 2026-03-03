@@ -7,10 +7,12 @@ import {UserStore} from "@/5_entities/user";
 import {GroupStore} from "@/5_entities/group";
 import {TaskStore} from "@/5_entities/task";
 import {routes} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./HomePage.module.scss";
 
 const HomePage = observer(() => {
     const navigate = useNavigate();
+    const {t} = useTranslation("home");
     const user = UserStore.currentUser$.value;
     const role = user?.role;
 
@@ -27,14 +29,14 @@ const HomePage = observer(() => {
 
     return (
         <div className={cls.page}>
-            <h1>Добро пожаловать, {user?.full_name}!</h1>
+            <h1>{t("welcome", {name: user?.full_name})}</h1>
 
             {role === "Teacher" && (
                 <Row gutter={[16, 16]}>
                     <Col span={8}>
                         <Card hoverable onClick={() => navigate(routes.groups)}>
                             <Statistic
-                                title="Группы"
+                                title={t("teacher.groups")}
                                 value={GroupStore.list$.total}
                                 prefix={<TeamOutlined />}
                             />
@@ -43,7 +45,7 @@ const HomePage = observer(() => {
                     <Col span={8}>
                         <Card hoverable onClick={() => navigate(routes.tasks)}>
                             <Statistic
-                                title="Задания"
+                                title={t("teacher.tasks")}
                                 value={TaskStore.list$.total}
                                 prefix={<FileTextOutlined />}
                             />
@@ -52,7 +54,7 @@ const HomePage = observer(() => {
                     <Col span={8}>
                         <Card hoverable onClick={() => navigate(routes.tasks)}>
                             <Statistic
-                                title="Решения"
+                                title={t("teacher.submissions")}
                                 value={TaskStore.submissions$.total}
                                 prefix={<BookOutlined />}
                             />
@@ -66,7 +68,7 @@ const HomePage = observer(() => {
                     <Col span={12}>
                         <Card hoverable onClick={() => navigate(routes.assignments)}>
                             <Statistic
-                                title="Мои задания"
+                                title={t("student.assignments")}
                                 value={TaskStore.assignments$.total}
                                 prefix={<BookOutlined />}
                             />
@@ -75,7 +77,7 @@ const HomePage = observer(() => {
                     <Col span={12}>
                         <Card hoverable onClick={() => navigate(routes.descriptions)}>
                             <Statistic
-                                title="Мои описания"
+                                title={t("student.descriptions")}
                                 value={TaskStore.descriptions$.total}
                                 prefix={<EditOutlined />}
                             />

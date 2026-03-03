@@ -20,104 +20,125 @@ import { ProfilePage } from "@/2_pages/profile";
 import { UsersPage } from "@/2_pages/admin/users";
 import { UserDetailPage as AdminUserDetailPage } from "@/2_pages/admin/user_detail";
 import { NotFoundPage } from "@/2_pages/not_found";
-import {Suspense} from "react";
+import {Suspense, type ReactElement} from "react";
 import {Spin} from "antd";
+import i18n from "@/6_shared/config/i18n/i18n";
 
 // Обертка для ленивой загрузки переводов на странице
-function withTranslationSuspense<P extends object>(
-    Component: React.ComponentType<P>
-) {
-    return function TranslatedComponent(props: P) {
-        return (
-            <Suspense fallback={<Spin size="large" />}>
-                <Component {...props} />
-            </Suspense>
-        );
-    };
+function withTranslationSuspense(element: ReactElement) {
+    return (
+        <Suspense fallback={<Spin size="large" />}>
+            {element}
+        </Suspense>
+    );
 }
+
+const createNamespacesLoader = (namespaces: string[]) => async () => {
+    await i18n.loadNamespaces(namespaces);
+    return null;
+};
 
 const router = createBrowserRouter(
     [
         {
             element: <ProtectedRoute page={<MainLayout />} />,
+            loader: createNamespacesLoader(["layout"]),
             children: [
                 {
                     path: routes.home,
                     element: withTranslationSuspense(<HomePage />),
+                    loader: createNamespacesLoader(["home"]),
                 },
                 // Teacher
                 {
                     path: routes.groups,
                     element: withTranslationSuspense(<GroupsPage />),
+                    loader: createNamespacesLoader(["groups"]),
                 },
                 {
                     path: routes.groupDetail,
                     element: withTranslationSuspense(<GroupDetailPage />),
+                    loader: createNamespacesLoader(["groupDetail"]),
                 },
                 {
                     path: routes.tasks,
                     element: withTranslationSuspense(<TasksPage />),
+                    loader: createNamespacesLoader(["tasks"]),
                 },
                 {
                     path: routes.taskDetail,
                     element: withTranslationSuspense(<TaskDetailPage />),
+                    loader: createNamespacesLoader(["taskDetail"]),
                 },
                 {
                     path: routes.submissions,
                     element: withTranslationSuspense(<SubmissionsPage />),
+                    loader: createNamespacesLoader(["submissions"]),
                 },
                 {
                     path: routes.submissionDetail,
                     element: withTranslationSuspense(<SubmissionDetailPage />),
+                    loader: createNamespacesLoader(["submissionDetail"]),
                 },
                 // Student
                 {
                     path: routes.assignments,
                     element: withTranslationSuspense(<AssignmentsPage />),
+                    loader: createNamespacesLoader(["assignments"]),
                 },
                 {
                     path: routes.assignmentDetail,
                     element: withTranslationSuspense(<AssignmentDetailPage />),
+                    loader: createNamespacesLoader(["assignmentDetail"]),
                 },
                 {
                     path: routes.descriptions,
                     element: withTranslationSuspense(<DescriptionsPage />),
+                    loader: createNamespacesLoader(["descriptions"]),
                 },
                 {
                     path: routes.descriptionDetail,
                     element: withTranslationSuspense(<DescriptionDetailPage />),
+                    loader: createNamespacesLoader(["descriptionDetail"]),
                 },
                 // Admin
                 {
                     path: routes.adminUsers,
                     element: withTranslationSuspense(<UsersPage />),
+                    loader: createNamespacesLoader(["users"]),
                 },
                 {
                     path: routes.adminUserDetail,
                     element: withTranslationSuspense(<AdminUserDetailPage />),
+                    loader: createNamespacesLoader(["userDetail"]),
                 },
                 // Common
                 {
                     path: routes.profile,
                     element: withTranslationSuspense(<ProfilePage />),
+                    loader: createNamespacesLoader(["profile"]),
                 },
                 {
                     path: "*",
                     element: withTranslationSuspense(<NotFoundPage />),
+                    loader: createNamespacesLoader(["notFound"]),
                 },
             ]
         },
         {
             path: routes.login,
             element: <LoginPage />,
+            loader: createNamespacesLoader(["auth"]),
         },
         {
             path: routes.register,
             element: <RegisterPage />,
+            loader: createNamespacesLoader(["auth"]),
         },
         {
             path: routes.verifyOtp,
             element: <VerifyOtpPage />,
+            loader: createNamespacesLoader(["auth"]),
         }
     ]
 );

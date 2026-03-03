@@ -11,7 +11,7 @@ import {useTranslation} from "react-i18next";
 import cls from "./DescriptionDetailPage.module.scss";
 
 const DescriptionDetailPage = observer(() => {
-    const {t} = useTranslation();
+    const {t} = useTranslation("descriptionDetail");
     const {id} = useParams<{id: string}>();
     const navigate = useNavigate();
     const desc = TaskStore.currentDescription$.value;
@@ -50,10 +50,10 @@ const DescriptionDetailPage = observer(() => {
         setSubmitting(false);
 
         if (success) {
-            message.success("Описание отправлено");
+            message.success(t("messages.sent"));
             navigate(routes.descriptions);
         } else {
-            message.error("Ошибка при отправке");
+            message.error(t("messages.error"));
         }
     };
 
@@ -64,17 +64,17 @@ const DescriptionDetailPage = observer(() => {
     return (
         <div className={cls.page}>
             <button className={cls.backBtn} onClick={() => navigate(routes.descriptions)}>
-                <ArrowLeftOutlined /> Назад к списку
+                <ArrowLeftOutlined /> {t("back")}
             </button>
-            <h1>{desc.task?.title || `Описание задания #${desc.id}`}</h1>
+            <h1>{desc.task?.title || t("titleFallback", {id: desc.id})}</h1>
 
             <Descriptions bordered size="small" column={2}>
-                <Descriptions.Item label="Статус">
+                <Descriptions.Item label={t("labels.status")}>
                     <Tag color={descriptionStatusColors[desc.status]}>
                         {descriptionStatusLabels[desc.status]}
                     </Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label="Дедлайн">
+                <Descriptions.Item label={t("labels.deadline")}>
                     {desc.deadline ? new Date(desc.deadline).toLocaleString("ru-RU") : "—"}
                 </Descriptions.Item>
             </Descriptions>
@@ -82,19 +82,19 @@ const DescriptionDetailPage = observer(() => {
             {desc.revision_comment && desc.status === "revision" && (
                 <Alert
                     type="warning"
-                    message="Комментарий преподавателя"
+                    message={t("labels.teacherComment")}
                     description={desc.revision_comment}
                     showIcon
                 />
             )}
 
             {canSubmit ? (
-                <Card title="Отправить описание" size="small">
+                <Card title={t("cards.sendDescription")} size="small">
                     <div className={cls.form}>
                         <Input.TextArea
                             value={text}
                             onChange={(e) => setText(e.target.value)}
-                            placeholder="Введите описание задания..."
+                            placeholder={t("descriptionPlaceholder")}
                             rows={6}
                         />
                         <FileUpload fileIds={fileIds} onChange={setFileIds} />
@@ -105,18 +105,18 @@ const DescriptionDetailPage = observer(() => {
                                 disabled={!text.trim()}
                                 onClick={handleSubmit}
                             >
-                                Отправить
+                                {t("send")}
                             </AppButton>
                         </div>
                     </div>
                 </Card>
             ) : (
                 desc.description && (
-                    <Card title="Описание" size="small">
+                    <Card title={t("cards.description")} size="small">
                         <p>{desc.description}</p>
                         {desc.files && desc.files.length > 0 && (
                             <div>
-                                <strong>Файлы:</strong>
+                                <strong>{t("labels.files")}:</strong>
                                 {desc.files.map(f => (
                                     <div key={f.id}>
                                         <a href={f.file} target="_blank" rel="noopener noreferrer">{f.original_name}</a>

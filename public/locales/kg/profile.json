@@ -1,0 +1,28 @@
+{
+  "profile": {
+    "edit": "Түзөтүү",
+    "email": "Email",
+    "phone": "Телефон",
+    "group": "Топ",
+    "studentCode": "Студент коду",
+    "changeStudentCode": "Студент кодун алмаштыруу",
+    "changeStudentCodeConfirm": "Студент кодун алмаштырасызбы?",
+    "changeStudentCodeDesc": "Учурдагы код жаңы кодго алмашат. Бул аракетти артка кайтаруу мүмкүн эмес.",
+    "change": "Алмаштыруу",
+    "registrationDate": "Катталган күнү",
+    "notSpecified": "Көрсөтүлгөн эмес",
+    "editProfile": "Профилди түзөтүү",
+    "security": "Коопсуздук",
+    "password": "Сырсөз",
+    "changePassword": "Сырсөздү өзгөртүү",
+    "newPassword": "Жаңы сырсөз",
+    "confirmPassword": "Сырсөздү ырастоо",
+    "enterPassword": "Жаңы сырсөздү киргизиңиз",
+    "repeatPassword": "Сырсөздү кайталаңыз",
+    "fullName": "Аты-жөнү",
+    "passwordChanged": "Сырсөз ийгиликтүү өзгөртүлдү",
+    "passwordChangeError": "Сырсөздү өзгөртүүдө ката кетти",
+    "studentCodeUpdated": "Студент коду жаңыртылды",
+    "studentCodeUpdateError": "Студент кодун өзгөртүүдө ката кетти"
+  }
+}

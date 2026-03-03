@@ -22,8 +22,8 @@ i18n
         fallbackLng: "ru",
         supportedLngs: ["ru", "kg"],
         debug: import.meta.env.DEV,
-        ns: ["common"],
-        defaultNS: "common",
+        ns: ["layout"],
+        defaultNS: "layout",
         backend: {
             loadPath: "/locales/{{lng}}/{{ns}}.json",
         },

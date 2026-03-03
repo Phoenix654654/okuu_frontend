@@ -18,7 +18,7 @@ import cls from "./UsersPage.module.scss";
 const GROUPS_PAGE_SIZE = 30;
 
 const UserList = observer(() => {
-    const {t} = useTranslation();
+    const {t} = useTranslation("users");
     const navigate = useNavigate();
     const {items, total, loading, page, pageSize, filters} = UserAdminStore.list$;
     const [groups, setGroups] = useState<IGroup[]>([]);
@@ -105,17 +105,17 @@ const UserList = observer(() => {
 
     const handleActivate = async (id: number) => {
         const success = await UserAdminStore.activateUser(id);
-        if (success) message.success("Пользователь активирован");
+        if (success) message.success(t("messages.activated"));
     };
 
     const handleDeactivate = async (id: number) => {
         const success = await UserAdminStore.deactivateUser(id);
-        if (success) message.success("Пользователь деактивирован");
+        if (success) message.success(t("messages.deactivated"));
     };
 
     const columns = [
         {
-            title: "ФИО",
+            title: t("table.fullName"),
             dataIndex: "full_name",
             key: "full_name",
         },
@@ -125,13 +125,13 @@ const UserList = observer(() => {
             key: "email",
         },
         {
-            title: "Код студента",
+            title: t("table.studentCode"),
             dataIndex: "student_code",
             key: "student_code",
             render: (code: string) => code || "—",
         },
         {
-            title: "Роль",
+            title: t("table.role"),
             dataIndex: "role",
             key: "role",
             render: (role: string) => (
@@ -139,16 +139,16 @@ const UserList = observer(() => {
             ),
         },
         {
-            title: "Статус",
+            title: t("table.status"),
             key: "status",
             render: (_: unknown, record: IUser) => (
                 record.is_active
-                    ? <Tag color="green">Активен</Tag>
-                    : <Tag color="red">Неактивен</Tag>
+                    ? <Tag color="green">{t("status.active")}</Tag>
+                    : <Tag color="red">{t("status.inactive")}</Tag>
             ),
         },
         {
-            title: "Действия",
+            title: t("table.actions"),
             key: "actions",
             width: 160,
             render: (_: unknown, record: IUser) => (
@@ -160,22 +160,22 @@ const UserList = observer(() => {
                     />
                     {record.is_active ? (
                         <Popconfirm
-                            title="Деактивировать пользователя?"
-                            description="Пользователь не сможет войти в систему."
+                            title={t("confirm.deactivateTitle")}
+                            description={t("confirm.deactivateDescription")}
                             onConfirm={() => handleDeactivate(record.id)}
-                            okText="Деактивировать"
-                            cancelText="Отмена"
+                            okText={t("confirm.deactivate")}
+                            cancelText={t("confirm.cancel")}
                             okButtonProps={{danger: true}}
                         >
                             <Button type="text" danger icon={<LockOutlined />} />
                         </Popconfirm>
                     ) : (
                         <Popconfirm
-                            title="Активировать пользователя?"
-                            description="Пользователь сможет войти в систему."
+                            title={t("confirm.activateTitle")}
+                            description={t("confirm.activateDescription")}
                             onConfirm={() => handleActivate(record.id)}
-                            okText="Активировать"
-                            cancelText="Отмена"
+                            okText={t("confirm.activate")}
+                            cancelText={t("confirm.cancel")}
                         >
                             <Button type="text" icon={<CheckOutlined />} style={{color: "green"}} />
                         </Popconfirm>
@@ -189,32 +189,32 @@ const UserList = observer(() => {
         <>
             <div className={cls.filters}>
                 <AppInput
-                    placeholder="ФИО"
+                    placeholder={t("filters.fullName")}
                     value={filters.full_name__icontains || ""}
                     onChange={handleTextFilter("full_name__icontains")}
                     style={{width: 220}}
                     allowClear
                 />
                 <AppInput
-                    placeholder="Код студента"
+                    placeholder={t("filters.studentCode")}
                     value={filters.student_code__icontains || ""}
                     onChange={handleTextFilter("student_code__icontains")}
                     style={{width: 180}}
                     allowClear
                 />
                 <Select
-                    placeholder="Статус"
+                    placeholder={t("filters.status")}
                     value={filters.is_active}
                     onChange={handleSelectFilter("is_active")}
                     allowClear
                     style={{width: 160}}
                     options={[
-                        {value: "true", label: "Активен"},
-                        {value: "false", label: "Неактивен"},
+                        {value: "true", label: t("status.active")},
+                        {value: "false", label: t("status.inactive")},
                     ]}
                 />
                 <Select
-                    placeholder="Группа"
+                    placeholder={t("filters.group")}
                     value={filters.group}
                     onChange={handleSelectFilter("group")}
                     allowClear
@@ -226,15 +226,15 @@ const UserList = observer(() => {
                     options={groups.map((g) => ({value: g.id, label: g.name}))}
                 />
                 <Select
-                    placeholder="Роль"
+                    placeholder={t("filters.role")}
                     value={filters.role}
                     onChange={handleSelectFilter("role")}
                     allowClear
                     style={{width: 180}}
                     options={[
-                        {value: "Student", label: "Студент"},
-                        {value: "Teacher", label: "Преподаватель"},
-                        {value: "Admin", label: "Администратор"},
+                        {value: "Student", label: t("roles.student")},
+                        {value: "Teacher", label: t("roles.teacher")},
+                        {value: "Admin", label: t("roles.admin")},
                     ]}
                 />
             </div>
@@ -259,6 +259,7 @@ const UserList = observer(() => {
 });
 
 const CreateUserForm = observer(() => {
+    const {t} = useTranslation("users");
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
@@ -278,7 +279,7 @@ const CreateUserForm = observer(() => {
 
     const handleSubmit = async () => {
         if (password !== passwordConfirm) {
-            message.error("Пароли не совпадают");
+            message.error(t("messages.passwordMismatch"));
             return;
         }
 
@@ -297,11 +298,11 @@ const CreateUserForm = observer(() => {
         setSubmitting(false);
 
         if (success) {
-            message.success("Пользователь создан");
+            message.success(t("messages.created"));
             resetForm();
             UserAdminStore.fetchUsers();
         } else {
-            message.error("Произошла ошибка");
+            message.error(t("messages.error"));
         }
     };
 
@@ -310,11 +311,11 @@ const CreateUserForm = observer(() => {
     return (
         <div className={cls.formWrapper}>
             <Form layout="vertical" className={cls.form} onFinish={handleSubmit}>
-                <Form.Item label="ФИО">
+                <Form.Item label={t("form.fullName")}>
                     <AppInput
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Иванов Иван Иванович"
+                        placeholder={t("form.fullNamePlaceholder")}
                     />
                 </Form.Item>
                 <Form.Item label="Email">
@@ -324,37 +325,37 @@ const CreateUserForm = observer(() => {
                         placeholder="email@example.com"
                     />
                 </Form.Item>
-                <Form.Item label="Телефон">
+                <Form.Item label={t("form.phone")}>
                     <AppInput
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="+996 XXX XXX XXX"
                     />
                 </Form.Item>
-                <Form.Item label="Роль">
+                <Form.Item label={t("form.role")}>
                     <Select
                         value={role}
                         onChange={setRole}
                         options={[
-                            {value: "Teacher", label: "Преподаватель"},
-                            {value: "Admin", label: "Администратор"},
+                            {value: "Teacher", label: t("roles.teacher")},
+                            {value: "Admin", label: t("roles.admin")},
                         ]}
                     />
                 </Form.Item>
-                <Form.Item label="Пароль">
+                <Form.Item label={t("form.password")}>
                     <AppInput
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Введите пароль"
+                        placeholder={t("form.passwordPlaceholder")}
                     />
                 </Form.Item>
-                <Form.Item label="Подтверждение пароля">
+                <Form.Item label={t("form.passwordConfirm")}>
                     <AppInput
                         type="password"
                         value={passwordConfirm}
                         onChange={(e) => setPasswordConfirm(e.target.value)}
-                        placeholder="Повторите пароль"
+                        placeholder={t("form.passwordConfirmPlaceholder")}
                     />
                 </Form.Item>
                 <div className={cls.actions}>
@@ -364,7 +365,7 @@ const CreateUserForm = observer(() => {
                         loading={submitting}
                         disabled={!isValid}
                     >
-                        Создать
+                        {t("form.create")}
                     </AppButton>
                 </div>
             </Form>
@@ -373,15 +374,16 @@ const CreateUserForm = observer(() => {
 });
 
 const UsersPage = observer(() => {
+    const {t} = useTranslation("users");
     const tabItems = [
         {
             key: "list",
-            label: "Список пользователей",
+            label: t("tabs.list"),
             children: <UserList />,
         },
         {
             key: "create",
-            label: "Создание пользователя",
+            label: t("tabs.create"),
             children: <CreateUserForm />,
         },
     ];

@@ -1,0 +1,28 @@
+{
+  "profile": {
+    "edit": "Редактировать",
+    "email": "Email",
+    "phone": "Телефон",
+    "group": "Группа",
+    "studentCode": "Код студента",
+    "changeStudentCode": "Сменить код студента",
+    "changeStudentCodeConfirm": "Сменить код студента?",
+    "changeStudentCodeDesc": "Текущий код будет заменён на новый. Это действие нельзя отменить.",
+    "change": "Сменить",
+    "registrationDate": "Дата регистрации",
+    "notSpecified": "Не указана",
+    "editProfile": "Редактирование профиля",
+    "security": "Безопасность",
+    "password": "Пароль",
+    "changePassword": "Изменить пароль",
+    "newPassword": "Новый пароль",
+    "confirmPassword": "Подтверждение пароля",
+    "enterPassword": "Введите новый пароль",
+    "repeatPassword": "Повторите пароль",
+    "fullName": "ФИО",
+    "passwordChanged": "Пароль успешно изменён",
+    "passwordChangeError": "Ошибка при смене пароля",
+    "studentCodeUpdated": "Код студента обновлён",
+    "studentCodeUpdateError": "Ошибка при смене кода студента"
+  }
+}

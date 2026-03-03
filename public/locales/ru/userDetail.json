@@ -1,0 +1,28 @@
+{
+  "messages": {
+    "activated": "Пользователь активирован",
+    "deactivated": "Пользователь деактивирован"
+  },
+  "back": "Назад к списку",
+  "status": {
+    "active": "Активен",
+    "inactive": "Неактивен"
+  },
+  "confirm": {
+    "deactivateTitle": "Деактивировать пользователя?",
+    "deactivateDescription": "Пользователь не сможет войти в систему.",
+    "activateTitle": "Активировать пользователя?",
+    "activateDescription": "Пользователь сможет войти в систему.",
+    "deactivate": "Деактивировать",
+    "activate": "Активировать",
+    "cancel": "Отмена"
+  },
+  "infoTitle": "Информация",
+  "labels": {
+    "phone": "Телефон",
+    "group": "Группа",
+    "notSpecified": "Не указана",
+    "studentCode": "Код студента",
+    "registrationDate": "Дата регистрации"
+  }
+}

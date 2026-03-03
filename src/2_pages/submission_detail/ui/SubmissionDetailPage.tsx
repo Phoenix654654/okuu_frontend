@@ -6,9 +6,11 @@ import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
 import {routes} from "@/6_shared";
+import {useTranslation} from "react-i18next";
 import cls from "./SubmissionDetailPage.module.scss";
 
 const SubmissionDetailPage = observer(() => {
+    const {t} = useTranslation("submissionDetail");
     const {id} = useParams<{id: string}>();
     const navigate = useNavigate();
     const submission = TaskStore.currentSubmission$.value;
@@ -38,10 +40,10 @@ const SubmissionDetailPage = observer(() => {
         setGrading(false);
 
         if (success) {
-            message.success("Оценка выставлена");
+            message.success(t("messages.graded"));
             navigate(routes.submissions);
         } else {
-            message.error("Ошибка при оценивании");
+            message.error(t("messages.error"));
         }
     };
 
@@ -54,36 +56,36 @@ const SubmissionDetailPage = observer(() => {
     return (
         <div className={cls.page}>
             <button className={cls.backBtn} onClick={() => navigate(routes.submissions)}>
-                <ArrowLeftOutlined /> Назад к списку
+                <ArrowLeftOutlined /> {t("back")}
             </button>
-            <h1>{typeof submission.task === "object" ? (submission.task as any)?.title : submission.task || "Решение"}</h1>
+            <h1>{typeof submission.task === "object" ? (submission.task as any)?.title : submission.task || t("solution")}</h1>
 
             <Descriptions bordered size="small" column={2}>
-                <Descriptions.Item label="Студент">
+                <Descriptions.Item label={t("labels.student")}>
                     {typeof submission.student === "object"
                         ? (submission.student as any)?.full_name || "—"
                         : submission.student || "—"}
                 </Descriptions.Item>
-                <Descriptions.Item label="Дата отправки">
+                <Descriptions.Item label={t("labels.submittedAt")}>
                     {submission.submitted_at ? new Date(submission.submitted_at).toLocaleString("ru-RU") : "—"}
                 </Descriptions.Item>
                 {isGraded && (
-                    <Descriptions.Item label="Оценка">
+                    <Descriptions.Item label={t("labels.score")}>
                         <Tag color="green">{submission.score}/5</Tag>
                     </Descriptions.Item>
                 )}
                 {submission.teacher_comment && (
-                    <Descriptions.Item label="Комментарий преподавателя">
+                    <Descriptions.Item label={t("labels.teacherComment")}>
                         {submission.teacher_comment}
                     </Descriptions.Item>
                 )}
             </Descriptions>
 
-            <Card title="Решение студента" size="small">
+            <Card title={t("cards.studentSolution")} size="small">
                 <p style={{whiteSpace: "pre-wrap"}}>{submission.content}</p>
                 {submission.files && submission.files.length > 0 && (
                     <div style={{marginTop: 8}}>
-                        <strong>Файлы:</strong>
+                        <strong>{t("labels.files")}:</strong>
                         {submission.files.map(f => (
                             <div key={f.id}>
                                 <a href={f.file} target="_blank" rel="noopener noreferrer">{f.original_name}</a>
@@ -94,10 +96,10 @@ const SubmissionDetailPage = observer(() => {
             </Card>
 
             {!isGraded && (
-                <Card title="Оценить решение" size="small">
+                <Card title={t("cards.gradeSolution")} size="small">
                     <div className={cls.gradeForm}>
                         <div>
-                            <label>Оценка (1-5)</label>
+                            <label>{t("labels.scoreInput")}</label>
                             <InputNumber
                                 value={score}
                                 onChange={setScore}
@@ -107,11 +109,11 @@ const SubmissionDetailPage = observer(() => {
                             />
                         </div>
                         <div>
-                            <label>Комментарий</label>
+                            <label>{t("labels.comment")}</label>
                             <Input.TextArea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                placeholder="Комментарий к оценке"
+                                placeholder={t("commentPlaceholder")}
                                 rows={3}
                                 style={{marginTop: 4}}
                             />
@@ -123,7 +125,7 @@ const SubmissionDetailPage = observer(() => {
                                 disabled={!score}
                                 onClick={handleGrade}
                             >
-                                Оценить
+                                {t("grade")}
                             </AppButton>
                         </div>
                     </div>

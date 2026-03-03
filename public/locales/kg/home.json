@@ -1,0 +1,12 @@
+{
+  "welcome": "Кош келиңиз, {{name}}!",
+  "teacher": {
+    "groups": "Топтор",
+    "tasks": "Тапшырмалар",
+    "submissions": "Чечимдер"
+  },
+  "student": {
+    "assignments": "Менин тапшырмаларым",
+    "descriptions": "Менин сүрөттөмөлөрүм"
+  }
+}

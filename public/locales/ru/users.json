@@ -1,0 +1,56 @@
+{
+  "messages": {
+    "activated": "Пользователь активирован",
+    "deactivated": "Пользователь деактивирован",
+    "passwordMismatch": "Пароли не совпадают",
+    "created": "Пользователь создан",
+    "error": "Произошла ошибка"
+  },
+  "table": {
+    "fullName": "ФИО",
+    "studentCode": "Код студента",
+    "role": "Роль",
+    "status": "Статус",
+    "actions": "Действия"
+  },
+  "status": {
+    "active": "Активен",
+    "inactive": "Неактивен"
+  },
+  "confirm": {
+    "deactivateTitle": "Деактивировать пользователя?",
+    "deactivateDescription": "Пользователь не сможет войти в систему.",
+    "activateTitle": "Активировать пользователя?",
+    "activateDescription": "Пользователь сможет войти в систему.",
+    "deactivate": "Деактивировать",
+    "activate": "Активировать",
+    "cancel": "Отмена"
+  },
+  "filters": {
+    "fullName": "ФИО",
+    "studentCode": "Код студента",
+    "status": "Статус",
+    "group": "Группа",
+    "role": "Роль"
+  },
+  "roles": {
+    "student": "Студент",
+    "teacher": "Преподаватель",
+    "admin": "Администратор"
+  },
+  "form": {
+    "fullName": "ФИО",
+    "fullNamePlaceholder": "Иванов Иван Иванович",
+    "phone": "Телефон",
+    "role": "Роль",
+    "password": "Пароль",
+    "passwordPlaceholder": "Введите пароль",
+    "passwordConfirm": "Подтверждение пароля",
+    "passwordConfirmPlaceholder": "Повторите пароль",
+    "create": "Создать"
+  },
+  "tabs": {
+    "list": "Список пользователей",
+    "create": "Создание пользователя"
+  }
+}

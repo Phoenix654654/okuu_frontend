@@ -1,0 +1,45 @@
+{
+  "messages": {
+    "deleted": "Тапшырма өчүрүлдү"
+  },
+  "back": "Тизмеге кайтуу",
+  "table": {
+    "description": "Сүрөттөмө",
+    "files": "Файлдар",
+    "student": "Студент",
+    "actions": "Аракеттер",
+    "status": "Статус",
+    "solution": "Чечим",
+    "score": "Баа",
+    "task": "Тапшырма",
+    "submittedAt": "Жөнөтүлгөн"
+  },
+  "buttons": {
+    "review": "Текшерүү",
+    "grade": "Баалоо",
+    "assignDescriber": "Сүрөттөөчү дайындоо",
+    "delete": "Өчүрүү"
+  },
+  "values": {
+    "yes": "Бар",
+    "no": "Жок"
+  },
+  "confirm": {
+    "deleteTask": "Тапшырманы өчүрөсүзбү?",
+    "yes": "Ооба",
+    "no": "Жок"
+  },
+  "labels": {
+    "teacher": "Мугалим",
+    "createdAt": "Түзүлгөн",
+    "updatedAt": "Жаңыртылган"
+  },
+  "cards": {
+    "taskDescription": "Тапшырманын сүрөттөмөсү",
+    "taskFiles": "Тапшырманын файлдары",
+    "selectedDescription": "Тандалган сүрөттөмө",
+    "descriptions": "Сүрөттөмөлөр",
+    "assignments": "Дайындоолор",
+    "submissions": "Чечимдер"
+  }
+}

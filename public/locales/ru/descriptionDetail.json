@@ -1,0 +1,20 @@
+{
+  "messages": {
+    "sent": "Описание отправлено",
+    "error": "Ошибка при отправке"
+  },
+  "back": "Назад к списку",
+  "titleFallback": "Описание задания #{{id}}",
+  "labels": {
+    "status": "Статус",
+    "deadline": "Дедлайн",
+    "teacherComment": "Комментарий преподавателя",
+    "files": "Файлы"
+  },
+  "cards": {
+    "sendDescription": "Отправить описание",
+    "description": "Описание"
+  },
+  "descriptionPlaceholder": "Введите описание задания...",
+  "send": "Отправить"
+}

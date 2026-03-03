@@ -13,7 +13,7 @@ import {observer} from "mobx-react-lite";
 
 export const RegisterForm = observer(() => {
     const navigate = useNavigate();
-    const {t} = useTranslation();
+    const {t} = useTranslation("auth");
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");

@@ -12,7 +12,7 @@ import {useTranslation} from "react-i18next";
 import cls from "./ProfilePage.module.scss";
 
 const ProfileContent = observer(() => {
-    const {t, i18n} = useTranslation();
+    const {t} = useTranslation(["profile", "auth", "layout"]);
     const user = UserStore.currentUser$.value;
     const [editing, setEditing] = useState(false);
     const [fullName, setFullName] = useState("");
@@ -99,12 +99,12 @@ const ProfileContent = observer(() => {
         setSavingPassword(true);
         try {
             await userService.changePassword(user.id, {password, password_confirm: passwordConfirm});
-            message.success("Пароль успешно изменён");
+            message.success(t("profile.passwordChanged"));
             setPassword("");
             setPasswordConfirm("");
             setChangingPassword(false);
         } catch {
-            message.error("Ошибка при смене пароля");
+            message.error(t("profile.passwordChangeError"));
         } finally {
             setSavingPassword(false);
         }
@@ -116,9 +116,9 @@ const ProfileContent = observer(() => {
         try {
             await userService.changeStudentCode(user.id);
             await UserStore.fetchCurrentUser();
-            message.success("Код студента обновлён");
+            message.success(t("profile.studentCodeUpdated"));
         } catch {
-            message.error("Ошибка при смене кода студента");
+            message.error(t("profile.studentCodeUpdateError"));
         } finally {
             setChangingCode(false);
         }
@@ -208,7 +208,7 @@ const ProfileContent = observer(() => {
                 <div className={cls.card}>
                     <h2 className={cls.cardTitle}>{t("profile.editProfile")}</h2>
                     <Form layout="vertical" onFinish={handleSave} className={cls.form}>
-                        <Form.Item label="ФИО">
+                        <Form.Item label={t("profile.fullName")}>
                             <AppInput value={fullName} onChange={(e) => setFullName(e.target.value)} />
                         </Form.Item>
                         <Form.Item label={t("profile.email")}>

@@ -12,7 +12,7 @@ import {useTranslation} from "react-i18next";
 import cls from "./TaskDetailPage.module.scss";
 
 const TaskDetailPage = observer(() => {
-    const {t} = useTranslation();
+    const {t} = useTranslation("taskDetail");
     const {id} = useParams<{id: string}>();
     const navigate = useNavigate();
     const task = TaskStore.current$.value;
@@ -48,7 +48,7 @@ const TaskDetailPage = observer(() => {
         if (!id) return;
         const success = await TaskStore.deleteTask(Number(id));
         if (success) {
-            message.success("Задание удалено");
+            message.success(t("messages.deleted"));
             navigate(routes.tasks);
         }
     };
@@ -64,13 +64,13 @@ const TaskDetailPage = observer(() => {
 
     const descriptionColumns = [
         {
-            title: "Описание",
+            title: t("table.description"),
             dataIndex: "description",
             key: "description",
             ellipsis: true,
         },
         {
-            title: "Файлы",
+            title: t("table.files"),
             key: "files",
             render: (_: unknown, r: ITaskDescriptionInline) =>
                 r.files && r.files.length > 0 ? (
@@ -84,12 +84,12 @@ const TaskDetailPage = observer(() => {
                 ) : "-",
         },
         {
-            title: "Студент",
+            title: t("table.student"),
             key: "student",
             render: (_: unknown, r: ITaskDescriptionInline) => r.describer?.student_code || "-",
         },
         {
-            title: "Действия",
+            title: t("table.actions"),
             key: "actions",
             render: (_: unknown, r: ITaskDescriptionInline) =>
                 canManageTask && r.status === "submitted" ? (
@@ -100,7 +100,7 @@ const TaskDetailPage = observer(() => {
                             setReviewOpen(true);
                         }}
                     >
-                        {"Проверить"}
+                        {t("buttons.review")}
                     </Button>
                 ) : null,
         },
@@ -108,24 +108,24 @@ const TaskDetailPage = observer(() => {
 
     const assignmentColumns = [
         {
-            title: "Студент",
+            title: t("table.student"),
             key: "student",
             render: (_: unknown, r: ITaskAssignmentInline) => r.student?.full_name || "-",
         },
         {
-            title: "Статус",
+            title: t("table.status"),
             dataIndex: "status",
             key: "status",
             render: (s: AssignmentStatus) => <Tag>{assignmentStatusLabels[s]}</Tag>,
         },
         {
-            title: "Решение",
+            title: t("table.solution"),
             dataIndex: "has_submission",
             key: "has_submission",
-            render: (has: boolean) => has ? <Tag color="green">{"Есть"}</Tag> : <Tag>{"Нет"}</Tag>,
+            render: (has: boolean) => has ? <Tag color="green">{t("values.yes")}</Tag> : <Tag>{t("values.no")}</Tag>,
         },
         {
-            title: "Оценка",
+            title: t("table.score"),
             dataIndex: "score",
             key: "score",
             render: (score: number | null) => score !== null ? <Tag color="green">{score}/5</Tag> : "-",
@@ -134,30 +134,30 @@ const TaskDetailPage = observer(() => {
 
     const submissionColumns = [
         {
-            title: "Студент",
+            title: t("table.student"),
             key: "student",
             render: (_: unknown, r: ISubmission) => r.student || `#${r.id}`,
         },
         {
-            title: "Задание",
+            title: t("table.task"),
             dataIndex: "task_title",
             key: "task_title",
             ellipsis: true,
         },
         {
-            title: "Отправлено",
+            title: t("table.submittedAt"),
             dataIndex: "submitted_at",
             key: "submitted_at",
             render: (date: string) => date ? new Date(date).toLocaleString("ru-RU") : "-",
         },
         {
-            title: "Оценка",
+            title: t("table.score"),
             dataIndex: "score",
             key: "score",
             render: (score: number | null) => score !== null ? <Tag color="green">{score}/5</Tag> : "-",
         },
         {
-            title: "Действия",
+            title: t("table.actions"),
             key: "actions",
             render: (_: unknown, r: ISubmission) =>
                 canManageTask && r.score === null ? (
@@ -168,7 +168,7 @@ const TaskDetailPage = observer(() => {
                             setGradeOpen(true);
                         }}
                     >
-                        {"Оценить"}
+                        {t("buttons.grade")}
                     </Button>
                 ) : null,
         },
@@ -177,7 +177,7 @@ const TaskDetailPage = observer(() => {
     return (
         <div className={cls.page}>
             <button className={cls.backBtn} onClick={() => navigate(routes.tasks)}>
-                <ArrowLeftOutlined /> {"Назад к списку"}
+                <ArrowLeftOutlined /> {t("back")}
             </button>
 
             <div className={cls.header}>
@@ -185,40 +185,40 @@ const TaskDetailPage = observer(() => {
                 <Space>
                     {canManageTask && (
                         <Button type="primary" onClick={() => setAssignDescriberOpen(true)}>
-                            {"Назначить описателя"}
+                            {t("buttons.assignDescriber")}
                         </Button>
                     )}
                     {canManageTask && (
                         <Popconfirm
-                            title={"Удалить задание?"}
+                            title={t("confirm.deleteTask")}
                             onConfirm={handleDelete}
-                            okText={"Да"}
-                            cancelText={"Нет"}
+                            okText={t("confirm.yes")}
+                            cancelText={t("confirm.no")}
                         >
-                            <Button danger>{"Удалить"}</Button>
+                            <Button danger>{t("buttons.delete")}</Button>
                         </Popconfirm>
                     )}
                 </Space>
             </div>
 
             <Descriptions bordered size="small" column={2}>
-                <Descriptions.Item label={"Преподаватель"}>{task.teacher?.full_name || "-"}</Descriptions.Item>
-                <Descriptions.Item label={"Создано"}>
+                <Descriptions.Item label={t("labels.teacher")}>{task.teacher?.full_name || "-"}</Descriptions.Item>
+                <Descriptions.Item label={t("labels.createdAt")}>
                     {new Date(task.created_at).toLocaleDateString("ru-RU")}
                 </Descriptions.Item>
-                <Descriptions.Item label={"Обновлено"}>
+                <Descriptions.Item label={t("labels.updatedAt")}>
                     {new Date(task.updated_at).toLocaleDateString("ru-RU")}
                 </Descriptions.Item>
             </Descriptions>
 
             {task.description && (
-                <Card title={"Описание задания"} size="small">
+                <Card title={t("cards.taskDescription")} size="small">
                     <p style={{whiteSpace: "pre-wrap"}}>{task.description}</p>
                 </Card>
             )}
 
             {task.files && task.files.length > 0 && (
-                <Card title={"Файлы задания"} size="small">
+                <Card title={t("cards.taskFiles")} size="small">
                     <Space direction="vertical" size={4}>
                         {task.files.map((f: IFile) => (
                             <a key={f.id} href={f.file} target="_blank" rel="noopener noreferrer">
@@ -230,13 +230,13 @@ const TaskDetailPage = observer(() => {
             )}
 
             {selectedDescriptionText && (
-                <Card title={"Выбранное описание"} size="small">
+                <Card title={t("cards.selectedDescription")} size="small">
                     <p style={{whiteSpace: "pre-wrap"}}>{selectedDescriptionText}</p>
                 </Card>
             )}
 
             {task.descriptions && task.descriptions.length > 0 && (
-                <Card title={"Описания"} size="small">
+                <Card title={t("cards.descriptions")} size="small">
                     <Table
                         dataSource={task.descriptions}
                         columns={descriptionColumns}
@@ -248,7 +248,7 @@ const TaskDetailPage = observer(() => {
             )}
 
             {task.assignments && task.assignments.length > 0 && (
-                <Card title={"Назначения"} size="small">
+                <Card title={t("cards.assignments")} size="small">
                     <Table
                         dataSource={task.assignments}
                         columns={assignmentColumns}
@@ -260,7 +260,7 @@ const TaskDetailPage = observer(() => {
             )}
 
             {TaskStore.submissions$.items.length > 0 && (
-                <Card title={"Решения"} size="small">
+                <Card title={t("cards.submissions")} size="small">
                     <Table
                         dataSource={TaskStore.submissions$.items}
                         columns={submissionColumns}

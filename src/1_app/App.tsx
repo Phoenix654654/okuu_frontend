@@ -19,7 +19,7 @@ const AppContent = observer(() => {
 });
 
 const App = observer(() => {
-    const {ready} = useTranslation();
+    const {ready} = useTranslation("layout");
 
     if (!ready) {
         return <Spin size="large" fullscreen />;
