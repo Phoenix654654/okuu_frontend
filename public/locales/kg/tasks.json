@@ -3,6 +3,7 @@
   "create": "Тапшырма түзүү",
   "table": {
     "title": "Аталышы",
+    "createdBy": "Жараткан",
     "createdAt": "Түзүлгөн",
     "actions": "Аракеттер"
   },

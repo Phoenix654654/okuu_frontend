@@ -3,6 +3,7 @@
   "create": "Создать задание",
   "table": {
     "title": "Название",
+    "createdBy": "Создал",
     "createdAt": "Создано",
     "actions": "Действия"
   },

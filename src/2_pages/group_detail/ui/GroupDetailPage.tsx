@@ -44,7 +44,8 @@ const GroupDetailPage = observer(() => {
     const role = UserStore.currentUser$.value?.role;
     const isAdmin = role === "Admin";
     const canManageTasks = role === "Teacher";
-    const isMobile = useMediaQuery("(max-width: 900px)");
+    const isNarrowPhone = useMediaQuery("(max-width: 425px)");
+    const isTablet = useMediaQuery("(max-width: 1024px)");
 
     const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
     const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
@@ -411,7 +412,11 @@ const GroupDetailPage = observer(() => {
                 </Space>
             </div>
 
-            <Descriptions bordered column={isMobile ? 1 : 2}>
+            <Descriptions
+                bordered
+                column={isTablet ? 1 : 2}
+                layout={isNarrowPhone ? "vertical" : "horizontal"}
+            >
                 <Descriptions.Item label={t("labels.name")}>{group.name}</Descriptions.Item>
                 <Descriptions.Item label={t("labels.year")}>
                     <Tag color="blue">{t("yearValue", {year: group.year})}</Tag>

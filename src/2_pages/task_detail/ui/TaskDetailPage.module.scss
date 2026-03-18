@@ -48,3 +48,101 @@
         }
     }
 }
+
+.cardList {
+    margin-top: 8px;
+}
+
+.cardListItem {
+    padding: 0 !important;
+    border: none !important;
+    margin-bottom: 10px;
+}
+
+.itemCard {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.itemMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.metaLine {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+}
+
+.metaLabel {
+    font-size: 11px;
+    color: var(--gray-primary-text);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    flex-shrink: 0;
+}
+
+.metaValue {
+    min-width: 0;
+    line-height: 1.2;
+    color: var(--dark-light);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.filesValue {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    line-height: 1.2;
+    white-space: normal;
+}
+
+.fileLink {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--violet-light);
+}
+
+.fileLink:hover {
+    color: var(--violet-light-active);
+}
+
+.preview {
+    margin-top: 10px;
+    color: var(--dark-light);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+.previewLabel {
+    font-size: 11px;
+    color: var(--gray-primary-text);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.itemActions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}

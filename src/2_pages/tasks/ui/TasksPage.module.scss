@@ -29,3 +29,110 @@
         }
     }
 }
+
+.cardList {
+    margin-top: 8px;
+}
+
+.cardListItem {
+    padding: 0 !important;
+    border: none !important;
+    margin-bottom: 10px;
+}
+
+.taskCard {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+
+    :global {
+        .ant-card-head-title,
+        .ant-card-extra {
+            padding: 0;
+        }
+
+        .ant-card-body {
+            padding: 12px;
+        }
+    }
+}
+
+.cardHeaderBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.cardHeaderBtn:focus-visible {
+    outline: 2px solid rgba(67, 121, 255, 0.35);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+.cardHeaderBtn:active {
+    opacity: 0.92;
+}
+
+.cardHeaderName {
+    color: var(--violet-light);
+    font-weight: 600;
+    display: inline-block;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: underline;
+    text-decoration-color: rgba(67, 121, 255, 0.45);
+    text-underline-offset: 3px;
+}
+
+.cardHeaderBtn:hover .cardHeaderName {
+    color: var(--violet-light-active);
+    text-decoration-color: rgba(67, 121, 255, 0.65);
+}
+
+.cardMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cardLine {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.cardLabel {
+    font-size: 11px;
+    color: var(--gray-primary-text);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+}
+
+.cardValue {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--dark-light);
+    font-weight: 500;
+    line-height: 1.2;
+}

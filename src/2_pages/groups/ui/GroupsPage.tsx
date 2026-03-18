@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Table, Button, Popconfirm, Space, Tag, Tabs, Form, InputNumber, Spin, message, Select} from "antd";
+import {Table, Button, Popconfirm, Space, Tag, Tabs, Form, InputNumber, Spin, message, Select, List, Card} from "antd";
 import {EditOutlined, DeleteOutlined, EyeOutlined, ClockCircleOutlined, PlayCircleOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
@@ -9,6 +9,7 @@ import type {IGroup} from "@/5_entities/group";
 import {AppPagination} from "@/6_shared/ui/pagination/AppPagination";
 import {AppInput} from "@/6_shared/ui/input/AppInput";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
+import {useMediaQuery} from "@/6_shared/lib/hooks/useMediaQuery/useMediaQuery";
 import {useTranslation} from "react-i18next";
 import cls from "./GroupsPage.module.scss";
 
@@ -18,6 +19,7 @@ const GroupList = observer(() => {
     const {items, total, loading, page, pageSize, filters} = GroupStore.list$;
     const isAdmin = UserStore.currentUser$.value?.role === "Admin";
     const [activeTab, setActiveTab] = useState<string>("active");
+    const isMobile = useMediaQuery("(max-width: 700px)");
 
     useEffect(() => {
         GroupStore.fetchGroups({ is_finished: activeTab === "active" ? false : true });
@@ -148,7 +150,7 @@ const GroupList = observer(() => {
                     placeholder={t("filters.year")}
                     value={filters.year}
                     onChange={handleYearFilter}
-                    style={{width: 220}}
+                    style={{width: isMobile ? "100%" : 220}}
                     options={Array.from({length: 10}, (_, index) => {
                         const year = index + 1;
                         return {value: year, label: t("table.yearValue", {year})};
@@ -163,15 +165,101 @@ const GroupList = observer(() => {
                     { key: "finished", label: t("tabs.finished") },
                 ]}
             />
-            <Table
-                bordered
-                dataSource={items}
-                columns={columns}
-                rowKey="id"
-                loading={loading}
-                scroll={{x: "max-content"}}
-                pagination={false}
-            />
+            {isMobile ? (
+                <List
+                    className={cls.cardList}
+                    loading={loading}
+                    dataSource={items}
+                    renderItem={(record: IGroup) => {
+                        const statusTag = (
+                            <Tag color={record.is_finished ? "orange" : "green"}>
+                                {record.is_finished ? t("status.finished") : t("status.active")}
+                            </Tag>
+                        );
+
+                        return (
+                            <List.Item className={cls.cardListItem}>
+                                <Card
+                                    size="small"
+                                    className={cls.groupCard}
+                                    title={
+                                        <button
+                                            type="button"
+                                            className={cls.cardHeaderBtn}
+                                            onClick={() => navigate(`/groups/${record.id}`)}
+                                        >
+                                            <span className={cls.cardHeaderName} title={record.name}>
+                                                {record.name}
+                                            </span>
+                                            {statusTag}
+                                        </button>
+                                    }
+                                >
+                                    <div className={cls.cardMeta}>
+                                        <div>
+                                            <span className={cls.cardLabel}>{t("table.year")}:</span>{" "}
+                                            <Tag color="blue">{t("table.yearValue", {year: record.year})}</Tag>
+                                        </div>
+                                        <div className={cls.cardLine}>
+                                            <span className={cls.cardLabel}>{t("table.teacher")}:</span>{" "}
+                                            <span className={cls.cardValue}>{record.teacher?.full_name || "--”"}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className={cls.cardActions}>
+                                        {isAdmin && (
+                                            <>
+                                                <Button
+                                                    size="small"
+                                                    type="text"
+                                                    shape="circle"
+                                                    icon={<EditOutlined />}
+                                                    onClick={() => handleEdit(record.id)}
+                                                    aria-label={t("form.editTitle")}
+                                                />
+
+                                                <Popconfirm
+                                                    title={record.is_finished ? t("confirm.markActive") : t("confirm.markFinished")}
+                                                    onConfirm={() => handleMarkFinished(record.id, !record.is_finished)}
+                                                    okText={t("confirm.yes")}
+                                                    cancelText={t("confirm.no")}
+                                                >
+                                                    <Button
+                                                        size="small"
+                                                        danger={!record.is_finished}
+                                                        icon={record.is_finished ? <PlayCircleOutlined /> : <ClockCircleOutlined />}
+                                                    >
+                                                        {record.is_finished ? t("buttons.activate") : t("buttons.finish")}
+                                                    </Button>
+                                                </Popconfirm>
+
+                                                <Popconfirm
+                                                    title={t("confirm.delete")}
+                                                    onConfirm={() => handleDelete(record.id)}
+                                                    okText={t("confirm.yes")}
+                                                    cancelText={t("confirm.no")}
+                                                >
+                                                    <Button size="small" type="text" danger shape="circle" icon={<DeleteOutlined />} aria-label={t("confirm.delete")} />
+                                                </Popconfirm>
+                                            </>
+                                        )}
+                                    </div>
+                                </Card>
+                            </List.Item>
+                        );
+                    }}
+                />
+            ) : (
+                <Table
+                    bordered
+                    dataSource={items}
+                    columns={columns}
+                    rowKey="id"
+                    loading={loading}
+                    scroll={{x: "max-content"}}
+                    pagination={false}
+                />
+            )}
             <AppPagination
                 page={page}
                 pageSize={pageSize}

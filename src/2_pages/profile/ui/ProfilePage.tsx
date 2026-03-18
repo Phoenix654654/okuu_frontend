@@ -8,12 +8,15 @@ import type {IGroup} from "@/5_entities/group";
 import {AppInput} from "@/6_shared/ui/input/AppInput";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
 import {getRoleLabels} from "@/6_shared";
+import {useMediaQuery} from "@/6_shared/lib/hooks/useMediaQuery/useMediaQuery";
 import {useTranslation} from "react-i18next";
 import cls from "./ProfilePage.module.scss";
 
 const ProfileContent = observer(() => {
-    const {t} = useTranslation(["profile", "auth", "layout"]);
+    const {t} = useTranslation(["profile", "auth", "layout", "common"]);
     const user = UserStore.currentUser$.value;
+    const isPhone = useMediaQuery("(max-width: 600px)");
+    const isNarrowPhone = useMediaQuery("(max-width: 425px)");
     const [editing, setEditing] = useState(false);
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
@@ -81,10 +84,10 @@ const ProfileContent = observer(() => {
             }
             await userService.updateUser(user.id, data as Parameters<typeof userService.updateUser>[1]);
             await UserStore.fetchCurrentUser();
-            message.success(t("common.save"));
+            message.success(t("common:common.save"));
             setEditing(false);
         } catch {
-            message.error(t("common.error"));
+            message.error(t("common:common.error"));
         } finally {
             setSaving(false);
         }
@@ -137,7 +140,7 @@ const ProfileContent = observer(() => {
     return (
         <div className={cls.page}>
             <div className={cls.header}>
-                <Avatar size={80} className={cls.avatar}>
+                <Avatar size={isNarrowPhone ? 56 : isPhone ? 64 : 80} className={cls.avatar}>
                     {initials}
                 </Avatar>
                 <div className={cls.headerInfo}>
@@ -162,7 +165,7 @@ const ProfileContent = observer(() => {
                 <div className={cls.card}>
                     <div className={cls.infoGrid}>
                         <InfoRow icon={<MailOutlined />} label={t("profile.email")} value={user.email} />
-                        <InfoRow icon={<PhoneOutlined />} label={t("profile.phone")} value={user.phone || "—"} />
+                        <InfoRow icon={<PhoneOutlined />} label={t("profile.phone")} value={user.phone || "--"} />
                         {user.role === "Student" && (
                             <InfoRow
                                 icon={<TeamOutlined />}
@@ -182,7 +185,7 @@ const ProfileContent = observer(() => {
                                     description={t("profile.changeStudentCodeDesc")}
                                     onConfirm={handleChangeStudentCode}
                                     okText={t("profile.change")}
-                                    cancelText={t("common.cancel")}
+                                    cancelText={t("common:common.cancel")}
                                     okButtonProps={{danger: true}}
                                 >
                                     <AppButton
@@ -234,9 +237,9 @@ const ProfileContent = observer(() => {
                             </Form.Item>
                         )}
                         <div className={cls.actions}>
-                            <AppButton onClick={handleCancel}>{t("common.cancel")}</AppButton>
+                            <AppButton onClick={handleCancel}>{t("common:common.cancel")}</AppButton>
                             <AppButton type="primary" htmlType="submit" loading={saving}>
-                                {t("common.save")}
+                                {t("common:common.save")}
                             </AppButton>
                         </div>
                     </Form>
@@ -252,7 +255,7 @@ const ProfileContent = observer(() => {
                         <span className={cls.infoIcon}><LockOutlined /></span>
                         <div className={cls.infoContent}>
                             <span className={cls.infoLabel}>{t("profile.password")}</span>
-                            <span className={cls.infoValue}>••••••••</span>
+                            <span className={cls.infoValue}>********</span>
                         </div>
                         <AppButton
                             type="default"
@@ -287,7 +290,7 @@ const ProfileContent = observer(() => {
                                 setPassword("");
                                 setPasswordConfirm("");
                             }}>
-                                {t("common.cancel")}
+                                {t("common:common.cancel")}
                             </AppButton>
                             <AppButton
                                 type="primary"
@@ -295,7 +298,7 @@ const ProfileContent = observer(() => {
                                 loading={savingPassword}
                                 disabled={!password || !passwordConfirm}
                             >
-                                {t("common.save")}
+                                {t("common:common.save")}
                             </AppButton>
                         </div>
                     </Form>

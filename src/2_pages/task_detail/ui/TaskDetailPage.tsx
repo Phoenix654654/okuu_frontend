@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Card, Tag, Table, Button, Space, Spin, Descriptions, message, Popconfirm} from "antd";
+import {Card, Tag, Table, Button, Space, Spin, Descriptions, message, Popconfirm, List} from "antd";
 import {ArrowLeftOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useParams, useNavigate} from "react-router-dom";
@@ -21,6 +21,7 @@ const TaskDetailPage = observer(() => {
     const canManageTask = UserStore.currentUser$.value?.role === "Teacher";
     const assignmentStatusLabels = getAssignmentStatusLabels();
     const isMobile = useMediaQuery("(max-width: 900px)");
+    const isPhone = useMediaQuery("(max-width: 700px)");
 
     const [assignDescriberOpen, setAssignDescriberOpen] = useState(false);
     const [reviewOpen, setReviewOpen] = useState(false);
@@ -239,40 +240,187 @@ const TaskDetailPage = observer(() => {
 
             {task.descriptions && task.descriptions.length > 0 && (
                 <Card title={t("cards.descriptions")} size="small">
-                    <Table
-                        dataSource={task.descriptions}
-                        columns={descriptionColumns}
-                        rowKey="id"
-                        pagination={false}
-                        scroll={{x: "max-content"}}
-                        size="small"
-                    />
+                    {isPhone ? (
+                        <List
+                            className={cls.cardList}
+                            dataSource={task.descriptions}
+                            renderItem={(r: ITaskDescriptionInline) => (
+                                <List.Item className={cls.cardListItem}>
+                                    <Card size="small" className={cls.itemCard}>
+                                        <div className={cls.itemMeta}>
+                                            <div className={cls.metaLine}>
+                                                <span className={cls.metaLabel}>{t("table.student")}:</span>
+                                                <span className={cls.metaValue}>{r.describer?.student_code || "-"}</span>
+                                            </div>
+                                            {r.files && r.files.length > 0 && (
+                                                <div className={cls.metaLine}>
+                                                    <span className={cls.metaLabel}>{t("table.files")}:</span>
+                                                    <span className={cls.filesValue}>
+                                                        {r.files.map((f: IFile) => (
+                                                            <a
+                                                                key={f.id}
+                                                                className={cls.fileLink}
+                                                                href={f.file}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {f.original_name}
+                                                            </a>
+                                                        ))}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className={cls.preview} title={r.description}>
+                                            <span className={cls.previewLabel}>{t("table.description")}:</span>{" "}
+                                            <span>{r.description || "-"}</span>
+                                        </div>
+                                        {canManageTask && r.status === "submitted" && (
+                                            <div className={cls.itemActions}>
+                                                <Button
+                                                    size="small"
+                                                    onClick={() => {
+                                                        setReviewDescId(r.id);
+                                                        setReviewOpen(true);
+                                                    }}
+                                                >
+                                                    {t("buttons.review")}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </Card>
+                                </List.Item>
+                            )}
+                        />
+                    ) : (
+                        <Table
+                            dataSource={task.descriptions}
+                            columns={descriptionColumns}
+                            rowKey="id"
+                            pagination={false}
+                            scroll={{x: "max-content"}}
+                            size="small"
+                        />
+                    )}
                 </Card>
             )}
 
             {task.assignments && task.assignments.length > 0 && (
                 <Card title={t("cards.assignments")} size="small">
-                    <Table
-                        dataSource={task.assignments}
-                        columns={assignmentColumns}
-                        rowKey="id"
-                        pagination={false}
-                        scroll={{x: "max-content"}}
-                        size="small"
-                    />
+                    {isPhone ? (
+                        <List
+                            className={cls.cardList}
+                            dataSource={task.assignments}
+                            renderItem={(r: ITaskAssignmentInline) => {
+                                const hasSubmission = ["true", "1"].includes(String(r.has_submission));
+                                const scoreText =
+                                    r.score !== null && r.score !== undefined && String(r.score).trim() !== ""
+                                        ? `${r.score}/5`
+                                        : "-";
+
+                                return (
+                                    <List.Item className={cls.cardListItem}>
+                                        <Card size="small" className={cls.itemCard}>
+                                            <div className={cls.itemMeta}>
+                                                <div className={cls.metaLine}>
+                                                    <span className={cls.metaLabel}>{t("table.student")}:</span>
+                                                    <span className={cls.metaValue}>{r.student?.full_name || "-"}</span>
+                                                </div>
+                                                <div className={cls.metaLine}>
+                                                    <span className={cls.metaLabel}>{t("table.status")}:</span>
+                                                    <span className={cls.metaValue}>
+                                                        <Tag>{assignmentStatusLabels[r.status]}</Tag>
+                                                    </span>
+                                                </div>
+                                                <div className={cls.metaLine}>
+                                                    <span className={cls.metaLabel}>{t("table.solution")}:</span>
+                                                    <span className={cls.metaValue}>
+                                                        {hasSubmission ? (
+                                                            <Tag color="green">{t("values.yes")}</Tag>
+                                                        ) : (
+                                                            <Tag>{t("values.no")}</Tag>
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                <div className={cls.metaLine}>
+                                                    <span className={cls.metaLabel}>{t("table.score")}:</span>
+                                                    <span className={cls.metaValue}>
+                                                        {scoreText === "-" ? "-" : <Tag color="green">{scoreText}</Tag>}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    </List.Item>
+                                );
+                            }}
+                        />
+                    ) : (
+                        <Table
+                            dataSource={task.assignments}
+                            columns={assignmentColumns}
+                            rowKey="id"
+                            pagination={false}
+                            scroll={{x: "max-content"}}
+                            size="small"
+                        />
+                    )}
                 </Card>
             )}
 
             {TaskStore.submissions$.items.length > 0 && (
                 <Card title={t("cards.submissions")} size="small">
-                    <Table
-                        dataSource={TaskStore.submissions$.items}
-                        columns={submissionColumns}
-                        rowKey="id"
-                        pagination={false}
-                        scroll={{x: "max-content"}}
-                        size="small"
-                    />
+                    {isPhone ? (
+                        <List
+                            className={cls.cardList}
+                            dataSource={TaskStore.submissions$.items}
+                            renderItem={(r: ISubmission) => (
+                                <List.Item className={cls.cardListItem}>
+                                    <Card size="small" className={cls.itemCard}>
+                                        <div className={cls.itemMeta}>
+                                            <div className={cls.metaLine}>
+                                                <span className={cls.metaLabel}>{t("table.student")}:</span>
+                                                <span className={cls.metaValue}>{r.student || `#${r.id}`}</span>
+                                            </div>
+                                            <div className={cls.metaLine}>
+                                                <span className={cls.metaLabel}>{t("table.submittedAt")}:</span>
+                                                <span className={cls.metaValue}>
+                                                    {r.submitted_at ? new Date(r.submitted_at).toLocaleString("ru-RU") : "-"}
+                                                </span>
+                                            </div>
+                                            <div className={cls.metaLine}>
+                                                <span className={cls.metaLabel}>{t("table.score")}:</span>
+                                                <span className={cls.metaValue}>
+                                                    {r.score !== null ? <Tag color="green">{r.score}/5</Tag> : "-"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {canManageTask && r.score === null && (
+                                            <div className={cls.itemActions}>
+                                                <Button
+                                                    size="small"
+                                                    onClick={() => {
+                                                        setGradeSubId(r.id);
+                                                        setGradeOpen(true);
+                                                    }}
+                                                >
+                                                    {t("buttons.grade")}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </Card>
+                                </List.Item>
+                            )}
+                        />
+                    ) : (
+                        <Table
+                            dataSource={TaskStore.submissions$.items}
+                            columns={submissionColumns}
+                            rowKey="id"
+                            pagination={false}
+                            scroll={{x: "max-content"}}
+                            size="small"
+                        />
+                    )}
                 </Card>
             )}
 
