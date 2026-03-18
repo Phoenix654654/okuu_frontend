@@ -1,10 +1,6 @@
-import {Button, Popconfirm} from "antd";
-import {LogoutOutlined, BellOutlined, MenuOutlined} from "@ant-design/icons";
+import {Button} from "antd";
+import {MenuOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
-import {useNavigate} from "react-router-dom";
-import {useTranslation} from "react-i18next";
-import {UserStore} from "@/5_entities/user";
-import {routes, getRoleLabels} from "@/6_shared";
 import {LanguageSwitcher} from "@/6_shared/ui/language-switcher";
 import cls from "./Header.module.scss";
 
@@ -14,55 +10,22 @@ type HeaderProps = {
 };
 
 export const Header = observer(({showMenuButton = false, onToggleSidebar}: HeaderProps) => {
-    const navigate = useNavigate();
-    const {t} = useTranslation("layout");
-    const user = UserStore.currentUser$.value;
-    const roleLabels = getRoleLabels();
-
-    const handleLogout = async () => {
-        await UserStore.logout();
-        navigate(routes.login);
-    };
-
     return (
         <div className={cls.header}>
-            <div className={cls.left}>
-                {showMenuButton && (
-                    <Button
-                        type="text"
-                        icon={<MenuOutlined />}
-                        size="large"
-                        className={cls.menuBtn}
-                        aria-label="Menu"
-                        onClick={onToggleSidebar}
-                    />
-                )}
-                <div className={cls.info}>
-                    {user && (
-                        <span className={cls.pageTitle}>{roleLabels[user.role as keyof typeof roleLabels] || user.role}: {user.full_name}</span>
-                    )}
-                    {user && user.student_code && (
-                        <span className={cls.studentCode}>{t("header.studentCode", {code: user.student_code})}</span>
-                    )}
-                </div>
-            </div>
+            {showMenuButton && (
+                <Button
+                    type="text"
+                    icon={<MenuOutlined />}
+                    size="large"
+                    className={cls.menuBtn}
+                    aria-label="Menu"
+                    onClick={onToggleSidebar}
+                />
+            )}
+
+            <div className={cls.spacer} />
             <div className={cls.actions}>
                 <LanguageSwitcher />
-                <Button type="text" icon={<BellOutlined />} size={'large'} aria-label={t("header.notifications")}/>
-                <Popconfirm
-                    title={t("header.logout")}
-                    description={t("header.logoutConfirm")}
-                    onConfirm={handleLogout}
-                    okText={t("header.yes")}
-                    cancelText={t("header.no")}
-                >
-                    <Button
-                        size={'large'}
-                        type="text"
-                        icon={<LogoutOutlined />}
-                        aria-label={t("header.logout")}
-                    />
-                </Popconfirm>
             </div>
         </div>
     );

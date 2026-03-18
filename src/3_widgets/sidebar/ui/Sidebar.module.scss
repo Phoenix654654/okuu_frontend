@@ -122,6 +122,17 @@
                 color: var(--sidebar-text-muted);
             }
         }
+
+        .logoutBtn {
+            flex-shrink: 0;
+            color: var(--sidebar-text-muted);
+        }
+
+        :global {
+            .ant-btn:hover {
+                color: var(--sidebar-text) !important;
+            }
+        }
     }
 }
 

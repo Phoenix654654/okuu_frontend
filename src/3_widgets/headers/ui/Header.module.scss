@@ -10,42 +10,20 @@
     gap: 12px;
     min-width: 0;
 
-    .left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-    }
-
     .menuBtn {
         flex-shrink: 0;
     }
 
-    .info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
+    .spacer {
+        flex: 1;
         min-width: 0;
-    }
-
-    .pageTitle {
-        font-size: 24px;
-        font-weight: 600;
-        color: var(--dark-light);
-        min-width: 0;
-    }
-
-    .studentCode {
-        font-size: 20px;
-        font-weight: 500;
-        color: var(--gray-secondary-text);
-        white-space: nowrap;
     }
 
     .actions {
         display: flex;
         align-items: center;
         gap: 8px;
+        flex-shrink: 0;
 
         .userName {
             font-size: 14px;
@@ -70,23 +48,26 @@
     .header {
         padding: 12px 14px;
         min-height: auto;
+        gap: 8px;
 
-        .info {
-            flex-direction: column;
-            align-items: flex-start;
+        .actions {
             gap: 4px;
         }
+    }
+}
 
-        .pageTitle {
-            font-size: 18px;
-            line-height: 1.2;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+@media (max-width: 480px) {
+    .header {
+        padding: 10px 10px;
+    }
 
-        .studentCode {
-            font-size: 14px;
+    .actions {
+        gap: 2px;
+
+        :global {
+            .ant-btn {
+                padding-inline: 6px;
+            }
         }
     }
 }
