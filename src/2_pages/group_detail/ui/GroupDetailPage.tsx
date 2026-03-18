@@ -10,6 +10,7 @@ import type {IGroupStudent} from "@/5_entities/group";
 import type {ITask, ITaskDescription} from "@/5_entities/task";
 import {CreateTaskModal, AssignDescriberModal, PublishTaskModal} from "@/4_features/tasks";
 import {routes} from "@/6_shared";
+import {useMediaQuery} from "@/6_shared/lib/hooks/useMediaQuery/useMediaQuery";
 import {useTranslation} from "react-i18next";
 import cls from "./GroupDetailPage.module.scss";
 
@@ -43,6 +44,7 @@ const GroupDetailPage = observer(() => {
     const role = UserStore.currentUser$.value?.role;
     const isAdmin = role === "Admin";
     const canManageTasks = role === "Teacher";
+    const isMobile = useMediaQuery("(max-width: 900px)");
 
     const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
     const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
@@ -409,7 +411,7 @@ const GroupDetailPage = observer(() => {
                 </Space>
             </div>
 
-            <Descriptions bordered column={2}>
+            <Descriptions bordered column={isMobile ? 1 : 2}>
                 <Descriptions.Item label={t("labels.name")}>{group.name}</Descriptions.Item>
                 <Descriptions.Item label={t("labels.year")}>
                     <Tag color="blue">{t("yearValue", {year: group.year})}</Tag>
@@ -465,6 +467,7 @@ const GroupDetailPage = observer(() => {
                 rowKey="id"
                 rowSelection={canManageTasks ? rowSelection : undefined}
                 loading={studentsLoading}
+                scroll={{x: "max-content"}}
                 pagination={false}
             />
 

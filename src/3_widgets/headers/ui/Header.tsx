@@ -1,5 +1,5 @@
 import {Button, Popconfirm} from "antd";
-import {LogoutOutlined, BellOutlined} from "@ant-design/icons";
+import {LogoutOutlined, BellOutlined, MenuOutlined} from "@ant-design/icons";
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
@@ -8,7 +8,12 @@ import {routes, getRoleLabels} from "@/6_shared";
 import {LanguageSwitcher} from "@/6_shared/ui/language-switcher";
 import cls from "./Header.module.scss";
 
-export const Header = observer(() => {
+type HeaderProps = {
+    showMenuButton?: boolean;
+    onToggleSidebar?: () => void;
+};
+
+export const Header = observer(({showMenuButton = false, onToggleSidebar}: HeaderProps) => {
     const navigate = useNavigate();
     const {t} = useTranslation("layout");
     const user = UserStore.currentUser$.value;
@@ -21,13 +26,25 @@ export const Header = observer(() => {
 
     return (
         <div className={cls.header}>
-            <div className={cls.info}>
-                {user && (
-                    <span className={cls.pageTitle}>{roleLabels[user.role as keyof typeof roleLabels] || user.role}: {user.full_name}</span>
+            <div className={cls.left}>
+                {showMenuButton && (
+                    <Button
+                        type="text"
+                        icon={<MenuOutlined />}
+                        size="large"
+                        className={cls.menuBtn}
+                        aria-label="Menu"
+                        onClick={onToggleSidebar}
+                    />
                 )}
-                {user && user.student_code && (
-                    <span className={cls.studentCode}>{t("header.studentCode", {code: user.student_code})}</span>
-                )}
+                <div className={cls.info}>
+                    {user && (
+                        <span className={cls.pageTitle}>{roleLabels[user.role as keyof typeof roleLabels] || user.role}: {user.full_name}</span>
+                    )}
+                    {user && user.student_code && (
+                        <span className={cls.studentCode}>{t("header.studentCode", {code: user.student_code})}</span>
+                    )}
+                </div>
             </div>
             <div className={cls.actions}>
                 <LanguageSwitcher />

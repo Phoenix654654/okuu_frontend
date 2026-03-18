@@ -23,3 +23,19 @@
   color: var(--dark-light);
   text-align: center;
 }
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 24px 16px;
+    border-radius: 10px;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+}

@@ -8,6 +8,7 @@ import {UserStore} from "@/5_entities/user";
 import type {AssignmentStatus, ITaskDescriptionInline, ITaskAssignmentInline, ISubmission, IFile} from "@/5_entities/task";
 import {AssignDescriberModal, ReviewDescriptionModal, GradeSubmissionModal} from "@/4_features/tasks";
 import {routes, getAssignmentStatusLabels} from "@/6_shared";
+import {useMediaQuery} from "@/6_shared/lib/hooks/useMediaQuery/useMediaQuery";
 import {useTranslation} from "react-i18next";
 import cls from "./TaskDetailPage.module.scss";
 
@@ -19,6 +20,7 @@ const TaskDetailPage = observer(() => {
     const loading = TaskStore.current$.loading;
     const canManageTask = UserStore.currentUser$.value?.role === "Teacher";
     const assignmentStatusLabels = getAssignmentStatusLabels();
+    const isMobile = useMediaQuery("(max-width: 900px)");
 
     const [assignDescriberOpen, setAssignDescriberOpen] = useState(false);
     const [reviewOpen, setReviewOpen] = useState(false);
@@ -201,7 +203,7 @@ const TaskDetailPage = observer(() => {
                 </Space>
             </div>
 
-            <Descriptions bordered size="small" column={2}>
+            <Descriptions bordered size="small" column={isMobile ? 1 : 2}>
                 <Descriptions.Item label={t("labels.teacher")}>{task.teacher?.full_name || "-"}</Descriptions.Item>
                 <Descriptions.Item label={t("labels.createdAt")}>
                     {new Date(task.created_at).toLocaleDateString("ru-RU")}
@@ -242,6 +244,7 @@ const TaskDetailPage = observer(() => {
                         columns={descriptionColumns}
                         rowKey="id"
                         pagination={false}
+                        scroll={{x: "max-content"}}
                         size="small"
                     />
                 </Card>
@@ -254,6 +257,7 @@ const TaskDetailPage = observer(() => {
                         columns={assignmentColumns}
                         rowKey="id"
                         pagination={false}
+                        scroll={{x: "max-content"}}
                         size="small"
                     />
                 </Card>
@@ -266,6 +270,7 @@ const TaskDetailPage = observer(() => {
                         columns={submissionColumns}
                         rowKey="id"
                         pagination={false}
+                        scroll={{x: "max-content"}}
                         size="small"
                     />
                 </Card>

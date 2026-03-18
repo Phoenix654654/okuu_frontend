@@ -7,6 +7,7 @@ import {TaskStore} from "@/5_entities/task";
 import {FileUpload} from "@/4_features/file-upload/FileUpload";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
 import {routes, descriptionStatusColors, getDescriptionStatusLabels} from "@/6_shared";
+import {useMediaQuery} from "@/6_shared/lib/hooks/useMediaQuery/useMediaQuery";
 import {useTranslation} from "react-i18next";
 import cls from "./DescriptionDetailPage.module.scss";
 
@@ -17,6 +18,7 @@ const DescriptionDetailPage = observer(() => {
     const desc = TaskStore.currentDescription$.value;
     const loading = TaskStore.currentDescription$.loading;
     const descriptionStatusLabels = getDescriptionStatusLabels();
+    const isMobile = useMediaQuery("(max-width: 900px)");
 
     const [text, setText] = useState("");
     const [fileIds, setFileIds] = useState<number[]>([]);
@@ -68,7 +70,7 @@ const DescriptionDetailPage = observer(() => {
             </button>
             <h1>{desc.task?.title || t("titleFallback", {id: desc.id})}</h1>
 
-            <Descriptions bordered size="small" column={2}>
+            <Descriptions bordered size="small" column={isMobile ? 1 : 2}>
                 <Descriptions.Item label={t("labels.status")}>
                     <Tag color={descriptionStatusColors[desc.status]}>
                         {descriptionStatusLabels[desc.status]}

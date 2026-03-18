@@ -6,6 +6,7 @@ import {useParams, useNavigate} from "react-router-dom";
 import {TaskStore} from "@/5_entities/task";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
 import {routes} from "@/6_shared";
+import {useMediaQuery} from "@/6_shared/lib/hooks/useMediaQuery/useMediaQuery";
 import {useTranslation} from "react-i18next";
 import cls from "./SubmissionDetailPage.module.scss";
 
@@ -15,6 +16,7 @@ const SubmissionDetailPage = observer(() => {
     const navigate = useNavigate();
     const submission = TaskStore.currentSubmission$.value;
     const loading = TaskStore.currentSubmission$.loading;
+    const isMobile = useMediaQuery("(max-width: 900px)");
 
     const [score, setScore] = useState<number | null>(null);
     const [comment, setComment] = useState("");
@@ -60,7 +62,7 @@ const SubmissionDetailPage = observer(() => {
             </button>
             <h1>{typeof submission.task === "object" ? (submission.task as any)?.title : submission.task || t("solution")}</h1>
 
-            <Descriptions bordered size="small" column={2}>
+            <Descriptions bordered size="small" column={isMobile ? 1 : 2}>
                 <Descriptions.Item label={t("labels.student")}>
                     {typeof submission.student === "object"
                         ? (submission.student as any)?.full_name || "—"

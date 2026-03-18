@@ -10,3 +10,13 @@
         color: var(--dark-light);
     }
 }
+
+@media (max-width: 900px) {
+    .page {
+        gap: 12px;
+
+        h1 {
+            font-size: 20px;
+        }
+    }
+}

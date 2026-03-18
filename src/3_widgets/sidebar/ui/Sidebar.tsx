@@ -2,13 +2,19 @@ import {Menu} from "antd";
 import {useLocation, useNavigate} from "react-router-dom";
 import {observer} from "mobx-react-lite";
 import {UserStore} from "@/5_entities/user";
+import {classNames} from "@/6_shared/lib/classNames/classNames";
 import cls from "./Sidebar.module.scss";
 import {getStudentItems, getTeacherItems, getAdminItems, getCommonItems, LogoKNU} from "@/6_shared";
 import {useEffect, useState} from "react";
 import i18next from "i18next";
 
 
-export const Sidebar = observer(() => {
+type SidebarProps = {
+    variant?: "default" | "drawer";
+    onNavigate?: () => void;
+};
+
+export const Sidebar = observer(({variant = "default", onNavigate}: SidebarProps) => {
     const navigate = useNavigate();
     const location = useLocation();
     const user = UserStore.currentUser$.value;
@@ -32,7 +38,7 @@ export const Sidebar = observer(() => {
     const selectedKey = menuItems.find(item => location.pathname.startsWith(item.key))?.key || "";
 
     return (
-        <div className={cls.sidebar}>
+        <div className={classNames(cls.sidebar, {[cls.drawer]: variant === "drawer"})}>
             <div className={cls.logoSection}>
                 <div className={cls.logoIcon}>
                     <img src={LogoKNU} alt="KNU"/>
@@ -45,7 +51,10 @@ export const Sidebar = observer(() => {
                     mode="inline"
                     selectedKeys={[selectedKey]}
                     items={menuItems}
-                    onClick={({key}) => navigate(key)}
+                    onClick={({key}) => {
+                        navigate(key);
+                        onNavigate?.();
+                    }}
                 />
             </div>
         </div>

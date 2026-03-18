@@ -8,6 +8,7 @@ import type {AssignmentStatus} from "@/5_entities/task";
 import {FileUpload} from "@/4_features/file-upload/FileUpload";
 import {AppButton} from "@/6_shared/ui/button/AppButton";
 import {routes} from "@/6_shared";
+import {useMediaQuery} from "@/6_shared/lib/hooks/useMediaQuery/useMediaQuery";
 import {useTranslation} from "react-i18next";
 import cls from "./AssignmentDetailPage.module.scss";
 
@@ -17,6 +18,7 @@ const AssignmentDetailPage = observer(() => {
     const navigate = useNavigate();
     const assignment = TaskStore.currentAssignment$.value;
     const loading = TaskStore.currentAssignment$.loading;
+    const isMobile = useMediaQuery("(max-width: 900px)");
 
     const [content, setContent] = useState("");
     const [fileIds, setFileIds] = useState<number[]>([]);
@@ -71,7 +73,7 @@ const AssignmentDetailPage = observer(() => {
             </button>
             <h1>{task?.title || t("taskFallback", {id: assignment.id})}</h1>
 
-            <Descriptions bordered size="small" column={2}>
+            <Descriptions bordered size="small" column={isMobile ? 1 : 2}>
                 <Descriptions.Item label={t("labels.status")}>
                     <Tag>{statusLabels[assignment.status]}</Tag>
                 </Descriptions.Item>
